@@ -1,0 +1,82 @@
+loki:
+  enabled: true
+  isDefault: false
+  config:
+    table_manager:
+      retention_deletes_enabled: true
+      retention_period: 48h
+    chunk_store_config:
+      max_look_back_period: 24h
+    compactor:
+      compaction_interval: 5m
+      retention_enabled: true
+      retention_delete_delay: 2m
+      retention_delete_worker_count: 10000
+    limits_config:
+      retention_period: 168h
+      enforce_metric_name: false
+      max_entries_limit_per_query: 5000
+      reject_old_samples: true
+      reject_old_samples_max_age: 168h
+  resources:
+    limits:
+      cpu: 250m
+      memory: 700Mi
+    requests:
+      cpu: 100m
+      memory: 300Mi
+  persistence:
+    enabled: true
+    storageClassName: gp2
+    size: "15Gi"
+  ingress:
+    enabled: "${enable_loki_internal_ingress}"
+    annotations:
+    kubernetes.io/ingress.class: "internal-nginx"
+    kubernetes.io/tls-acme: "false"
+    hosts:
+    - host: ${loki_hostname}
+      paths:
+      - /
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Infra-Services"
+            operator: In
+            values:
+            - "true"
+
+promtail:
+  enabled: true
+  config:
+    lokiAddress: http://{{ .Release.Name }}:3100/loki/api/v1/push
+
+fluent-bit:
+  enabled: false
+
+grafana:
+  enabled: false
+  sidecar:
+    datasources:
+      enabled: true
+      maxLines: 1000
+  image:
+    tag: 9.0.4
+
+prometheus:
+  enabled: false
+  isDefault: false
+
+
+outputs:
+  main: |-
+    output {
+      loki {
+        url => "http://loki:3100/loki/api/v1/push"
+        #username => "test"
+        #password => "test"
+      }
+      # stdout { codec => rubydebug }
+    }

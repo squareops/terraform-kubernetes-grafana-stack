@@ -1,0 +1,220 @@
+metaMonitoring:
+  prometheusRule:
+    enabled: true
+    mimirAlerts: true
+    mimirRules: true
+    groups:
+    - name: mimir_api_1
+      rules:
+      - expr: histogram_quantile(0.99, sum(rate(cortex_request_duration_seconds_bucket[1m]))
+          by (le, cluster, job))
+        record: cluster_job:cortex_request_duration_seconds:99quantile
+      - expr: histogram_quantile(0.50, sum(rate(cortex_request_duration_seconds_bucket[1m]))
+          by (le, cluster, job))
+        record: cluster_job:cortex_request_duration_seconds:50quantile
+      - expr: sum(rate(cortex_request_duration_seconds_sum[1m])) by (cluster, job) / sum(rate(cortex_request_duration_seconds_count[1m]))
+          by (cluster, job)
+        record: cluster_job:cortex_request_duration_seconds:avg
+      - expr: sum(rate(cortex_request_duration_seconds_bucket[1m])) by (le, cluster, job)
+        record: cluster_job:cortex_request_duration_seconds_bucket:sum_rate
+      - expr: sum(rate(cortex_request_duration_seconds_sum[1m])) by (cluster, job)
+        record: cluster_job:cortex_request_duration_seconds_sum:sum_rate
+      - expr: sum(rate(cortex_request_duration_seconds_count[1m])) by (cluster, job)
+        record: cluster_job:cortex_request_duration_seconds_count:sum_rate
+  serviceMonitor:
+    enabled: true
+  grafanaAgent:
+    enabled: true
+    installOperator: true
+    metrics:
+      additionalRemoteWriteConfigs:
+        - url: "http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push"
+
+serviceAccount:
+  # -- Whether to create a service account or not. In case 'create' is false, do set 'name' to an existing service account name.
+  create: true
+  # -- Override for the generated service account name.
+  name: grafana-mimir-sa
+  annotations:
+    eks.amazonaws.com/role-arn: "${s3_role_arn}"
+
+
+# global:
+#   extraEnvFrom:
+#     - secretRef:
+#         name: mimir-bucket-secret
+#   podAnnotations:
+#     bucketSecretVersion: "0"
+
+# This turns of the built-in MinIO support
+minio:
+  enabled: false
+
+mimir:
+  structuredConfig:
+    limits:
+      out_of_order_time_window: 1h
+    blocks_storage:
+      backend: s3
+      s3:
+        bucket_name: ${s3_bucket_name}
+        endpoint: s3.amazonaws.com
+        region: ${s3_bucket_region}
+        sse:
+          type: "SSE-S3"
+      tsdb:
+        retention_period: 48h
+
+alertmanager:
+  enabled: false
+  persistentVolume:
+    storageClass: ""
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Monitor-Services"
+            operator: In
+            values:
+            - "true"
+
+ruler:
+  enabled: false
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Monitor-Services"
+            operator: In
+            values:
+            - "true"
+
+distributor:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Monitor-Services"
+            operator: In
+            values:
+            - "true"
+  extraArgs:
+    distributor.ingestion-rate-limit: "10000000000000"
+
+overrides_exporter:
+  enabled: false
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Monitor-Services"
+            operator: In
+            values:
+            - "true"
+
+querier:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Monitor-Services"
+            operator: In
+            values:
+            - "true"
+  extraArgs:
+    querier.max-fetched-chunks-per-query: "8000000"
+
+query_frontend:
+  affinity:
+    nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: "Monitor-Services"
+              operator: In
+              values:
+              - "true"
+
+query_scheduler:
+  enabled: false
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Monitor-Services"
+            operator: In
+            values:
+            - "true"
+
+ingester:
+  replicas: 2
+  persistentVolume:
+    storageClass: ${storage_class_name}
+    # storageClass: standard
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Monitor-Services"
+            operator: In
+            values:
+            - "true"
+
+  topologySpreadConstraints:
+    maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      app.kubernetes.io/component: ingester
+  extraArgs:
+    ingester.max-global-series-per-user: "0"
+    ingester.max-global-series-per-metric: "0"
+
+store_gateway:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Monitor-Services"
+            operator: In
+            values:
+            - "true"
+
+  topologySpreadConstraints:
+    maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      app.kubernetes.io/component: store-gateway
+  persistentVolume:
+    storageClass: ${storage_class_name}
+    # storageClass: standard
+
+compactor:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Monitor-Services"
+            operator: In
+            values:
+            - "true"
+
+  topologySpreadConstraints:
+    maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      app.kubernetes.io/component: compactor
+  persistentVolume:
+    storageClass: ${storage_class_name}
+    # storageClass: standard

@@ -1,0 +1,146 @@
+global:
+  rbac:
+    create: true
+    pspEnabled: true
+    pspAnnotations:
+      pod-security.kubernetes.io/enforce: baseline
+      pod-security.kubernetes.io/audit: baseline
+      pod-security.kubernetes.io/warn: baseline
+
+alertmanager:
+  enabled: true
+  config:
+    global:
+      resolve_timeout: 5m
+    route:
+      group_wait: 30s
+      group_interval: 1m
+      repeat_interval: 12h
+      receiver: slack_others
+      routes:
+      - receiver: slack_critical
+        # continue: true
+        match:
+          severity: critical
+      - receiver: slack_warning
+        # continue: true
+        match:
+          severity: warning
+      # - receiver: email_alerts
+      #   match_re:
+      #     severity: critical|warning
+    receivers:
+    - name: slack_others
+      slack_configs:
+      - api_url: "https://hooks.slack.com/services/TB5FXBSUE/B04FUJGT9L0/UUn8UaBCoc45n"
+        send_resolved: true
+        icon_url: https://avatars3.githubusercontent.com/u/3380462
+        title: |-
+          [{{ .Status | toUpper }}{{ if eq .Status "firing" }}: {{ .Alerts.Firing | len }}{{ end }}]
+        text: |-
+          {{ range .Alerts }}
+
+          *Alert Name :* {{ .Labels.alertname }}
+
+          {{- if .Annotations.summary }}
+          *Alert Summary:* {{ .Annotations.summary }}
+          {{- end -}}
+
+          {{- if .Annotations.description }}
+          *Alert Description:* {{ .Annotations.description }}
+          {{ else }}
+          *Alert Message:* {{ .Annotations.message }}
+          {{- end }}
+
+          *Alert Details:*
+          {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+          {{ end }}
+          {{ end }}
+
+    - name: slack_critical
+      slack_configs:
+      - api_url: "https://hooks.slack.com/services/TB5FXBSUE/B04FUJGT9L0/UUn8UaBCoc45n"
+        send_resolved: true
+        icon_url: https://avatars3.githubusercontent.com/u/3380462
+        title: |-
+          [{{ .Status | toUpper }}{{ if eq .Status "firing" }}: {{ .Alerts.Firing | len }}{{ end }}]
+        text: |-
+          {{ range .Alerts }}
+
+          *Alert Name :* {{ .Labels.alertname }}
+
+          {{- if .Annotations.summary }}
+          *Alert Summary:* {{ .Annotations.summary }}
+          {{- end -}}
+
+          {{- if .Annotations.description }}
+          *Alert Description:* {{ .Annotations.description }}
+          {{ else }}
+          *Alert Message:* {{ .Annotations.message }}
+          {{- end }}
+
+          *Alert Details:*
+          {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+          {{ end }}
+          {{ end }}
+
+    - name: slack_warning
+      slack_configs:
+      - api_url: "https://hooks.slack.com/services/TB5FXBSUE/B04FUJGT9L0/UUn8UaBCoc45n"
+        send_resolved: true
+        icon_url: https://avatars3.githubusercontent.com/u/3380462
+        title: |-
+          [{{ .Status | toUpper }}{{ if eq .Status "firing" }}: {{ .Alerts.Firing | len }}{{ end }}]
+        text: |-
+          {{ range .Alerts }}
+
+          *Alert Name :* {{ .Labels.alertname }}
+
+          {{- if .Annotations.summary }}
+          *Alert Summary:* {{ .Annotations.summary }}
+          {{- end -}}
+
+          {{- if .Annotations.description }}
+          *Alert Description:* {{ .Annotations.description }}
+          {{ else }}
+          *Alert Message:* {{ .Annotations.message }}
+          {{- end }}
+
+          *Alert Details:*
+          {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+          {{ end }}
+          {{ end }}
+
+
+defaultRules:
+  disabled:
+    Watchdog: true
+    # InfoInhibitor: true
+    # TargetDown: true
+  # KubeAPIDown: true
+  # NodeRAIDDegraded: true
+
+grafana:
+  resources:
+    limits:
+      cpu: 300m
+      memory: 900Mi
+    requests:
+      cpu: 100m
+      memory: 300Mi
+
+  sidecar:
+    resources:
+      limits:
+        cpu: 100m
+        memory: 200Mi
+      requests:
+        cpu: 50m
+        memory: 50Mi
+
+#   rbac:
+#     pspEnabled: true
+
+# prometheus-node-exporter:
+#   rbac:
+#     pspEnabled: true
