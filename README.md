@@ -204,7 +204,8 @@ No requirements.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_grafana"></a> [grafana](#output\_grafana) | Grafana\_Info |
+| <a name="output_grafana_password"></a> [grafana\_password](#output\_grafana\_password) | password |
+| <a name="output_grafana_user"></a> [grafana\_user](#output\_grafana\_user) | user |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Contribution & Issue Reporting
