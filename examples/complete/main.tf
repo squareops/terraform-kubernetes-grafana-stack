@@ -19,10 +19,10 @@ module "pgl" {
     grafana_mimir_values_yaml          = file("./helm/mimir.yaml")
     dashboard_refresh_interval         = "300"
     grafana_enabled                    = true
-    prometheus_hostname                = "prometh.squareops.in"
+    prometheus_hostname                = ""
     enable_prometheus_internal_ingress = false
     enable_loki_internal_ingress       = false
-    loki_hostname                      = "loki.squareops.in"
+    loki_hostname                      = ""
     mimir_s3_bucket_config = {
       s3_bucket_name     = ""
       versioning_enabled = "true"
