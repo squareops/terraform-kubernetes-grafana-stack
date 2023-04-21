@@ -36,7 +36,7 @@ resource "helm_release" "loki" {
   values = [
     templatefile("${path.module}/helm/values/loki/values.yaml", {
       loki_hostname                = var.deployment_config.loki_hostname,
-      enable_loki_internal_ingress = var.deployment_config.enable_loki_internal_ingress
+      enable_loki_internal_ingress = var.deployment_config.loki_internal_ingress_enabled
     }),
     var.deployment_config.loki_values_yaml
   ]
@@ -84,7 +84,7 @@ resource "helm_release" "prometheus_grafana" {
       storage_class_name                 = "${var.deployment_config.storage_class_name}",
       min_refresh_interval               = "${var.deployment_config.dashboard_refresh_interval}",
       grafana_enabled                    = "${var.deployment_config.grafana_enabled}",
-      enable_prometheus_internal_ingress = "${var.deployment_config.enable_prometheus_internal_ingress}",
+      enable_prometheus_internal_ingress = "${var.deployment_config.prometheus_internal_ingress_enabled}",
       prometheus_hostname                = "${var.deployment_config.prometheus_hostname}"
     }),
     var.deployment_config.prometheus_values_yaml
@@ -100,8 +100,8 @@ resource "helm_release" "karpenter_provisioner" {
     templatefile("${path.module}/karpenter_provisioner/values.yaml", {
       private_subnet_name                  = var.deployment_config.karpenter_config.private_subnet_name,
       cluster_name                         = var.cluster_name,
-      karpenter_ec2_capacity_type          = "[${join(",", [for s in var.deployment_config.karpenter_config.karpenter_ec2_capacity_type : format("%s", s)])}]",
-      excluded_karpenter_ec2_instance_type = "[${join(",", var.deployment_config.karpenter_config.excluded_karpenter_ec2_instance_type)}]"
+      karpenter_ec2_capacity_type          = "[${join(",", [for s in var.deployment_config.karpenter_config.instance_capacity_type : format("%s", s)])}]",
+      excluded_karpenter_ec2_instance_type = "[${join(",", var.deployment_config.karpenter_config.excluded_instance_type)}]"
     }),
     var.deployment_config.karpenter_config.karpenter_values
   ]

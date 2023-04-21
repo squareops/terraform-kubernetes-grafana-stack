@@ -1,6 +1,6 @@
 nginx:
   ingress:
-    enabled: false
+    enabled: true
     ingressClassName: nginx
     hosts:
       - host: mimir.ref.stg.skaf.squareops.in

@@ -46,18 +46,18 @@ variable "grafana_mimir_enabled" {
 variable "deployment_config" {
   type = any
   default = {
-    hostname                           = ""
-    storage_class_name                 = "gp2"
-    prometheus_values_yaml             = ""
-    loki_values_yaml                   = ""
-    blackbox_values_yaml               = ""
-    grafana_mimir_values_yaml          = ""
-    dashboard_refresh_interval         = ""
-    grafana_enabled                    = true
-    prometheus_hostname                = ""
-    enable_prometheus_internal_ingress = false
-    enable_loki_internal_ingress       = false
-    loki_hostname                      = ""
+    hostname                            = ""
+    storage_class_name                  = "gp2"
+    prometheus_values_yaml              = ""
+    loki_values_yaml                    = ""
+    blackbox_values_yaml                = ""
+    grafana_mimir_values_yaml           = ""
+    dashboard_refresh_interval          = ""
+    grafana_enabled                     = true
+    prometheus_hostname                 = ""
+    prometheus_internal_ingress_enabled = false
+    loki_internal_ingress_enabled       = false
+    loki_hostname                       = ""
     mimir_s3_bucket_config = {
       s3_bucket_name     = ""
       versioning_enabled = ""
@@ -65,10 +65,10 @@ variable "deployment_config" {
     }
     karpenter_enabled = ""
     karpenter_config = {
-      private_subnet_name                  = ""
-      karpenter_ec2_capacity_type          = [""]
-      excluded_karpenter_ec2_instance_type = [""]
-      karpenter_values                     = ""
+      private_subnet_name    = ""
+      instance_capacity_type = [""]
+      excluded_instance_type = [""]
+      karpenter_values       = ""
     }
 
   }
