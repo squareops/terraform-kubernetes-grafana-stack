@@ -46,7 +46,6 @@ module "s3_bucket_mimir" {
   source        = "terraform-aws-modules/s3-bucket/aws"
   version       = "3.7.0"
   bucket        = var.deployment_config.mimir_s3_bucket_config.s3_bucket_name
-  acl           = "private"
   force_destroy = true
 
   attach_deny_insecure_transport_policy = false
@@ -69,8 +68,8 @@ module "s3_bucket_mimir" {
   restrict_public_buckets = true
 
   # S3 Bucket Ownership Controls
-  control_object_ownership = false
-  object_ownership         = "bucket-owner-full-control"
+  control_object_ownership = true
+  object_ownership         = "BucketOwnerPreferred"
 }
 
 resource "helm_release" "grafana_mimir" {
