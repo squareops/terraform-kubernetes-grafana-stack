@@ -60,7 +60,7 @@ extraContainers: []
   #       name: secret-blackbox-tls
 
 ## Enable pod security policy
-pspEnabled: true
+pspEnabled: false
 
 hostNetwork: false
 

@@ -38,6 +38,5 @@ No inputs.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_grafana_password"></a> [grafana\_password](#output\_grafana\_password) | grafana password |
-| <a name="output_grafana_user"></a> [grafana\_user](#output\_grafana\_user) | grafana username |
+| <a name="output_grafana_credentials"></a> [grafana\_credentials](#output\_grafana\_credentials) | grafana\_Info |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

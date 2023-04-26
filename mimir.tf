@@ -69,7 +69,7 @@ module "s3_bucket_mimir" {
 
   # S3 Bucket Ownership Controls
   control_object_ownership = true
-  object_ownership         = "BucketOwnerPreferred"
+  object_ownership         = "BucketOwnerPreferred""
 }
 
 resource "helm_release" "grafana_mimir" {

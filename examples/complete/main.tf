@@ -11,18 +11,18 @@ module "pgl" {
   loki_enabled                  = true
   grafana_mimir_enabled         = true
   deployment_config = {
-    hostname                           = "grafanaa.squareops.in"
-    storage_class_name                 = "gp2"
-    prometheus_values_yaml             = file("./helm/prometheus.yaml")
-    loki_values_yaml                   = file("./helm/loki.yaml")
-    blackbox_values_yaml               = file("./helm/blackbox.yaml")
-    grafana_mimir_values_yaml          = file("./helm/mimir.yaml")
-    dashboard_refresh_interval         = "300"
-    grafana_enabled                    = true
-    prometheus_hostname                = ""
-    enable_prometheus_internal_ingress = false
-    enable_loki_internal_ingress       = false
-    loki_hostname                      = ""
+    hostname                            = "grafanaa.squareops.in"
+    storage_class_name                  = "gp2"
+    prometheus_values_yaml              = file("./helm/prometheus.yaml")
+    loki_values_yaml                    = file("./helm/loki.yaml")
+    blackbox_values_yaml                = file("./helm/blackbox.yaml")
+    grafana_mimir_values_yaml           = file("./helm/mimir.yaml")
+    dashboard_refresh_interval          = "300"
+    grafana_enabled                     = true
+    prometheus_hostname                 = "prometh.squareops.in"
+    prometheus_internal_ingress_enabled = false
+    loki_internal_ingress_enabled       = false
+    loki_hostname                       = "loki.squareops.in"
     mimir_s3_bucket_config = {
       s3_bucket_name     = ""
       versioning_enabled = "true"
@@ -30,10 +30,10 @@ module "pgl" {
     }
     karpenter_enabled = true
     karpenter_config = {
-      private_subnet_name                  = "private-subnet-name"
-      karpenter_ec2_capacity_type          = ["spot"]
-      excluded_karpenter_ec2_instance_type = ["nano", "micro", "small"]
-      karpenter_values                     = file("./helm/karpenter.yaml")
+      private_subnet_name    = "private-subnet-name"
+      instance_capacity_type = ["spot"]
+      excluded_instance_type = ["nano", "micro", "small"]
+      karpenter_values       = file("./helm/karpenter.yaml")
     }
   }
   exporter_config = {
