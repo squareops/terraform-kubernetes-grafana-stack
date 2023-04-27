@@ -5,6 +5,7 @@ metadata:
 spec:
   labels:
     Monitor-Services: "true"
+    eks.amazonaws.com/nodegroup: "monitoring-ng"
   requirements:
     - key: karpenter.sh/capacity-type         # optional, set to on-demand by default, spot if both are listed
       operator: In
