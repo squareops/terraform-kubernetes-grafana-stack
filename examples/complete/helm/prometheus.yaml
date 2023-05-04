@@ -19,16 +19,14 @@ alertmanager:
       receiver: slack_others
       routes:
       - receiver: slack_critical
-        # continue: true
+
         match:
           severity: critical
       - receiver: slack_warning
-        # continue: true
+       
         match:
           severity: warning
-      # - receiver: email_alerts
-      #   match_re:
-      #     severity: critical|warning
+    
     receivers:
     - name: slack_others
       slack_configs:
@@ -115,10 +113,7 @@ alertmanager:
 defaultRules:
   disabled:
     Watchdog: true
-    # InfoInhibitor: true
-    # TargetDown: true
-  # KubeAPIDown: true
-  # NodeRAIDDegraded: true
+
 
 grafana:
   resources:
@@ -137,10 +132,3 @@ grafana:
       requests:
         cpu: 50m
         memory: 50Mi
-
-#   rbac:
-#     pspEnabled: true
-
-# prometheus-node-exporter:
-#   rbac:
-#     pspEnabled: true
