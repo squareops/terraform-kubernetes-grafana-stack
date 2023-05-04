@@ -246,34 +246,6 @@ resource "helm_release" "kafka_exporter" {
   depends_on = [helm_release.prometheus_grafana]
 }
 
-# resource "helm_release" "mongodb_exporter" {
-#   count             = var.exporter_config.mongodb ? 1 : 0
-#   name              = "mongodb-exporter"
-#   repository        = "https://prometheus-community.github.io/helm-charts"
-#   chart             = "prometheus-mongodb-exporter"
-#   namespace         = var.pgl_namespace
-#   version           = "3.1.0"
-#   timeout           = 600
-#   values = [
-#     file("${path.module}/helm/values/mongodb.yaml")
-#   ]
-#   depends_on = [helm_release.prometheus_grafana]
-# }
-
-# resource "helm_release" "mysql_exporter" {
-#   count             = var.exporter_config.mysql ? 1 : 0
-#   name              = "mysql-exporter"
-#   repository        = "https://prometheus-community.github.io/helm-charts"
-#   chart             = "prometheus-mysql-exporter"
-#   namespace         = var.pgl_namespace
-#   version           = "1.8.1"
-#   timeout           = 600
-#   values = [
-#     file("${path.module}/helm/values/mysql.yaml")
-#   ]
-#   depends_on = [helm_release.prometheus_grafana]
-# }
-
 resource "helm_release" "nats_exporter" {
   count      = var.exporter_config.nats ? 1 : 0
   name       = "nats-exporter"
@@ -329,34 +301,6 @@ resource "helm_release" "pushgateway" {
   ]
   depends_on = [helm_release.prometheus_grafana]
 }
-
-# resource "helm_release" "rabbitmq_exporter" {
-#   count             = var.exporter_config.rabbitmq ? 1 : 0
-#   name              = "rabbitmq-exporter"
-#   repository        = "https://prometheus-community.github.io/helm-charts"
-#   chart             = "prometheus-rabbitmq-exporter"
-#   namespace         = var.pgl_namespace
-#   version           = "1.3.0"
-#   timeout           = 600
-#   values = [
-#     file("${path.module}/helm/values/rabbitmq.yaml")
-#   ]
-#   depends_on = [helm_release.prometheus_grafana]
-# }
-
-# resource "helm_release" "redis_exporter" {
-#   count             = var.exporter_config.redis ? 1 : 0
-#   name              = "redis-exporter"
-#   repository        = "https://prometheus-community.github.io/helm-charts"
-#   chart             = "prometheus-redis-exporter"
-#   namespace         = var.pgl_namespace
-#   version           = "5.0.0"
-#   timeout           = 600
-#   values = [
-#     file("${path.module}/helm/values/redis.yaml")
-#   ]
-#   depends_on = [helm_release.prometheus_grafana]
-# }
 
 resource "helm_release" "snmp_exporter" {
   count      = var.exporter_config.snmp ? 1 : 0
