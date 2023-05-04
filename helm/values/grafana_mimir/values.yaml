@@ -31,22 +31,11 @@ metaMonitoring:
         - url: "http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push"
 
 serviceAccount:
-  # -- Whether to create a service account or not. In case 'create' is false, do set 'name' to an existing service account name.
   create: true
-  # -- Override for the generated service account name.
   name: grafana-mimir-sa
   annotations:
     eks.amazonaws.com/role-arn: "${s3_role_arn}"
 
-
-# global:
-#   extraEnvFrom:
-#     - secretRef:
-#         name: mimir-bucket-secret
-#   podAnnotations:
-#     bucketSecretVersion: "0"
-
-# This turns of the built-in MinIO support
 minio:
   enabled: false
 
@@ -156,7 +145,6 @@ ingester:
   replicas: 2
   persistentVolume:
     storageClass: ${storage_class_name}
-    # storageClass: standard
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -196,7 +184,6 @@ store_gateway:
       app.kubernetes.io/component: store-gateway
   persistentVolume:
     storageClass: ${storage_class_name}
-    # storageClass: standard
 
 compactor:
   affinity:
@@ -217,4 +204,3 @@ compactor:
       app.kubernetes.io/component: compactor
   persistentVolume:
     storageClass: ${storage_class_name}
-    # storageClass: standard
