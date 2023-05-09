@@ -101,6 +101,15 @@ The required IAM permissions to create resources from this module can be found [
   8. If we enable internal ingress for prometheus and loki then we will be able to access it on private endpoint via vpn.
   9. This module is compatible with EKS version 1.23, which is great news for users deploying the module on an EKS cluster running that version. Review the module's documentation, meet specific configuration requirements, and test thoroughly after deployment to ensure everything works as expected.
 
+## Supported Versions Table:
+
+| Resources                       |  Helm Chart Version                |     K8s supported version   |      
+| :-----:                         | :---                               |         :---                | 
+| Kube-Prometheus-Stack           | **42.0.0**                         |    1.23,1.24,1.25           |
+| Prometheus-Blackbox-Exporter    | **42.0.0**                         |    1.23,1.24,1.25           |
+| Mimir                           | **3.2.0**                          |    1.23,1.24,1.25           |
+| Loki-Stack                      | **2.8.2**                          |    1.23,1.24,1.25           |
+
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
