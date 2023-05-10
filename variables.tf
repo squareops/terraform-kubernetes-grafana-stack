@@ -1,46 +1,44 @@
-## MONITORING
-
 variable "kube_prometheus_stack_enabled" {
   default     = false
   type        = bool
-  description = "Set true to deploy grafana"
+  description = "Specify whether or not to deploy Grafana as part of the Prometheus and Alertmanager stack."
 }
 
 variable "loki_enabled" {
   default     = false
   type        = bool
-  description = "Set true to deploy loki"
+  description = "Whether or not to deploy Loki for log aggregation and querying."
 }
 
 variable "loki_stack_version" {
   default     = "2.8.2"
   type        = string
-  description = "Enter loki stack Version"
+  description = "Version of the Loki stack to deploy."
 }
 
 variable "blackbox_exporter_version" {
   default     = "4.10.1"
   type        = string
-  description = "Enter Blackbox exporter version"
+  description = "Version of the Blackbox exporter to deploy."
 }
 
 variable "prometheus_chart_version" {
   default     = "42.0.0"
   type        = string
-  description = "Enter prometheus_chart_version"
+  description = "Version of the Prometheus chart to deploy."
 }
 
 variable "grafana_mimir_version" {
   default     = "3.2.0"
   type        = string
-  description = "Enter grafana mimir version"
+  description = "Version of the Grafana Mimir plugin to deploy."
 }
 
 
 variable "grafana_mimir_enabled" {
   default     = false
   type        = bool
-  description = "Set true to grafana mimir"
+  description = "Specify whether or not to deploy the Grafana Mimir plugin."
 }
 
 variable "deployment_config" {
@@ -72,7 +70,7 @@ variable "deployment_config" {
     }
 
   }
-  description = "PGL configurations"
+  description = "Configuration options for the Prometheus, Alertmanager, Loki, and Grafana deployments, including the hostname, storage class name, dashboard refresh interval, and S3 bucket configuration for Mimir."
 }
 
 variable "exporter_config" {
@@ -103,32 +101,34 @@ variable "exporter_config" {
     jenkins        = false
     argocd         = false
   }
+  description = "allows enabling/disabling various exporters for scraping metrics, including CloudWatch, Consul, MongoDB, Redis, and StatsD."
 }
 
 variable "pgl_namespace" {
-  default = "monitoring"
-  type    = string
+  default     = "monitoring"
+  type        = string
+  description = "Name of the Kubernetes namespace where the Grafana deployment will be deployed."
 }
 
 variable "aws_cw_secret" {
   default     = false
   type        = bool
-  description = "Set to true if want to create kubernetes secret for cloudwatch exporter"
+  description = "Whether or not to create a Kubernetes secret for the CloudWatch exporter."
 }
 
 variable "aws_access_key_id" {
   default     = ""
   type        = string
-  description = "provide aws access key for creating the cloudwatch secret"
+  description = "AWS access key to use when creating the CloudWatch secret."
 }
 
 variable "aws_secret_key_id" {
   default     = ""
   type        = string
-  description = "provide aws secret key for creating the cloudwatch secret"
+  description = "AWS secret key to use when creating the CloudWatch secret."
 }
 
 variable "cluster_name" {
   type        = string
-  description = "Name of the EKS cluster"
+  description = "Specifies the name of the EKS cluster."
 }

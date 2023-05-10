@@ -1,11 +1,16 @@
 locals {
+  name        = "sonarqube"
   region      = "us-east-2"
-  name        = "skaf"
   environment = "prod"
+  additional_tags = {
+    Owner      = "organization_name"
+    Expires    = "Never"
+    Department = "Engineering"
+  }
 }
 
 module "pgl" {
-  source                        = "../.."
+  source                        = "https://github.com/sq-ia/terraform-kubernetes-elastic.git"
   cluster_name                  = "cluster-name"
   kube_prometheus_stack_enabled = true
   loki_enabled                  = true
@@ -37,31 +42,29 @@ module "pgl" {
     }
   }
   exporter_config = {
-    argocd         = true
-    blackbox       = true
-    cloudwatch     = false
-    conntrack      = false
-    consul         = false
-    couchdb        = false
-    druid          = false
-    elasticsearch  = false
     json           = false
-    jenkins        = true
-    kafka          = false
-    mongodb        = true
-    mysql          = true
     nats           = false
     nifi           = false
-    pingdom        = false
-    postgres       = false
-    prometheustosd = false
-    push_gateway   = false
-    rabbitmq       = true
-    redis          = true
     snmp           = false
-    stackdriver    = false
+    kafka          = false
+    druid          = false
+    mysql          = true
+    redis          = true
+    consul         = false
+    argocd         = true
     statsd         = false
+    couchdb        = false
+    jenkins        = true
+    mongodb        = true
+    pingdom        = false
+    blackbox       = true
+    rabbitmq       = true
+    postgres       = false
+    conntrack      = false
+    cloudwatch     = false
+    stackdriver    = false
+    push_gateway   = false
+    elasticsearch  = false
+    prometheustosd = false
   }
-
-
 }

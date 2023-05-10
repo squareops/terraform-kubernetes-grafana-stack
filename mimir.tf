@@ -42,14 +42,12 @@ resource "aws_iam_role" "mimir_role" {
 }
 
 module "s3_bucket_mimir" {
-  count         = var.grafana_mimir_enabled ? 1 : 0
-  source        = "terraform-aws-modules/s3-bucket/aws"
-  version       = "3.7.0"
-  bucket        = var.deployment_config.mimir_s3_bucket_config.s3_bucket_name
-  force_destroy = true
-
+  count                                 = var.grafana_mimir_enabled ? 1 : 0
+  source                                = "terraform-aws-modules/s3-bucket/aws"
+  version                               = "3.7.0"
+  bucket                                = var.deployment_config.mimir_s3_bucket_config.s3_bucket_name
+  force_destroy                         = true
   attach_deny_insecure_transport_policy = false
-
   versioning = {
     enabled = var.deployment_config.mimir_s3_bucket_config.versioning_enabled
   }
@@ -63,31 +61,31 @@ module "s3_bucket_mimir" {
   }
   # S3 bucket-level Public Access Block configuration
   block_public_acls       = true
-  block_public_policy     = true
   ignore_public_acls      = true
+  block_public_policy     = true
   restrict_public_buckets = true
 
   # S3 Bucket Ownership Controls
-  control_object_ownership = true
   object_ownership         = "BucketOwnerPreferred"
+  control_object_ownership = true
 }
 
 resource "helm_release" "grafana_mimir" {
   count      = var.grafana_mimir_enabled ? 1 : 0
   depends_on = [kubernetes_namespace.monitoring]
   name       = "grafana-mimir"
-  repository = "https://grafana.github.io/helm-charts"
   chart      = "mimir-distributed"
-  namespace  = var.pgl_namespace
   version    = var.grafana_mimir_version
   timeout    = 600
+  namespace  = var.pgl_namespace
+  repository = "https://grafana.github.io/helm-charts"
 
   values = [
     templatefile("${path.module}/helm/values/grafana_mimir/values.yaml", {
       s3_role_arn        = aws_iam_role.mimir_role[0].arn,
-      storage_class_name = "${var.deployment_config.storage_class_name}"
       s3_bucket_name     = module.s3_bucket_mimir[0].s3_bucket_id,
-      s3_bucket_region   = var.deployment_config.mimir_s3_bucket_config.s3_bucket_region
+      s3_bucket_region   = var.deployment_config.mimir_s3_bucket_config.s3_bucket_region,
+      storage_class_name = "${var.deployment_config.storage_class_name}"
     }),
     var.deployment_config.grafana_mimir_values_yaml
   ]
