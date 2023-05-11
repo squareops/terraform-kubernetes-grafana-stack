@@ -3,9 +3,7 @@ kind: Provisioner
 metadata:
   name: karpenter-provisioner-pgl
 spec:
-  labels:
-    Monitor-Services: "true"
-    eks.amazonaws.com/nodegroup: "monitoring-ng"
+ {{- toYaml Values.spec | nindent 2 }}
   requirements:
     - key: karpenter.sh/capacity-type         # optional, set to on-demand by default, spot if both are listed
       operator: In
