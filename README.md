@@ -31,7 +31,7 @@ This module also includes alerting features that allow you to set up custom aler
 
 ```hcl
 module "pgl" {
-  source                        = "https://github.com/sq-ia/terraform-kubernetes-elastic.git"
+  source                        = "https://github.com/sq-ia/terraform-kubernetes-grafana.git"
   cluster_name                  = "cluster-name"
   kube_prometheus_stack_enabled = true
   loki_enabled                  = true
