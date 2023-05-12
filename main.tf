@@ -27,12 +27,12 @@ resource "helm_release" "loki" {
   count           = var.loki_enabled ? 1 : 0
   depends_on      = [kubernetes_namespace.monitoring]
   name            = "loki"
-  namespace       = var.pgl_namespace
   atomic          = true
-  cleanup_on_fail = true
-  repository      = "https://grafana.github.io/helm-charts"
   chart           = "loki-stack"
   version         = var.loki_stack_version
+  namespace       = var.pgl_namespace
+  repository      = "https://grafana.github.io/helm-charts"
+  cleanup_on_fail = true
   values = [
     templatefile("${path.module}/helm/values/loki/values.yaml", {
       loki_hostname                = var.deployment_config.loki_hostname,
@@ -45,13 +45,12 @@ resource "helm_release" "loki" {
 resource "helm_release" "blackbox_exporter" {
   count      = var.exporter_config.blackbox ? 1 : 0
   depends_on = [helm_release.prometheus_grafana]
-
   name       = "blackbox-exporter"
-  repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-blackbox-exporter"
-  namespace  = var.pgl_namespace
   version    = var.blackbox_exporter_version
   timeout    = 600
+  namespace  = var.pgl_namespace
+  repository = "https://prometheus-community.github.io/helm-charts"
 
   values = [
     file("${path.module}/helm/values/blackbox_exporter/values.yaml"),
@@ -62,30 +61,30 @@ resource "helm_release" "blackbox_exporter" {
 resource "helm_release" "prometheus_grafana" {
   depends_on        = [kubernetes_namespace.monitoring, kubernetes_priority_class.priority_class]
   name              = "prometheus-operator"
-  repository        = "https://prometheus-community.github.io/helm-charts"
   chart             = "kube-prometheus-stack"
-  namespace         = var.pgl_namespace
-  dependency_update = true
   version           = var.prometheus_chart_version
   timeout           = 600
+  namespace         = var.pgl_namespace
+  repository        = "https://prometheus-community.github.io/helm-charts"
+  dependency_update = true
   values = var.grafana_mimir_enabled ? [
     templatefile("${path.module}/helm/values/prometheus/mimir/values.yaml", {
       hostname               = "${var.deployment_config.hostname}",
-      grafana_admin_password = "${random_password.grafana_password.result}",
+      grafana_enabled        = "${var.deployment_config.grafana_enabled}",
       storage_class_name     = "${var.deployment_config.storage_class_name}",
       min_refresh_interval   = "${var.deployment_config.dashboard_refresh_interval}",
-      grafana_enabled        = "${var.deployment_config.grafana_enabled}"
+      grafana_admin_password = "${random_password.grafana_password.result}"
     }),
     var.deployment_config.prometheus_values_yaml
     ] : [
     templatefile("${path.module}/helm/values/prometheus/values.yaml", {
       hostname                           = "${var.deployment_config.hostname}",
-      grafana_admin_password             = "${random_password.grafana_password.result}",
-      storage_class_name                 = "${var.deployment_config.storage_class_name}",
-      min_refresh_interval               = "${var.deployment_config.dashboard_refresh_interval}",
       grafana_enabled                    = "${var.deployment_config.grafana_enabled}",
-      enable_prometheus_internal_ingress = "${var.deployment_config.prometheus_internal_ingress_enabled}",
-      prometheus_hostname                = "${var.deployment_config.prometheus_hostname}"
+      storage_class_name                 = "${var.deployment_config.storage_class_name}",
+      prometheus_hostname                = "${var.deployment_config.prometheus_hostname}",
+      min_refresh_interval               = "${var.deployment_config.dashboard_refresh_interval}",
+      grafana_admin_password             = "${random_password.grafana_password.result}",
+      enable_prometheus_internal_ingress = "${var.deployment_config.prometheus_internal_ingress_enabled}"
     }),
     var.deployment_config.prometheus_values_yaml
   ]
@@ -98,8 +97,8 @@ resource "helm_release" "karpenter_provisioner" {
   timeout = 600
   values = [
     templatefile("${path.module}/karpenter_provisioner/values.yaml", {
-      private_subnet_name                  = var.deployment_config.karpenter_config.private_subnet_name,
       cluster_name                         = var.cluster_name,
+      private_subnet_name                  = var.deployment_config.karpenter_config.private_subnet_name,
       karpenter_ec2_capacity_type          = "[${join(",", [for s in var.deployment_config.karpenter_config.instance_capacity_type : format("%s", s)])}]",
       excluded_karpenter_ec2_instance_type = "[${join(",", var.deployment_config.karpenter_config.excluded_instance_type)}]"
     }),
@@ -112,9 +111,9 @@ resource "kubernetes_priority_class" "priority_class" {
   metadata {
     name = "grafana-pod-critical"
   }
+  value             = 1000000000
   global_default    = false
   preemption_policy = "PreemptLowerPriority"
-  value             = 1000000000
 }
 
 resource "kubernetes_secret" "cloudwatch_cred" {
@@ -134,11 +133,11 @@ resource "kubernetes_secret" "cloudwatch_cred" {
 resource "helm_release" "cloudwatch_exporter" {
   count      = var.exporter_config.cloudwatch ? 1 : 0
   name       = "cloudwatch-operator"
-  repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-cloudwatch-exporter"
-  namespace  = var.pgl_namespace
   version    = "0.19.2"
   timeout    = 600
+  namespace  = var.pgl_namespace
+  repository = "https://prometheus-community.github.io/helm-charts"
   values = [
     file("${path.module}/helm/values/cloudwatch.yaml")
   ]
@@ -151,10 +150,10 @@ resource "helm_release" "cloudwatch_exporter" {
 resource "helm_release" "conntrak_stats_exporter" {
   count      = var.exporter_config.conntrack ? 1 : 0
   name       = "conntrack-stats-exporter"
-  repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-conntrack-stats-exporter"
-  namespace  = var.pgl_namespace
   version    = "0.1.0"
+  namespace  = var.pgl_namespace
+  repository = "https://prometheus-community.github.io/helm-charts"
   timeout    = 600
   values = [
     file("${path.module}/helm/values/conntrack.yaml")
@@ -165,11 +164,11 @@ resource "helm_release" "conntrak_stats_exporter" {
 resource "helm_release" "consul_exporter" {
   count      = var.exporter_config.consul ? 1 : 0
   name       = "consul-exporter"
-  repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-consul-exporter"
-  namespace  = var.pgl_namespace
   version    = "0.5.0"
   timeout    = 600
+  namespace  = var.pgl_namespace
+  repository = "https://prometheus-community.github.io/helm-charts"
   values = [
     file("${path.module}/helm/values/consul.yaml")
   ]
@@ -179,11 +178,11 @@ resource "helm_release" "consul_exporter" {
 resource "helm_release" "couchdb_exporter" {
   count      = var.exporter_config.couchdb ? 1 : 0
   name       = "couchdb-exporter"
-  repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-couchdb-exporter"
-  namespace  = var.pgl_namespace
   version    = "0.2.0"
   timeout    = 600
+  namespace  = var.pgl_namespace
+  repository = "https://prometheus-community.github.io/helm-charts"
   values = [
     file("${path.module}/helm/values/couchdb.yaml")
   ]
@@ -193,11 +192,11 @@ resource "helm_release" "couchdb_exporter" {
 resource "helm_release" "druid_exporter" {
   count      = var.exporter_config.druid ? 1 : 0
   name       = "druid-exporter"
-  repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-druid-exporter"
-  namespace  = var.pgl_namespace
   version    = "0.11.0"
   timeout    = 600
+  namespace  = var.pgl_namespace
+  repository = "https://prometheus-community.github.io/helm-charts"
   values = [
     file("${path.module}/helm/values/druid.yaml")
   ]
@@ -207,11 +206,11 @@ resource "helm_release" "druid_exporter" {
 resource "helm_release" "elasticsearch_exporter" {
   count      = var.exporter_config.elasticsearch ? 1 : 0
   name       = "elasticsearch-exporter"
-  repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-elasticsearch-exporter"
-  namespace  = var.pgl_namespace
   version    = "4.13.0"
   timeout    = 600
+  namespace  = var.pgl_namespace
+  repository = "https://prometheus-community.github.io/helm-charts"
   values = [
     file("${path.module}/helm/values/elasticsearch-exporter.yaml")
   ]
@@ -221,11 +220,11 @@ resource "helm_release" "elasticsearch_exporter" {
 resource "helm_release" "json_exporter" {
   count      = var.exporter_config.json ? 1 : 0
   name       = "json-exporter"
-  repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-json-exporter"
-  namespace  = var.pgl_namespace
   version    = "0.2.3"
   timeout    = 600
+  namespace  = var.pgl_namespace
+  repository = "https://prometheus-community.github.io/helm-charts"
   values = [
     file("${path.module}/helm/values/json-exporter.yaml")
   ]
@@ -235,53 +234,25 @@ resource "helm_release" "json_exporter" {
 resource "helm_release" "kafka_exporter" {
   count      = var.exporter_config.kafka ? 1 : 0
   name       = "kafka-exporter"
-  repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-kafka-exporter"
-  namespace  = var.pgl_namespace
   version    = "1.6.0"
   timeout    = 600
+  namespace  = var.pgl_namespace
+  repository = "https://prometheus-community.github.io/helm-charts"
   values = [
     file("${path.module}/helm/values/kafka.yaml")
   ]
   depends_on = [helm_release.prometheus_grafana]
 }
 
-# resource "helm_release" "mongodb_exporter" {
-#   count             = var.exporter_config.mongodb ? 1 : 0
-#   name              = "mongodb-exporter"
-#   repository        = "https://prometheus-community.github.io/helm-charts"
-#   chart             = "prometheus-mongodb-exporter"
-#   namespace         = var.pgl_namespace
-#   version           = "3.1.0"
-#   timeout           = 600
-#   values = [
-#     file("${path.module}/helm/values/mongodb.yaml")
-#   ]
-#   depends_on = [helm_release.prometheus_grafana]
-# }
-
-# resource "helm_release" "mysql_exporter" {
-#   count             = var.exporter_config.mysql ? 1 : 0
-#   name              = "mysql-exporter"
-#   repository        = "https://prometheus-community.github.io/helm-charts"
-#   chart             = "prometheus-mysql-exporter"
-#   namespace         = var.pgl_namespace
-#   version           = "1.8.1"
-#   timeout           = 600
-#   values = [
-#     file("${path.module}/helm/values/mysql.yaml")
-#   ]
-#   depends_on = [helm_release.prometheus_grafana]
-# }
-
 resource "helm_release" "nats_exporter" {
   count      = var.exporter_config.nats ? 1 : 0
   name       = "nats-exporter"
-  repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-nats-exporter"
-  namespace  = var.pgl_namespace
   version    = "2.9.3"
   timeout    = 600
+  namespace  = var.pgl_namespace
+  repository = "https://prometheus-community.github.io/helm-charts"
   values = [
     file("${path.module}/helm/values/nats.yaml")
   ]
@@ -291,11 +262,11 @@ resource "helm_release" "nats_exporter" {
 resource "helm_release" "pingdom_exporter" {
   count      = var.exporter_config.pingdom ? 1 : 0
   name       = "pingdom-exporter"
-  repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-pingdom-exporter"
-  namespace  = var.pgl_namespace
   version    = "2.4.1"
   timeout    = 600
+  namespace  = var.pgl_namespace
+  repository = "https://prometheus-community.github.io/helm-charts"
   values = [
     file("${path.module}/helm/values/pingdom.yaml")
   ]
@@ -305,11 +276,11 @@ resource "helm_release" "pingdom_exporter" {
 resource "helm_release" "postgres_exporter" {
   count      = var.exporter_config.postgres ? 1 : 0
   name       = "postgres-exporter"
-  repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-postgres-exporter"
-  namespace  = var.pgl_namespace
   version    = "3.0.3"
   timeout    = 600
+  namespace  = var.pgl_namespace
+  repository = "https://prometheus-community.github.io/helm-charts"
   values = [
     file("${path.module}/helm/values/postgres.yaml")
   ]
@@ -319,53 +290,25 @@ resource "helm_release" "postgres_exporter" {
 resource "helm_release" "pushgateway" {
   count      = var.exporter_config.push_gateway ? 1 : 0
   name       = "pushgateway"
-  repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-pushgateway"
-  namespace  = var.pgl_namespace
   version    = "1.18.2"
   timeout    = 600
+  namespace  = var.pgl_namespace
+  repository = "https://prometheus-community.github.io/helm-charts"
   values = [
     file("${path.module}/helm/values/pushgateway.yaml")
   ]
   depends_on = [helm_release.prometheus_grafana]
 }
 
-# resource "helm_release" "rabbitmq_exporter" {
-#   count             = var.exporter_config.rabbitmq ? 1 : 0
-#   name              = "rabbitmq-exporter"
-#   repository        = "https://prometheus-community.github.io/helm-charts"
-#   chart             = "prometheus-rabbitmq-exporter"
-#   namespace         = var.pgl_namespace
-#   version           = "1.3.0"
-#   timeout           = 600
-#   values = [
-#     file("${path.module}/helm/values/rabbitmq.yaml")
-#   ]
-#   depends_on = [helm_release.prometheus_grafana]
-# }
-
-# resource "helm_release" "redis_exporter" {
-#   count             = var.exporter_config.redis ? 1 : 0
-#   name              = "redis-exporter"
-#   repository        = "https://prometheus-community.github.io/helm-charts"
-#   chart             = "prometheus-redis-exporter"
-#   namespace         = var.pgl_namespace
-#   version           = "5.0.0"
-#   timeout           = 600
-#   values = [
-#     file("${path.module}/helm/values/redis.yaml")
-#   ]
-#   depends_on = [helm_release.prometheus_grafana]
-# }
-
 resource "helm_release" "snmp_exporter" {
   count      = var.exporter_config.snmp ? 1 : 0
   name       = "snmp-exporter"
-  repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-snmp-exporter"
-  namespace  = var.pgl_namespace
   version    = "1.1.0"
   timeout    = 600
+  namespace  = var.pgl_namespace
+  repository = "https://prometheus-community.github.io/helm-charts"
   values = [
     file("${path.module}/helm/values/snmp.yaml")
   ]
@@ -375,11 +318,11 @@ resource "helm_release" "snmp_exporter" {
 resource "helm_release" "stackdriver_exporter" {
   count      = var.exporter_config.stackdriver ? 1 : 0
   name       = "stackdriver-exporter"
-  repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-stackdriver-exporter"
-  namespace  = var.pgl_namespace
   version    = "4.0.0"
   timeout    = 600
+  namespace  = var.pgl_namespace
+  repository = "https://prometheus-community.github.io/helm-charts"
   values = [
     file("${path.module}/helm/values/stackdriver.yaml")
   ]
@@ -389,11 +332,11 @@ resource "helm_release" "stackdriver_exporter" {
 resource "helm_release" "statsd_exporter" {
   count      = var.exporter_config.statsd ? 1 : 0
   name       = "statsd-exporter"
-  repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-statsd-exporter"
-  namespace  = var.pgl_namespace
   version    = "0.5.0"
   timeout    = 600
+  namespace  = var.pgl_namespace
+  repository = "https://prometheus-community.github.io/helm-charts"
   values = [
     file("${path.module}/helm/values/statsd.yaml")
   ]
@@ -403,11 +346,11 @@ resource "helm_release" "statsd_exporter" {
 resource "helm_release" "prometheus-to-sd" {
   count      = var.exporter_config.prometheustosd ? 1 : 0
   name       = "prometheus-to-sd"
-  repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-to-sd"
-  namespace  = var.pgl_namespace
   version    = "0.4.0"
   timeout    = 600
+  namespace  = var.pgl_namespace
+  repository = "https://prometheus-community.github.io/helm-charts"
   values = [
     file("${path.module}/helm/values/prometheus-to-sd.yaml")
   ]

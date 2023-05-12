@@ -2,3 +2,8 @@ private_subnet_name: "${private_subnet_name}"
 cluster_name: "${cluster_name}"
 karpenter_ec2_capacity_type: "${karpenter_ec2_capacity_type}"
 excluded_karpenter_ec2_instance_type: "${excluded_karpenter_ec2_instance_type}"
+
+spec:
+  labels:
+    Monitor-Services: "true"
+    eks.amazonaws.com/nodegroup: "monitoring-ng"

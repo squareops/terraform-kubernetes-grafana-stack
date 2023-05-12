@@ -17,70 +17,77 @@ This PGL module includes multiple dashboards that provide a comprehensive view o
 
 This module also includes alerting features that allow you to set up custom alerts for specific events or conditions. You can configure alerts to notify you via email, Slack, or other channels, and set up automated responses to resolve issues quickly.
 
+## Supported Versions Table:
+
+| Resources                       |  Helm Chart Version                |     K8s supported version   |  
+| :-----:                         | :---                               |         :---                |
+| Kube-Prometheus-Stack           | **42.0.0**                         |    **1.23,1.24,1.25**           |
+| Prometheus-Blackbox-Exporter    | **42.0.0**                         |    **1.23,1.24,1.25**           |
+| Mimir                           | **3.2.0**                          |    **1.23,1.24,1.25**           |
+| Loki-Stack                      | **2.8.2**                          |    **1.23,1.24,1.25**           |
+
 
 ## Usage Example
 
 ```hcl
 module "pgl" {
-  source                        = "../.."
+  source                        = "https://github.com/sq-ia/terraform-kubernetes-grafana.git"
   cluster_name                  = "cluster-name"
   kube_prometheus_stack_enabled = true
   loki_enabled                  = true
   grafana_mimir_enabled         = true
   deployment_config = {
-    hostname                           = "grafana.squareops.in"
-    storage_class_name                 = "gp2"
-    prometheus_values_yaml             = file("./helm/prometheus.yaml")
-    loki_values_yaml                   = file("./helm/loki.yaml")
-    blackbox_values_yaml               = file("./helm/blackbox.yaml")
-    grafana_mimir_values_yaml          = file("./helm/mimir.yaml")
-    dashboard_refresh_interval         = "300"
-    grafana_enabled                    = true
-    prometheus_hostname                = "prometh.squareops.in"
-    enable_prometheus_internal_ingress = false
-    enable_loki_internal_ingress       = false
-    loki_hostname                      = "loki.squareops.in"
+    hostname                            = "grafanaa.squareops.in"
+    storage_class_name                  = "gp2"
+    prometheus_values_yaml              = ""
+    loki_values_yaml                    = ""
+    blackbox_values_yaml                = ""
+    grafana_mimir_values_yaml           = ""
+    dashboard_refresh_interval          = "300"
+    grafana_enabled                     = true
+    prometheus_hostname                 = "prometh.squareops.in"
+    prometheus_internal_ingress_enabled = false
+    loki_internal_ingress_enabled       = false
+    loki_hostname                       = "loki.squareops.in"
     mimir_s3_bucket_config = {
-      s3_bucket_name     = "bucket-name"
+      s3_bucket_name     = ""
       versioning_enabled = "true"
-      s3_bucket_region   = "bucket-region"
+      s3_bucket_region   = ""
     }
     karpenter_enabled = true
     karpenter_config = {
-      private_subnet_name                  = "private-subnet"
-      karpenter_ec2_capacity_type          = ["spot"]
-      excluded_karpenter_ec2_instance_type = ["nano", "micro", "small"]
-      karpenter_values                     = file("./helm/karpenter.yaml")
+      private_subnet_name    = "private-subnet-name"
+      instance_capacity_type = ["spot"]
+      excluded_instance_type = ["nano", "micro", "small"]
+      karpenter_values       = ""
     }
   }
   exporter_config = {
-    argocd         = true
-    blackbox       = true
-    cloudwatch     = false
-    conntrack      = false
-    consul         = false
-    couchdb        = false
-    druid          = false
-    elasticsearch  = false
     json           = false
-    jenkins        = true
-    kafka          = false
-    mongodb        = true
-    mysql          = true
     nats           = false
     nifi           = false
-    pingdom        = false
-    postgres       = false
-    prometheustosd = false
-    push_gateway   = false
-    rabbitmq       = true
-    redis          = true
     snmp           = false
-    stackdriver    = false
+    kafka          = false
+    druid          = false
+    mysql          = true
+    redis          = true
+    consul         = false
+    argocd         = true
     statsd         = false
+    couchdb        = false
+    jenkins        = true
+    mongodb        = true
+    pingdom        = false
+    blackbox       = true
+    rabbitmq       = true
+    postgres       = false
+    conntrack      = false
+    cloudwatch     = false
+    stackdriver    = false
+    push_gateway   = false
+    elasticsearch  = false
+    prometheustosd = false
   }
-
-
 }
 
 
@@ -185,20 +192,20 @@ No requirements.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_aws_access_key_id"></a> [aws\_access\_key\_id](#input\_aws\_access\_key\_id) | provide aws access key for creating the cloudwatch secret | `string` | `""` | no |
-| <a name="input_aws_cw_secret"></a> [aws\_cw\_secret](#input\_aws\_cw\_secret) | Set to true if want to create kubernetes secret for cloudwatch exporter | `bool` | `false` | no |
-| <a name="input_aws_secret_key_id"></a> [aws\_secret\_key\_id](#input\_aws\_secret\_key\_id) | provide aws secret key for creating the cloudwatch secret | `string` | `""` | no |
-| <a name="input_blackbox_exporter_version"></a> [blackbox\_exporter\_version](#input\_blackbox\_exporter\_version) | Enter Blackbox exporter version | `string` | `"4.10.1"` | no |
-| <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the EKS cluster | `string` | n/a | yes |
-| <a name="input_deployment_config"></a> [deployment\_config](#input\_deployment\_config) | PGL configurations | `any` | <pre>{<br>  "blackbox_values_yaml": "",<br>  "dashboard_refresh_interval": "",<br>  "grafana_enabled": true,<br>  "grafana_mimir_values_yaml": "",<br>  "hostname": "",<br>  "karpenter_config": {<br>    "excluded_instance_type": [<br>      ""<br>    ],<br>    "instance_capacity_type": [<br>      ""<br>    ],<br>    "karpenter_values": "",<br>    "private_subnet_name": ""<br>  },<br>  "karpenter_enabled": "",<br>  "loki_hostname": "",<br>  "loki_internal_ingress_enabled": false,<br>  "loki_values_yaml": "",<br>  "mimir_s3_bucket_config": {<br>    "s3_bucket_name": "",<br>    "s3_bucket_region": "",<br>    "versioning_enabled": ""<br>  },<br>  "prometheus_hostname": "",<br>  "prometheus_internal_ingress_enabled": false,<br>  "prometheus_values_yaml": "",<br>  "storage_class_name": "gp2"<br>}</pre> | no |
-| <a name="input_exporter_config"></a> [exporter\_config](#input\_exporter\_config) | n/a | `map(any)` | <pre>{<br>  "argocd": false,<br>  "blackbox": true,<br>  "cloudwatch": false,<br>  "conntrack": false,<br>  "consul": false,<br>  "couchdb": false,<br>  "druid": false,<br>  "elasticsearch": true,<br>  "jenkins": false,<br>  "json": false,<br>  "kafka": false,<br>  "mongodb": true,<br>  "mysql": true,<br>  "nats": false,<br>  "nifi": false,<br>  "pingdom": false,<br>  "postgres": false,<br>  "prometheustosd": false,<br>  "push_gateway": false,<br>  "rabbitmq": false,<br>  "redis": true,<br>  "snmp": false,<br>  "stackdriver": false,<br>  "statsd": true<br>}</pre> | no |
-| <a name="input_grafana_mimir_enabled"></a> [grafana\_mimir\_enabled](#input\_grafana\_mimir\_enabled) | Set true to grafana mimir | `bool` | `false` | no |
-| <a name="input_grafana_mimir_version"></a> [grafana\_mimir\_version](#input\_grafana\_mimir\_version) | Enter grafana mimir version | `string` | `"3.2.0"` | no |
-| <a name="input_kube_prometheus_stack_enabled"></a> [kube\_prometheus\_stack\_enabled](#input\_kube\_prometheus\_stack\_enabled) | Set true to deploy grafana | `bool` | `false` | no |
-| <a name="input_loki_enabled"></a> [loki\_enabled](#input\_loki\_enabled) | Set true to deploy loki | `bool` | `false` | no |
-| <a name="input_loki_stack_version"></a> [loki\_stack\_version](#input\_loki\_stack\_version) | Enter loki stack Version | `string` | `"2.8.2"` | no |
-| <a name="input_pgl_namespace"></a> [pgl\_namespace](#input\_pgl\_namespace) | n/a | `string` | `"monitoring"` | no |
-| <a name="input_prometheus_chart_version"></a> [prometheus\_chart\_version](#input\_prometheus\_chart\_version) | Enter prometheus\_chart\_version | `string` | `"42.0.0"` | no |
+| <a name="input_aws_access_key_id"></a> [aws\_access\_key\_id](#input\_aws\_access\_key\_id) | AWS access key to use when creating the CloudWatch secret. | `string` | `""` | no |
+| <a name="input_aws_cw_secret"></a> [aws\_cw\_secret](#input\_aws\_cw\_secret) | Whether or not to create a Kubernetes secret for the CloudWatch exporter. | `bool` | `false` | no |
+| <a name="input_aws_secret_key_id"></a> [aws\_secret\_key\_id](#input\_aws\_secret\_key\_id) | AWS secret key to use when creating the CloudWatch secret. | `string` | `""` | no |
+| <a name="input_blackbox_exporter_version"></a> [blackbox\_exporter\_version](#input\_blackbox\_exporter\_version) | Version of the Blackbox exporter to deploy. | `string` | `"4.10.1"` | no |
+| <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Specifies the name of the EKS cluster. | `string` | n/a | yes |
+| <a name="input_deployment_config"></a> [deployment\_config](#input\_deployment\_config) | Configuration options for the Prometheus, Alertmanager, Loki, and Grafana deployments, including the hostname, storage class name, dashboard refresh interval, and S3 bucket configuration for Mimir. | `any` | <pre>{<br>  "blackbox_values_yaml": "",<br>  "dashboard_refresh_interval": "",<br>  "grafana_enabled": true,<br>  "grafana_mimir_values_yaml": "",<br>  "hostname": "",<br>  "karpenter_config": {<br>    "excluded_instance_type": [<br>      ""<br>    ],<br>    "instance_capacity_type": [<br>      ""<br>    ],<br>    "karpenter_values": "",<br>    "private_subnet_name": ""<br>  },<br>  "karpenter_enabled": "",<br>  "loki_hostname": "",<br>  "loki_internal_ingress_enabled": false,<br>  "loki_values_yaml": "",<br>  "mimir_s3_bucket_config": {<br>    "s3_bucket_name": "",<br>    "s3_bucket_region": "",<br>    "versioning_enabled": ""<br>  },<br>  "prometheus_hostname": "",<br>  "prometheus_internal_ingress_enabled": false,<br>  "prometheus_values_yaml": "",<br>  "storage_class_name": "gp2"<br>}</pre> | no |
+| <a name="input_exporter_config"></a> [exporter\_config](#input\_exporter\_config) | allows enabling/disabling various exporters for scraping metrics, including CloudWatch, Consul, MongoDB, Redis, and StatsD. | `map(any)` | <pre>{<br>  "argocd": false,<br>  "blackbox": true,<br>  "cloudwatch": false,<br>  "conntrack": false,<br>  "consul": false,<br>  "couchdb": false,<br>  "druid": false,<br>  "elasticsearch": true,<br>  "jenkins": false,<br>  "json": false,<br>  "kafka": false,<br>  "mongodb": true,<br>  "mysql": true,<br>  "nats": false,<br>  "nifi": false,<br>  "pingdom": false,<br>  "postgres": false,<br>  "prometheustosd": false,<br>  "push_gateway": false,<br>  "rabbitmq": false,<br>  "redis": true,<br>  "snmp": false,<br>  "stackdriver": false,<br>  "statsd": true<br>}</pre> | no |
+| <a name="input_grafana_mimir_enabled"></a> [grafana\_mimir\_enabled](#input\_grafana\_mimir\_enabled) | Specify whether or not to deploy the Grafana Mimir plugin. | `bool` | `false` | no |
+| <a name="input_grafana_mimir_version"></a> [grafana\_mimir\_version](#input\_grafana\_mimir\_version) | Version of the Grafana Mimir plugin to deploy. | `string` | `"3.2.0"` | no |
+| <a name="input_kube_prometheus_stack_enabled"></a> [kube\_prometheus\_stack\_enabled](#input\_kube\_prometheus\_stack\_enabled) | Specify whether or not to deploy Grafana as part of the Prometheus and Alertmanager stack. | `bool` | `false` | no |
+| <a name="input_loki_enabled"></a> [loki\_enabled](#input\_loki\_enabled) | Whether or not to deploy Loki for log aggregation and querying. | `bool` | `false` | no |
+| <a name="input_loki_stack_version"></a> [loki\_stack\_version](#input\_loki\_stack\_version) | Version of the Loki stack to deploy. | `string` | `"2.8.2"` | no |
+| <a name="input_pgl_namespace"></a> [pgl\_namespace](#input\_pgl\_namespace) | Name of the Kubernetes namespace where the Grafana deployment will be deployed. | `string` | `"monitoring"` | no |
+| <a name="input_prometheus_chart_version"></a> [prometheus\_chart\_version](#input\_prometheus\_chart\_version) | Version of the Prometheus chart to deploy. | `string` | `"42.0.0"` | no |
 
 ## Outputs
 
