@@ -3,7 +3,7 @@ kind: Provisioner
 metadata:
   name: karpenter-provisioner-pgl
 spec:
- {{- toYaml Values.spec | nindent 2 }}
+{{- toYaml .Values.spec | nindent 2 }}
   requirements:
     - key: karpenter.sh/capacity-type         # optional, set to on-demand by default, spot if both are listed
       operator: In
