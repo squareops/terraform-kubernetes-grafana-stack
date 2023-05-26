@@ -207,7 +207,7 @@ resource "helm_release" "elasticsearch_exporter" {
   count      = var.exporter_config.elasticsearch ? 1 : 0
   name       = "elasticsearch-exporter"
   chart      = "prometheus-elasticsearch-exporter"
-  version    = "4.13.0"
+  version    = "5.1.1"
   timeout    = 600
   namespace  = var.pgl_namespace
   repository = "https://prometheus-community.github.io/helm-charts"
