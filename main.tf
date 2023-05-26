@@ -466,7 +466,7 @@ resource "kubernetes_config_map" "elasticsearch_dashboard" {
   }
 
   data = {
-    "es_exporter.json" = "${file("${path.module}/grafana/dashboards/elastic_exporter.json")}"
+    "es-exporter.json" = "${file("${path.module}/grafana/dashboards/es-exporter.json")}"
   }
   depends_on = [helm_release.prometheus_grafana]
 }
