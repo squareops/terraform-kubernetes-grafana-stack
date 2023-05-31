@@ -603,7 +603,7 @@ additionalPrometheusRulesMap:
             severity: page
           annotations:
             summary: High keys eviction ratio in instance {{$labels.instance}}
-            
+
       - name: Jenkins Alerts
         rules:
         - alert: JenkinsInstanceUnhealthy
@@ -612,7 +612,7 @@ additionalPrometheusRulesMap:
           labels:
             severity: warning
           annotations:
-            summary: Jenkins server is unhealthy 
+            summary: Jenkins server is unhealthy
             description: "Check jenkins health. Current health values is {{ $value }}"
         - alert: JenkinsOutdatedPlugins
           expr: jenkins_plugins_withUpdate > 20
@@ -655,7 +655,7 @@ additionalPrometheusRulesMap:
             severity: warning
           annotations:
             summary: ElasticSearch node {{ $labels.name }} heap usage is high
-            description: The heap usage in {{ $labels.name }} is less than 15% for 10m.      
+            description: The heap usage in {{ $labels.name }} is less than 15% for 10m.
 
       - name: Rabbitmq
         rules:
@@ -708,4 +708,3 @@ additionalPrometheusRulesMap:
           labels:
             rulesgroup: rabbitmq
             severity: warning
-      

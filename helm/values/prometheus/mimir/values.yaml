@@ -638,7 +638,7 @@ additionalPrometheusRulesMap:
           labels:
             severity: warning
           annotations:
-            summary: Jenkins server is unhealthy 
+            summary: Jenkins server is unhealthy
             description: "Check jenkins health. Current health values is {{ $value }}"
         - alert: JenkinsOutdatedPlugins
           expr: jenkins_plugins_withUpdate > 20
