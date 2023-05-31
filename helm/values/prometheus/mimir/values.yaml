@@ -630,6 +630,58 @@ additionalPrometheusRulesMap:
             severity: page
           annotations:
             summary: High keys eviction ratio in instance {{$labels.instance}}
+      - name: Jenkins Alerts
+        rules:
+        - alert: JenkinsInstanceUnhealthy
+          expr: jenkins_health_check_score < 0.5
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: Jenkins server is unhealthy 
+            description: "Check jenkins health. Current health values is {{ $value }}"
+        - alert: JenkinsOutdatedPlugins
+          expr: jenkins_plugins_withUpdate > 20
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: Many outdated Jenkins Plugins
+            description: "Several jenkins plugins have updates available\n  VALUE = {{ $value }}\n"
+        - alert: JenkinsFailedJobs
+          expr: rate(jenkins_runs_failure_total[1h]) > 1
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: Jenkins Jobs Failing
+            description: "Jenkins jobs are failing\n  VALUE = {{ $value }}\n"
+      - name: Elastic Search Alerts
+        rules:
+        - alert: ElasticSearchClusterUnhealthy
+          expr: elasticsearch_cluster_health_status{color="red"}==1
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            summary: Elastic Search Cluster Is Unhealthy
+            description: "Elastic Search Cluster is in Unhealthy State. Current health values is RED"
+        - alert: ElasticSearchHighHeapMemoryUsage
+          expr: elasticsearch_jvm_memory_used_bytes{area="heap"} / elasticsearch_jvm_memory_max_bytes{area="heap"} > 0.7
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: ElasticSearch node {{ $labels.name }} heap usage is high
+            description: The heap usage in {{ $labels.name }} is over 80% for 10m.
+        - alert: ElasticSearchLowHeapMemoryUsage
+          expr: elasticsearch_jvm_memory_used_bytes{area="heap"} / elasticsearch_jvm_memory_max_bytes{area="heap"} < 0.15
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: ElasticSearch node {{ $labels.name }} heap usage is high
+            description: The heap usage in {{ $labels.name }} is less than 15% for 10m.
 
       - name: Rabbitmq
         rules:
