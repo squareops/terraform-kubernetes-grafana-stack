@@ -61,7 +61,8 @@ nodeSelector: {}
 
 tolerations: []
 
-podAnnotations: {}
+podAnnotations: 
+  co.elastic.logs/enabled: "true"
 
 podLabels: {}
 
@@ -252,7 +253,8 @@ serviceMonitor:
   scrapeTimeout: 10s
   scheme: http
   relabelings: []
-  targetLabels: []
+  targetLabels:
+    release: prometheus-operator
   metricRelabelings: []
   sampleLimit: 0
 
