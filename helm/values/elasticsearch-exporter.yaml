@@ -14,17 +14,22 @@ restartPolicy: Always
 
 image:
   repository: quay.io/prometheuscommunity/elasticsearch-exporter
-  tag: v1.3.0
+  tag: v1.5.0
   pullPolicy: IfNotPresent
   pullSecret: ""
 
-## Set enabled to false if you don't want securityContext
-## in your Deployment.
-## The below values are the default for kubernetes.
-## Openshift won't deploy with runAsUser: 1000 without additional permissions.
-securityContext:
-  enabled: true  # Should be set to false when running on OpenShift
+podSecurityContext:
+  runAsNonRoot: true
   runAsUser: 1000
+  seccompProfile:
+    type: "RuntimeDefault"
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
 
 # Custom DNS configuration to be added to prometheus-elasticsearch-exporter pods
 dnsConfig: {}
@@ -61,7 +66,15 @@ podAnnotations:
 
 podLabels: {}
 
-affinity: {}
+affinity: 
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "Infra-Services"
+          operator: In
+          values:
+          - "true"
 
 service:
   type: ClusterIP
@@ -73,13 +86,15 @@ service:
 
 deployment:
   annotations: {}
+  labels: {}
 
 ## Extra environment variables that will be passed into the exporter pod
 ## example:
 ## env:
 ##   KEY_1: value1
 ##   KEY_2: value2
-env: {}
+env: 
+  ES_USERNAME: elastic
 
 ## Extra arguments to pass to the container's executable
 ## example:
@@ -98,7 +113,10 @@ envFromSecret: ""
 ##   ES_PASSWORD:
 ##     secret: my-secret
 ##     key: password
-extraEnvSecrets: {}
+extraEnvSecrets:
+  ES_PASSWORD:
+    secret: elasticsearch-es-elastic-user
+    key: elastic
 
 # A list of secrets and their paths to mount inside the pod
 # This is useful for mounting certificates for security
@@ -131,7 +149,7 @@ es:
   ## of a remote Elasticsearch server. When basic auth is needed,
   ## specify as: <proto>://<user>:<password>@<host>:<port>. e.g., http://admin:pass@localhost:9200.
   ##
-  uri: http://es-elasticsearch.monitoring.svc.cluster.local:9200
+  uri: https://elasticsearch-es-http.elastic-system.svc.cluster.local:9200
 
   ## If true, query stats for all nodes in the cluster, rather than just the
   ## node we connect to.
@@ -150,6 +168,10 @@ es:
   ##
   indices_mappings: true
 
+  ## If true, query stats for aliases.
+  ##
+  aliases: false
+
   ## If true, query stats for shards in the cluster.
   ##
   shards: true
@@ -160,7 +182,15 @@ es:
 
   ## If true, query stats for cluster settings.
   ##
-  cluster_settings: false
+  cluster_settings: true
+
+  ## If true, query stats for SLM snapshots.
+  ##
+  slm: false
+
+  ## If true, query stats for data streams.
+  ##
+  data_stream: true
 
   ## Timeout for trying to get stats from Elasticsearch. (ex: 20s)
   ##
@@ -169,7 +199,7 @@ es:
   ## Skip SSL verification when connecting to Elasticsearch
   ## (only available if image.tag >= 1.0.4rc1)
   ##
-  sslSkipVerify: false
+  sslSkipVerify: true
 
   ssl:
     ## If true, a secure connection to ES cluster is used
@@ -190,7 +220,7 @@ es:
     client:
       ## if true, client SSL certificate is used for authentication
       ##
-      enabled: true
+      enabled: false
 
       ## PEM that contains the client cert to connect to Elasticsearch.
       ##
@@ -215,10 +245,10 @@ serviceMonitor:
   ## https://github.com/coreos/prometheus-operator
   ##
   enabled: true
-  #  namespace: monitoring
-  labels:
+  namespace: elastic-system
+  labels: 
     release: prometheus-operator
-  interval: 10s
+  interval: 60s
   jobLabel: ""
   scrapeTimeout: 10s
   scheme: http
