@@ -47,13 +47,13 @@ log:
   format: logfmt
   level: info
 
-resources: {}
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
+resources: 
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 250Mi
 
 priorityClassName: ""
 
@@ -61,8 +61,7 @@ nodeSelector: {}
 
 tolerations: []
 
-podAnnotations:
-  co.elastic.logs/enabled: "true"
+podAnnotations: {}
 
 podLabels: {}
 
@@ -253,8 +252,7 @@ serviceMonitor:
   scrapeTimeout: 10s
   scheme: http
   relabelings: []
-  targetLabels:
-    release: prometheus-operator
+  targetLabels: []
   metricRelabelings: []
   sampleLimit: 0
 
