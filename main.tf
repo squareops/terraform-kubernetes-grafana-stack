@@ -209,7 +209,7 @@ resource "helm_release" "elasticsearch_exporter" {
   chart      = "prometheus-elasticsearch-exporter"
   version    = "5.1.1"
   timeout    = 600
-  namespace  = var.pgl_namespace
+  namespace  = "elastic-system"
   repository = "https://prometheus-community.github.io/helm-charts"
   values = [
     file("${path.module}/helm/values/elasticsearch-exporter.yaml")
