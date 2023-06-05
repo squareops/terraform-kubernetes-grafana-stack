@@ -1,9 +1,9 @@
 {
   "__inputs": [
     {
-      "name": "DS_PROMETHEUS-ELASTICSEARCH",
-      "label": "prometheus-elasticsearch",
-      "description": "",
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "description": "Prometheus Data Source",
       "type": "datasource",
       "pluginId": "prometheus",
       "pluginName": "Prometheus"

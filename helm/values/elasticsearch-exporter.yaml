@@ -48,12 +48,12 @@ log:
   level: info
 
 resources: 
-  requests:
-    cpu: 100m
-    memory: 128Mi
-  limits:
-    cpu: 200m
-    memory: 250Mi
+ # requests:
+ #   cpu: 100m
+ #   memory: 128Mi
+ # limits:
+ #   cpu: 200m
+ #   memory: 250Mi
 
 priorityClassName: ""
 
@@ -61,19 +61,20 @@ nodeSelector: {}
 
 tolerations: []
 
-podAnnotations: {}
+podAnnotations: 
+  co.elastic.logs/enabled: "true"
 
 podLabels: {}
 
-affinity: 
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: "Infra-Services"
-          operator: In
-          values:
-          - "true"
+affinity: {}
+ # nodeAffinity:
+ #   requiredDuringSchedulingIgnoredDuringExecution:
+ #     nodeSelectorTerms:
+ #     - matchExpressions:
+ #       - key: "Infra-Services"
+ #         operator: In
+ #         values:
+ #         - "true"
 
 service:
   type: ClusterIP
@@ -252,7 +253,8 @@ serviceMonitor:
   scrapeTimeout: 10s
   scheme: http
   relabelings: []
-  targetLabels: []
+  targetLabels:
+    release: prometheus-operator
   metricRelabelings: []
   sampleLimit: 0
 

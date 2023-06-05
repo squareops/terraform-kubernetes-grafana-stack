@@ -209,7 +209,7 @@ resource "helm_release" "elasticsearch_exporter" {
   chart      = "prometheus-elasticsearch-exporter"
   version    = "5.1.1"
   timeout    = 600
-  namespace  = var.pgl_namespace
+  namespace  = "elastic-system"
   repository = "https://prometheus-community.github.io/helm-charts"
   values = [
     file("${path.module}/helm/values/elasticsearch-exporter.yaml")
@@ -453,9 +453,9 @@ resource "kubernetes_config_map" "mongodb_dashboard" {
 }
 
 resource "kubernetes_config_map" "elasticsearch_dashboard" {
-  count = var.deployment_config.grafana_enabled ? 1 : 0
+  count = var.exporter_config.elasticsearch && var.deployment_config.grafana_enabled ? 1 : 0
   metadata {
-    name      = "elasticsearch_monitoring_dashboard"
+    name      = "elasticsearch-monitoring-dashboard"
     namespace = var.pgl_namespace
     labels = {
       "grafana_dashboard" : "1"
