@@ -47,13 +47,13 @@ log:
   format: logfmt
   level: info
 
-resources: 
-  requests:
-    cpu: 100m
-    memory: 128Mi
-  limits:
-    cpu: 200m
-    memory: 250Mi
+resources: {}
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
 
 priorityClassName: ""
 
