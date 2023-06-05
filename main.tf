@@ -456,9 +456,6 @@ resource "kubernetes_config_map" "elasticsearch_dashboard" {
   count = var.exporter_config.elasticsearch && var.deployment_config.grafana_enabled ? 1 : 0
   metadata {
     name      = "elasticsearch-monitoring-dashboard"
-  count = var.deployment_config.grafana_enabled ? 1 : 0
-  metadata {
-    name      = "elasticsearch_monitoring_dashboard"
     namespace = var.pgl_namespace
     labels = {
       "grafana_dashboard" : "1"
