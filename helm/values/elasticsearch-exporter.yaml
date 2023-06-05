@@ -48,12 +48,12 @@ log:
   level: info
 
 resources: 
-  requests:
-    cpu: 100m
-    memory: 128Mi
-  limits:
-    cpu: 200m
-    memory: 250Mi
+ # requests:
+ #   cpu: 100m
+ #   memory: 128Mi
+ # limits:
+ #   cpu: 200m
+ #   memory: 250Mi
 
 priorityClassName: ""
 
@@ -65,15 +65,15 @@ podAnnotations: {}
 
 podLabels: {}
 
-affinity: 
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: "Infra-Services"
-          operator: In
-          values:
-          - "true"
+affinity: {}
+ # nodeAffinity:
+ #   requiredDuringSchedulingIgnoredDuringExecution:
+ #     nodeSelectorTerms:
+ #     - matchExpressions:
+ #       - key: "Infra-Services"
+ #         operator: In
+ #         values:
+ #         - "true"
 
 service:
   type: ClusterIP
