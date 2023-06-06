@@ -4,6 +4,14 @@ locals {
     "/^https:///",
     ""
   )
+
+  loki_datasource_config = <<EOF
+
+- name: Loki
+  access: proxy   
+  type: loki
+  url: http://loki-read-headless:3100 
+  EOF
 }
 
 data "aws_caller_identity" "current" {}
@@ -73,7 +81,8 @@ resource "helm_release" "prometheus_grafana" {
       grafana_enabled        = "${var.deployment_config.grafana_enabled}",
       storage_class_name     = "${var.deployment_config.storage_class_name}",
       min_refresh_interval   = "${var.deployment_config.dashboard_refresh_interval}",
-      grafana_admin_password = "${random_password.grafana_password.result}"
+      grafana_admin_password = "${random_password.grafana_password.result}",
+      loki_datasource_config = var.loki_scalable_enabled ? local.loki_datasource_config : ""
     }),
     var.deployment_config.prometheus_values_yaml
     ] : [
@@ -548,7 +557,7 @@ resource "kubernetes_config_map" "rabbitmq_dashboard" {
 }
 
 resource "kubernetes_config_map" "loki_dashboard" {
-  count = var.loki_enabled && var.deployment_config.grafana_enabled ? 1 : 0
+  count = (var.loki_enabled || var.loki_scalable_enabled) && var.deployment_config.grafana_enabled ? 1 : 0
   depends_on = [
     helm_release.prometheus_grafana,
     helm_release.loki

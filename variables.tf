@@ -61,6 +61,19 @@ variable "deployment_config" {
       versioning_enabled = ""
       s3_bucket_region   = ""
     }
+    loki_scalable_s3_config = {
+      s3_bucket_name     = ""
+      versioning_enabled = ""
+      s3_bucket_region   = ""
+    }
+    loki_scalable_config = {
+      loki_scalable_version = "4.4.2"
+      loki_scalable_values  = ""
+    }
+    promtail_config = {
+      promtail_version = "6.8.2"
+      promtail_values  = ""
+    }
     karpenter_enabled = ""
     karpenter_config = {
       private_subnet_name    = ""
@@ -131,4 +144,11 @@ variable "aws_secret_key_id" {
 variable "cluster_name" {
   type        = string
   description = "Specifies the name of the EKS cluster."
+}
+
+###
+variable "loki_scalable_enabled" {
+  default     = false
+  type        = bool
+  description = "Specify whether or not to deploy the loki scalable"
 }
