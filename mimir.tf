@@ -261,7 +261,7 @@ resource "kubernetes_config_map" "mimir-reads-resources_dashboard" {
 
 resource "aws_iam_role" "loki_scalable_role" {
   count = var.loki_scalable_enabled ? 1 : 0
-  name  = join("-", [var.cluster_name, "loki_scalable"])
+  name  = join("-", [var.cluster_name, "loki-scalable"])
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [

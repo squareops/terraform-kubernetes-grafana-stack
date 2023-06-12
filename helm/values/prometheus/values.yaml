@@ -212,6 +212,9 @@ grafana:
     #     url: http://loki:3100
     #     access: proxy
 
+  additionalDataSources: 
+   ${indent(4, loki_datasource_config)}    
+
   persistence:
     enabled: true
     storageClassName: ${storage_class_name}
