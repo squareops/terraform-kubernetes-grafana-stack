@@ -21,6 +21,9 @@ resource "random_password" "grafana_password" {
 resource "kubernetes_namespace" "monitoring" {
   metadata {
     name = var.pgl_namespace
+    labels = {
+      "pod-security.kubernetes.io/warn" = "restricted"
+    }
   }
 }
 resource "helm_release" "loki" {
