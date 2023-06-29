@@ -1,0 +1,11 @@
+write:
+  # -- Number of replicas for the write
+  replicas: 2 
+
+read:
+  # -- Number of replicas for the read
+  replicas: 2  
+
+backend:
+  # -- Number of replicas for the backend
+  replicas: 2 
