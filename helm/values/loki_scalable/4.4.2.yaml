@@ -28,7 +28,11 @@ loki:
 monitoring:
   serviceMonitor:
     labels:
-      release: "prometheus-operator"  
+      release: "prometheus-operator" 
+  # Dashboards for monitoring Loki
+  dashboards:
+    # -- If enabled, create configmap with dashboards for monitoring Loki
+    enabled: false    
 
 write:
   # -- Number of replicas for the write
