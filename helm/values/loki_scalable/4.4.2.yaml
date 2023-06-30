@@ -1,14 +1,3 @@
-serviceAccount:
-  # -- Specifies whether a ServiceAccount should be created
-  create: true
-  # -- The name of the ServiceAccount to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: loki
-  # -- Annotations for the service account
-  annotations:
-    eks.amazonaws.com/role-arn: ${loki_scalable_s3_role_arn}
-
-
 loki:
   auth_enabled: false
   storage:
@@ -32,7 +21,11 @@ monitoring:
   # Dashboards for monitoring Loki
   dashboards:
     # -- If enabled, create configmap with dashboards for monitoring Loki
-    enabled: false    
+    enabled: false  
+  lokiCanary:
+    enabled: true
+    annotations: 
+      eks.amazonaws.com/role-arn: ${loki_scalable_s3_role_arn}    
 
 write:
   # -- Number of replicas for the write

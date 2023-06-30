@@ -274,7 +274,7 @@ resource "aws_iam_role" "loki_scalable_role" {
         Condition = {
           StringEquals = {
             "${local.oidc_provider}:aud" = "sts.amazonaws.com",
-            "${local.oidc_provider}:sub" = "system:serviceaccount:monitoring:loki"
+            "${local.oidc_provider}:sub" = "system:serviceaccount:monitoring:loki-canary"
           }
         }
       }
