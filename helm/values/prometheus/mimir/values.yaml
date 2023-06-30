@@ -229,8 +229,8 @@ grafana:
         # traceIdLabelName: trace_id
     resources:
       limits:
-        cpu: 100m
-        memory: 100Mi
+        cpu: 200m
+        memory: 200Mi
       requests:
         cpu: 50m
         memory: 50Mi
@@ -287,8 +287,8 @@ grafana:
 
   resources:
     limits:
-      cpu: 500m
-      memory: 1.5Gi
+      cpu: 1000m
+      memory: 3Gi
     requests:
       cpu: 200m
       memory: 400Mi
@@ -361,16 +361,16 @@ prometheus:
           storageClassName: ${storage_class_name}
           resources:
             requests:
-              storage: 10Gi
+              storage: 20Gi
 
     retention: 30d
 
     resources:
       limits:
-        cpu: 300m
-        memory: 1.5Gi
+        cpu: 600m
+        memory: 3Gi
       requests:
-        cpu: 100m
+        cpu: 200m
         memory: 800Mi
 
     remoteWrite:
