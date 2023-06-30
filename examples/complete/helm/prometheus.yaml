@@ -123,16 +123,16 @@ defaultRules:
 grafana:
   resources:
     limits:
-      cpu: 300m
-      memory: 900Mi
+      cpu: 1000m
+      memory: 3Gi
     requests:
-      cpu: 100m
-      memory: 300Mi
+      cpu: 300m
+      memory: 500Mi
 
   sidecar:
     resources:
       limits:
-        cpu: 100m
+        cpu: 200m
         memory: 200Mi
       requests:
         cpu: 50m
