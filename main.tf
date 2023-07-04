@@ -94,7 +94,7 @@ resource "helm_release" "prometheus_grafana" {
       min_refresh_interval               = "${var.deployment_config.dashboard_refresh_interval}",
       grafana_admin_password             = "${random_password.grafana_password.result}",
       enable_prometheus_internal_ingress = "${var.deployment_config.prometheus_internal_ingress_enabled}",
-      loki_datasource_config = var.loki_scalable_enabled ? local.loki_datasource_config : ""
+      loki_datasource_config             = var.loki_scalable_enabled ? local.loki_datasource_config : ""
     }),
     var.deployment_config.prometheus_values_yaml
   ]
