@@ -61,14 +61,12 @@ variable "deployment_config" {
       versioning_enabled = ""
       s3_bucket_region   = ""
     }
-    loki_scalable_s3_config = {
-      s3_bucket_name     = ""
-      versioning_enabled = ""
-      s3_bucket_region   = ""
-    }
     loki_scalable_config = {
       loki_scalable_version = "5.8.8"
       loki_scalable_values  = ""
+      s3_bucket_name        = ""
+      versioning_enabled    = ""
+      s3_bucket_region      = ""
     }
     promtail_config = {
       promtail_version = "6.8.2"

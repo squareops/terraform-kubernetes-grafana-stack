@@ -34,14 +34,12 @@ module "pgl" {
       versioning_enabled = "true"
       s3_bucket_region   = local.region
     }
-    loki_scalable_s3_config = {
-      s3_bucket_name     = ""
-      versioning_enabled = true
-      s3_bucket_region   = "local.region"
-    }
     loki_scalable_config = {
       loki_scalable_version = "5.8.8"
       loki_scalable_values  = file("./helm/loki-scalable.yaml")
+      s3_bucket_name        = ""
+      versioning_enabled    = true
+      s3_bucket_region      = "local.region"
     }
     promtail_config = {
       promtail_version = "6.8.2"
