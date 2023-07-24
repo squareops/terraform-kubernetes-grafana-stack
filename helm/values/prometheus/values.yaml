@@ -193,8 +193,8 @@ grafana:
   sidecar:
     resources:
       limits:
-        cpu: 100m
-        memory: 100Mi
+        cpu: 200m
+        memory: 200Mi
       requests:
         cpu: 50m
         memory: 50Mi
@@ -211,6 +211,9 @@ grafana:
     #     type: loki
     #     url: http://loki:3100
     #     access: proxy
+
+  additionalDataSources: 
+   ${indent(4, loki_datasource_config)}    
 
   persistence:
     enabled: true
@@ -247,8 +250,8 @@ grafana:
 
   resources:
     limits:
-      cpu: 500m
-      memory: 1.5Gi
+      cpu: 1000m
+      memory: 3Gi
     requests:
       cpu: 200m
       memory: 400Mi
@@ -323,14 +326,14 @@ prometheus:
           storageClassName: ${storage_class_name}
           resources:
             requests:
-              storage: 10Gi
+              storage: 20Gi
 
     retention: 30d
 
     resources:
       limits:
-        cpu: 300m
-        memory: 1.5Gi
+        cpu: 600m
+        memory: 3Gi
       requests:
         cpu: 200m
         memory: 500Mi

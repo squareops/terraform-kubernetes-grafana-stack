@@ -14,6 +14,7 @@ module "pgl" {
   cluster_name                  = "cluster-name"
   kube_prometheus_stack_enabled = true
   loki_enabled                  = true
+  loki_scalable_enabled         = false
   grafana_mimir_enabled         = true
   deployment_config = {
     hostname                            = "grafanaa.squareops.in"
@@ -32,6 +33,17 @@ module "pgl" {
       s3_bucket_name     = ""
       versioning_enabled = "true"
       s3_bucket_region   = local.region
+    }
+    loki_scalable_config = {
+      loki_scalable_version = "5.8.8"
+      loki_scalable_values  = file("./helm/loki-scalable.yaml")
+      s3_bucket_name        = ""
+      versioning_enabled    = true
+      s3_bucket_region      = "local.region"
+    }
+    promtail_config = {
+      promtail_version = "6.8.2"
+      promtail_values  = file("./helm/promtail.yaml")
     }
     karpenter_enabled = true
     karpenter_config = {

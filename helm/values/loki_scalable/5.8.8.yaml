@@ -1,0 +1,138 @@
+loki:
+  auth_enabled: false
+  storage:
+    bucketNames:
+      chunks: ${s3_bucket_name}
+      ruler: ${s3_bucket_name}
+      admin: ${s3_bucket_name}
+    type: s3
+    s3:
+      endpoint: s3.${s3_bucket_region}.amazonaws.com
+      region: ${s3_bucket_region}
+      # Set this to `true` to force the request to use path-style addressing.
+      s3ForcePathStyle: true
+      # Disable https on S3 connection.
+      insecure: true 
+
+monitoring:
+  selfMonitoring:
+    enabled: true
+    grafanaAgent:
+      installOperator: false
+  serviceMonitor:
+    labels:
+      release: "prometheus-operator" 
+  # Dashboards for monitoring Loki
+  dashboards:
+    # -- If enabled, create configmap with dashboards for monitoring Loki
+    enabled: false  
+  lokiCanary:
+    enabled: true
+    annotations: 
+      eks.amazonaws.com/role-arn: ${loki_scalable_s3_role_arn}    
+
+write:
+  # -- Number of replicas for the write
+  replicas: 2  
+  affinity: |
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              {{- include "loki.writeSelectorLabels" . | nindent 10 }}
+          topologyKey: topology.kubernetes.io/zone  
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Monitor-Services"
+            operator: In
+            values:
+            - "true"        
+
+read:
+  # -- Number of replicas for the read
+  replicas: 2
+  autoscaling:
+    # -- Enable autoscaling for the read, this is only used if `queryIndex.enabled: true`
+    enabled: true
+    # -- Minimum autoscaling replicas for the read
+    minReplicas: 2
+    # -- Maximum autoscaling replicas for the read
+    maxReplicas: 5
+    # -- Target CPU utilisation percentage for the read
+    targetCPUUtilizationPercentage: 60
+    # -- Target memory utilisation percentage for the read
+    targetMemoryUtilizationPercentage:   
+  affinity: |
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              {{- include "loki.readSelectorLabels" . | nindent 10 }}
+          topologyKey: topology.kubernetes.io/zone 
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Monitor-Services"
+            operator: In
+            values:
+            - "true"         
+
+backend:
+  # -- Number of replicas for the backend
+  replicas: 2  
+  affinity: |
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              {{- include "loki.backendSelectorLabels" . | nindent 10 }}
+          topologyKey: topology.kubernetes.io/zone  
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Monitor-Services"
+            operator: In
+            values:
+            - "true"       
+
+
+
+# Configuration for the gateway
+gateway:
+  # -- Specifies whether the gateway should be enabled
+  enabled: true
+  # -- Number of replicas for the gateway
+  replicas: 2
+  # -- Enable logging of 2xx and 3xx HTTP requests
+  verboseLogging: true
+  autoscaling:
+    # -- Enable autoscaling for the gateway
+    enabled: true
+    # -- Minimum autoscaling replicas for the gateway
+    minReplicas: 2
+    # -- Maximum autoscaling replicas for the gateway
+    maxReplicas: 5
+    # -- Target CPU utilisation percentage for the gateway
+    targetCPUUtilizationPercentage: 60
+    # -- Target memory utilisation percentage for the gateway
+    targetMemoryUtilizationPercentage: 
+  affinity: |
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              {{- include "loki.gatewaySelectorLabels" . | nindent 10 }}
+          topologyKey: topology.kubernetes.io/zone 
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Monitor-Services"
+            operator: In
+            values:
+            - "true"        
+    
