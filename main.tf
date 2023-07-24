@@ -100,22 +100,6 @@ resource "helm_release" "prometheus_grafana" {
   ]
 }
 
-resource "helm_release" "karpenter_provisioner" {
-  count   = var.deployment_config.karpenter_enabled ? 1 : 0
-  name    = "karpenter-provisioner-pgl"
-  chart   = "${path.module}/karpenter_provisioner/"
-  timeout = 600
-  values = [
-    templatefile("${path.module}/karpenter_provisioner/values.yaml", {
-      cluster_name                         = var.cluster_name,
-      private_subnet_name                  = var.deployment_config.karpenter_config.private_subnet_name,
-      karpenter_ec2_capacity_type          = "[${join(",", [for s in var.deployment_config.karpenter_config.instance_capacity_type : format("%s", s)])}]",
-      excluded_karpenter_ec2_instance_type = "[${join(",", var.deployment_config.karpenter_config.excluded_instance_type)}]"
-    }),
-    var.deployment_config.karpenter_config.karpenter_values
-  ]
-}
-
 resource "kubernetes_priority_class" "priority_class" {
   description = "Used for grafana critical pods that must not be moved from their current"
   metadata {
