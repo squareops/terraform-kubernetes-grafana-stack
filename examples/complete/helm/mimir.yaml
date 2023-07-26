@@ -13,3 +13,70 @@ nginx:
 serviceMonitor:
   enabled: true
   interval: 10s
+
+distributor:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Moniter-Services"
+            operator: In
+            values:
+            - "true"
+
+querier:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Moniter-Services"
+            operator: In
+            values:
+            - "true" 
+
+query_frontend:
+  affinity:
+    nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: "Moniter-Services"
+              operator: In
+              values:
+              - "true"                 
+
+ingester:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Moniter-Services"
+            operator: In
+            values:
+            - "true"
+
+store_gateway:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Moniter-Services"
+            operator: In
+            values:
+            - "true"
+
+compactor:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Moniter-Services"
+            operator: In
+            values:
+            - "true"            
+

@@ -1,11 +1,50 @@
 write:
   # -- Number of replicas for the write
-  replicas: 2 
+  replicas: 2   
+  affinity: |
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Moniter-Services"
+            operator: In
+            values:
+            - "true"   
 
 read:
   # -- Number of replicas for the read
-  replicas: 2  
+  replicas: 2
+  affinity: |
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Moniter-Services"
+            operator: In
+            values:
+            - "true"    
 
 backend:
   # -- Number of replicas for the backend
   replicas: 2 
+  affinity: |
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Moniter-Services"
+            operator: In
+            values:
+            - "true" 
+
+gateway:
+  replicas: 2   
+  affinity: |
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Moniter-Services"
+            operator: In
+            values:
+            - "true"             
