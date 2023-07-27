@@ -25,6 +25,7 @@ This module also includes alerting features that allow you to set up custom aler
 | Prometheus-Blackbox-Exporter    | **42.0.0**                         |    **1.23,1.24,1.25**           |
 | Mimir                           | **3.2.0**                          |    **1.23,1.24,1.25**           |
 | Loki-Stack                      | **2.8.2**                          |    **1.23,1.24,1.25**           |
+| Loki-Scalable                   | **5.8.8**                          |    **1.23,1.24,1.25**           |
 
 
 ## Usage Example
@@ -35,6 +36,7 @@ module "pgl" {
   cluster_name                  = "cluster-name"
   kube_prometheus_stack_enabled = true
   loki_enabled                  = true
+  loki_scalable_enabled         = false
   grafana_mimir_enabled         = true
   deployment_config = {
     hostname                            = "grafanaa.squareops.in"
@@ -54,12 +56,16 @@ module "pgl" {
       versioning_enabled = "true"
       s3_bucket_region   = ""
     }
-    karpenter_enabled = true
-    karpenter_config = {
-      private_subnet_name    = "private-subnet-name"
-      instance_capacity_type = ["spot"]
-      excluded_instance_type = ["nano", "micro", "small"]
-      karpenter_values       = ""
+    loki_scalable_config = {
+      loki_scalable_version = "5.8.8"
+      loki_scalable_values  = file("./helm/loki-scalable.yaml")
+      s3_bucket_name        = ""
+      versioning_enabled    = true
+      s3_bucket_region      = "local.region"
+    }
+    promtail_config = {
+      promtail_version = "6.8.2"
+      promtail_values  = file("./helm/promtail.yaml")
     }
   }
   exporter_config = {
@@ -92,10 +98,10 @@ module "pgl" {
 
 
 ```
-Refer [examples](https://github.com/sq-ia/terraform-kubernetes-grafana-stack/tree/main/examples/complete) for more details.
+Refer [examples](https://github.com/sq-ia/terraform-kubernetes-grafana/tree/main/examples/complete) for more details.
 
 ## IAM Permissions
-The required IAM permissions to create resources from this module can be found [here](https://github.com/sq-ia/terraform-kubernetes-grafana-stack/blob/main/IAM.md)
+The required IAM permissions to create resources from this module can be found [here](https://github.com/sq-ia/terraform-kubernetes-grafana/blob/main/IAM.md)
 
 ## Important Notes
   1. In order to enable the exporter, it is required to deploy Prometheus/Grafana first.
@@ -145,7 +151,6 @@ No requirements.
 | [helm_release.grafana_mimir](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.json_exporter](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.kafka_exporter](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
-| [helm_release.karpenter_provisioner](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.loki](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.nats_exporter](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.pingdom_exporter](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
@@ -197,7 +202,6 @@ No requirements.
 | <a name="input_aws_secret_key_id"></a> [aws\_secret\_key\_id](#input\_aws\_secret\_key\_id) | AWS secret key to use when creating the CloudWatch secret. | `string` | `""` | no |
 | <a name="input_blackbox_exporter_version"></a> [blackbox\_exporter\_version](#input\_blackbox\_exporter\_version) | Version of the Blackbox exporter to deploy. | `string` | `"4.10.1"` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Specifies the name of the EKS cluster. | `string` | n/a | yes |
-| <a name="input_deployment_config"></a> [deployment\_config](#input\_deployment\_config) | Configuration options for the Prometheus, Alertmanager, Loki, and Grafana deployments, including the hostname, storage class name, dashboard refresh interval, and S3 bucket configuration for Mimir. | `any` | <pre>{<br>  "blackbox_values_yaml": "",<br>  "dashboard_refresh_interval": "",<br>  "grafana_enabled": true,<br>  "grafana_mimir_values_yaml": "",<br>  "hostname": "",<br>  "karpenter_config": {<br>    "excluded_instance_type": [<br>      ""<br>    ],<br>    "instance_capacity_type": [<br>      ""<br>    ],<br>    "karpenter_values": "",<br>    "private_subnet_name": ""<br>  },<br>  "karpenter_enabled": "",<br>  "loki_hostname": "",<br>  "loki_internal_ingress_enabled": false,<br>  "loki_values_yaml": "",<br>  "mimir_s3_bucket_config": {<br>    "s3_bucket_name": "",<br>    "s3_bucket_region": "",<br>    "versioning_enabled": ""<br>  },<br>  "prometheus_hostname": "",<br>  "prometheus_internal_ingress_enabled": false,<br>  "prometheus_values_yaml": "",<br>  "storage_class_name": "gp2"<br>}</pre> | no |
 | <a name="input_exporter_config"></a> [exporter\_config](#input\_exporter\_config) | allows enabling/disabling various exporters for scraping metrics, including CloudWatch, Consul, MongoDB, Redis, and StatsD. | `map(any)` | <pre>{<br>  "argocd": false,<br>  "blackbox": true,<br>  "cloudwatch": false,<br>  "conntrack": false,<br>  "consul": false,<br>  "couchdb": false,<br>  "druid": false,<br>  "elasticsearch": true,<br>  "jenkins": false,<br>  "json": false,<br>  "kafka": false,<br>  "mongodb": true,<br>  "mysql": true,<br>  "nats": false,<br>  "nifi": false,<br>  "pingdom": false,<br>  "postgres": false,<br>  "prometheustosd": false,<br>  "push_gateway": false,<br>  "rabbitmq": false,<br>  "redis": true,<br>  "snmp": false,<br>  "stackdriver": false,<br>  "statsd": true<br>}</pre> | no |
 | <a name="input_grafana_mimir_enabled"></a> [grafana\_mimir\_enabled](#input\_grafana\_mimir\_enabled) | Specify whether or not to deploy the Grafana Mimir plugin. | `bool` | `false` | no |
 | <a name="input_grafana_mimir_version"></a> [grafana\_mimir\_version](#input\_grafana\_mimir\_version) | Version of the Grafana Mimir plugin to deploy. | `string` | `"3.2.0"` | no |
@@ -218,7 +222,7 @@ No requirements.
 
 To report an issue with a project:
 
-  1. Check the repository's [issue tracker](https://github.com/sq-ia/terraform-kubernetes-grafana-stack/issues) on GitHub
+  1. Check the repository's [issue tracker](https://github.com/sq-ia/terraform-kubernetes-grafana/issues) on GitHub
   2. Search to see if the issue has already been reported
   3. If you can't find an answer to your question in the documentation or issue tracker, you can ask a question by creating a new issue. Be sure to provide enough context and details so others can understand your problem.
 
@@ -230,7 +234,7 @@ Apache License, Version 2.0, January 2004 (http://www.apache.org/licenses/).
 
 To support a GitHub project by liking it, you can follow these steps:
 
-  1. Visit the repository: Navigate to the [GitHub repository](https://github.com/sq-ia/terraform-kubernetes-grafana-stack).
+  1. Visit the repository: Navigate to the [GitHub repository](https://github.com/sq-ia/terraform-kubernetes-grafana).
 
   2. Click the "Star" button: On the repository page, you'll see a "Star" button in the upper right corner. Clicking on it will star the repository, indicating your support for the project.
 
