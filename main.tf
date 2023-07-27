@@ -688,3 +688,102 @@ resource "null_resource" "grafana_homepage" {
     EOT
   }
 }
+
+resource "kubernetes_config_map" "istio_dashboard" {
+  depends_on = [helm_release.prometheus_grafana]
+  count = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
+  metadata {
+    name      = "Istio-Control-Plane-dashboard"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+  }
+
+  data = {
+    "istio-control-plane-dashboard.json" = "${file("${path.module}/grafana/dashboards/Istio_Control_Plane_Dashboard.json")}"
+  }
+}
+
+resource "kubernetes_config_map" "istio_dashboard_1" {
+  depends_on = [helm_release.prometheus_grafana]
+  count = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
+  metadata {
+    name      = "Istio-Mesh-dashboard"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+  }
+
+  data = {
+    "istio-mesh-dashboard.json" = "${file("${path.module}/grafana/dashboards/Istio_Mesh_Dashboard.json")}"
+  }
+}
+
+
+resource "kubernetes_config_map" "istio_dashboard_2" {
+  depends_on = [helm_release.prometheus_grafana]
+  count = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
+  metadata {
+    name      = "Istio-Performance-dashboard"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+  }
+
+  data = {
+    "istio-performance-dashboard.json" = "${file("${path.module}/grafana/dashboards/Istio_Performance_Dashboard.json")}"
+  }
+}
+
+
+resource "kubernetes_config_map" "istio_dashboard_3" {
+  depends_on = [helm_release.prometheus_grafana]
+  count = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
+  metadata {
+    name      = "Istio-Service-dashboard"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+  }
+
+  data = {
+    "istio-service-dashboard.json" = "${file("${path.module}/grafana/dashboards/Istio_Service_Dashboard.json")}"
+  }
+}
+
+
+resource "kubernetes_config_map" "istio_dashboard_4" {
+  depends_on = [helm_release.prometheus_grafana]
+  count = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
+  metadata {
+    name      = "Istio-Workload-dashboard"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+  }
+
+  data = {
+    "istio-workload-dashboard.json" = "${file("${path.module}/grafana/dashboards/Istio_Workload_Dashboard.json")}"
+  }
+}
+

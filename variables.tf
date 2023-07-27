@@ -100,6 +100,7 @@ variable "exporter_config" {
     mysql          = true
     nats           = false
     nifi           = false
+    istio          = false
     pingdom        = false
     postgres       = false
     prometheustosd = false
