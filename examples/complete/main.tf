@@ -67,6 +67,7 @@ module "pgl" {
     statsd         = false
     couchdb        = false
     jenkins        = true
+    istio          = true
     mongodb        = true
     pingdom        = false
     blackbox       = true
