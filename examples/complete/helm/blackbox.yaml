@@ -17,4 +17,4 @@ affinity:
         - key: "Moniter-Services"
           operator: In
           values:
-          - "true"     
+          - "true"

@@ -8,9 +8,9 @@ locals {
   loki_datasource_config = <<EOF
 
 - name: Loki
-  access: proxy   
+  access: proxy
   type: loki
-  url: http://loki-read-headless:3100 
+  url: http://loki-read-headless:3100
   EOF
 }
 

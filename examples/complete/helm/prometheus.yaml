@@ -155,7 +155,7 @@ grafana:
           - key: "Moniter-Services"
             operator: In
             values:
-            - "true"  
+            - "true"
 
 kube-state-metrics:
   affinity:
@@ -177,7 +177,7 @@ prometheusOperator:
           - key: "Moniter-Services"
             operator: In
             values:
-            - "true" 
+            - "true"
 
 prometheus:
   ingress:
@@ -189,7 +189,7 @@ prometheus:
             - key: "Moniter-Services"
               operator: In
               values:
-              - "true"                       
+              - "true"
 
 #   rbac:
 #     pspEnabled: true

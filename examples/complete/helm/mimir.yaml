@@ -34,7 +34,7 @@ querier:
           - key: "Moniter-Services"
             operator: In
             values:
-            - "true" 
+            - "true"
 
 query_frontend:
   affinity:
@@ -45,7 +45,7 @@ query_frontend:
             - key: "Moniter-Services"
               operator: In
               values:
-              - "true"                 
+              - "true"
 
 ingester:
   affinity:
@@ -78,5 +78,4 @@ compactor:
           - key: "Moniter-Services"
             operator: In
             values:
-            - "true"            
-
+            - "true"

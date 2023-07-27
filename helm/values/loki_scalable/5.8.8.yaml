@@ -12,7 +12,7 @@ loki:
       # Set this to `true` to force the request to use path-style addressing.
       s3ForcePathStyle: true
       # Disable https on S3 connection.
-      insecure: true 
+      insecure: true
 
 monitoring:
   selfMonitoring:
@@ -21,26 +21,26 @@ monitoring:
       installOperator: false
   serviceMonitor:
     labels:
-      release: "prometheus-operator" 
+      release: "prometheus-operator"
   # Dashboards for monitoring Loki
   dashboards:
     # -- If enabled, create configmap with dashboards for monitoring Loki
-    enabled: false  
+    enabled: false
   lokiCanary:
     enabled: true
-    annotations: 
-      eks.amazonaws.com/role-arn: ${loki_scalable_s3_role_arn}    
+    annotations:
+      eks.amazonaws.com/role-arn: ${loki_scalable_s3_role_arn}
 
 write:
   # -- Number of replicas for the write
-  replicas: 2  
+  replicas: 2
   affinity: |
     podAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         - labelSelector:
             matchLabels:
               {{- include "loki.writeSelectorLabels" . | nindent 10 }}
-          topologyKey: topology.kubernetes.io/zone  
+          topologyKey: topology.kubernetes.io/zone
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
@@ -48,7 +48,7 @@ write:
           - key: "Monitor-Services"
             operator: In
             values:
-            - "true"        
+            - "true"
 
 read:
   # -- Number of replicas for the read
@@ -63,14 +63,14 @@ read:
     # -- Target CPU utilisation percentage for the read
     targetCPUUtilizationPercentage: 60
     # -- Target memory utilisation percentage for the read
-    targetMemoryUtilizationPercentage:   
+    targetMemoryUtilizationPercentage:
   affinity: |
     podAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         - labelSelector:
             matchLabels:
               {{- include "loki.readSelectorLabels" . | nindent 10 }}
-          topologyKey: topology.kubernetes.io/zone 
+          topologyKey: topology.kubernetes.io/zone
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
@@ -78,18 +78,18 @@ read:
           - key: "Monitor-Services"
             operator: In
             values:
-            - "true"         
+            - "true"
 
 backend:
   # -- Number of replicas for the backend
-  replicas: 2  
+  replicas: 2
   affinity: |
     podAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         - labelSelector:
             matchLabels:
               {{- include "loki.backendSelectorLabels" . | nindent 10 }}
-          topologyKey: topology.kubernetes.io/zone  
+          topologyKey: topology.kubernetes.io/zone
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
@@ -97,7 +97,7 @@ backend:
           - key: "Monitor-Services"
             operator: In
             values:
-            - "true"       
+            - "true"
 
 
 
@@ -119,14 +119,14 @@ gateway:
     # -- Target CPU utilisation percentage for the gateway
     targetCPUUtilizationPercentage: 60
     # -- Target memory utilisation percentage for the gateway
-    targetMemoryUtilizationPercentage: 
+    targetMemoryUtilizationPercentage:
   affinity: |
     podAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         - labelSelector:
             matchLabels:
               {{- include "loki.gatewaySelectorLabels" . | nindent 10 }}
-          topologyKey: topology.kubernetes.io/zone 
+          topologyKey: topology.kubernetes.io/zone
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
@@ -134,5 +134,4 @@ gateway:
           - key: "Monitor-Services"
             operator: In
             values:
-            - "true"        
-    
+            - "true"
