@@ -689,7 +689,7 @@ resource "null_resource" "grafana_homepage" {
   }
 }
 
-resource "kubernetes_config_map" "istio_dashboard" {
+resource "kubernetes_config_map" "istio_control_plane_dashboard" {
   depends_on = [helm_release.prometheus_grafana]
   count = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
   metadata {
@@ -708,7 +708,7 @@ resource "kubernetes_config_map" "istio_dashboard" {
   }
 }
 
-resource "kubernetes_config_map" "istio_dashboard_1" {
+resource "kubernetes_config_map" "istio_mesh_dashboard" {
   depends_on = [helm_release.prometheus_grafana]
   count = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
   metadata {
@@ -728,7 +728,7 @@ resource "kubernetes_config_map" "istio_dashboard_1" {
 }
 
 
-resource "kubernetes_config_map" "istio_dashboard_2" {
+resource "kubernetes_config_map" "istio_performance_dashboard" {
   depends_on = [helm_release.prometheus_grafana]
   count = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
   metadata {
@@ -748,7 +748,7 @@ resource "kubernetes_config_map" "istio_dashboard_2" {
 }
 
 
-resource "kubernetes_config_map" "istio_dashboard_3" {
+resource "kubernetes_config_map" "istio_service_dashboard" {
   depends_on = [helm_release.prometheus_grafana]
   count = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
   metadata {
@@ -768,7 +768,7 @@ resource "kubernetes_config_map" "istio_dashboard_3" {
 }
 
 
-resource "kubernetes_config_map" "istio_dashboard_4" {
+resource "kubernetes_config_map" "istio_workload_dashboard" {
   depends_on = [helm_release.prometheus_grafana]
   count = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
   metadata {
