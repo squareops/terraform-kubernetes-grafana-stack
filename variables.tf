@@ -72,14 +72,6 @@ variable "deployment_config" {
       promtail_version = "6.8.2"
       promtail_values  = ""
     }
-    karpenter_enabled = ""
-    karpenter_config = {
-      private_subnet_name    = ""
-      instance_capacity_type = [""]
-      excluded_instance_type = [""]
-      karpenter_values       = ""
-    }
-
   }
   description = "Configuration options for the Prometheus, Alertmanager, Loki, and Grafana deployments, including the hostname, storage class name, dashboard refresh interval, and S3 bucket configuration for Mimir."
 }
