@@ -43,7 +43,7 @@ loki:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "Infra-Services"
+          - key: "Monitor-Services"
             operator: In
             values:
             - "true"

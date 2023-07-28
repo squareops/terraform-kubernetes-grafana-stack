@@ -47,7 +47,7 @@ log:
   format: logfmt
   level: info
 
-resources: 
+resources:
  # requests:
  #   cpu: 100m
  #   memory: 128Mi
@@ -61,7 +61,7 @@ nodeSelector: {}
 
 tolerations: []
 
-podAnnotations: 
+podAnnotations:
   co.elastic.logs/enabled: "true"
 
 podLabels: {}
@@ -93,7 +93,7 @@ deployment:
 ## env:
 ##   KEY_1: value1
 ##   KEY_2: value2
-env: 
+env:
   ES_USERNAME: elastic
 
 ## Extra arguments to pass to the container's executable
@@ -246,7 +246,7 @@ serviceMonitor:
   ##
   enabled: true
   namespace: elastic-system
-  labels: 
+  labels:
     release: prometheus-operator
   interval: 60s
   jobLabel: ""

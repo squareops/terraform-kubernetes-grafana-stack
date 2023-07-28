@@ -45,13 +45,6 @@ module "pgl" {
       promtail_version = "6.8.2"
       promtail_values  = file("./helm/promtail.yaml")
     }
-    karpenter_enabled = true
-    karpenter_config = {
-      private_subnet_name    = "private-subnet-name"
-      instance_capacity_type = ["spot"]
-      excluded_instance_type = ["nano", "micro", "small"]
-      karpenter_values       = file("./helm/karpenter.yaml")
-    }
   }
   exporter_config = {
     json           = false
