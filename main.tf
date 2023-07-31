@@ -787,3 +787,22 @@ resource "kubernetes_config_map" "istio_workload_dashboard" {
   }
 }
 
+
+resource "kubernetes_config_map" "kafka_dashboard" {
+  depends_on = [helm_release.prometheus_grafana]
+  count = var.exporter_config.kafka && var.deployment_config.grafana_enabled ? 1 : 0
+  metadata {
+    name      = "kafka-dashboard"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+  }
+
+  data = {
+    "kafka-dashboard.json" = "${file("${path.module}/grafana/dashboards/Kafka_Dashboard.json")}"
+  }
+}
