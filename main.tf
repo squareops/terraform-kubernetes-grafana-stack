@@ -268,7 +268,7 @@ resource "helm_release" "pingdom_exporter" {
 }
 
 resource "helm_release" "postgres_exporter" {
-  count      = var.exporter_config.postgres ? 1 : 0
+  count      = var.exporter_config.postgres ? 0 : 0
   name       = "postgres-exporter"
   chart      = "prometheus-postgres-exporter"
   version    = "3.0.3"
