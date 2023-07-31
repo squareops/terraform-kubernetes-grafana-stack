@@ -8,9 +8,9 @@ locals {
   loki_datasource_config = <<EOF
 
 - name: Loki
-  access: proxy   
+  access: proxy
   type: loki
-  url: http://loki-read-headless:3100 
+  url: http://loki-read-headless:3100
   EOF
 }
 
@@ -97,22 +97,6 @@ resource "helm_release" "prometheus_grafana" {
       loki_datasource_config             = var.loki_scalable_enabled ? local.loki_datasource_config : ""
     }),
     var.deployment_config.prometheus_values_yaml
-  ]
-}
-
-resource "helm_release" "karpenter_provisioner" {
-  count   = var.deployment_config.karpenter_enabled ? 1 : 0
-  name    = "karpenter-provisioner-pgl"
-  chart   = "${path.module}/karpenter_provisioner/"
-  timeout = 600
-  values = [
-    templatefile("${path.module}/karpenter_provisioner/values.yaml", {
-      cluster_name                         = var.cluster_name,
-      private_subnet_name                  = var.deployment_config.karpenter_config.private_subnet_name,
-      karpenter_ec2_capacity_type          = "[${join(",", [for s in var.deployment_config.karpenter_config.instance_capacity_type : format("%s", s)])}]",
-      excluded_karpenter_ec2_instance_type = "[${join(",", var.deployment_config.karpenter_config.excluded_instance_type)}]"
-    }),
-    var.deployment_config.karpenter_config.karpenter_values
   ]
 }
 

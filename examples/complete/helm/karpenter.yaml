@@ -1,6 +1,0 @@
-karpenter_ec2_capacity_type: ["on-demand"]
-
-spec:
-  labels:
-    Monitor-Services: "true"
-    eks.amazonaws.com/nodegroup: "monitoring-ng"

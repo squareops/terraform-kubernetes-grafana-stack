@@ -77,13 +77,13 @@ resource "helm_release" "loki_scalable" {
     kubernetes_namespace.monitoring,
     module.loki_scalable_s3_bucket
   ]
-  name       = "loki-scalable"
-  namespace  = var.pgl_namespace
+  name            = "loki-scalable"
+  namespace       = var.pgl_namespace
   atomic          = false
   cleanup_on_fail = false
-  repository = "https://grafana.github.io/helm-charts"
-  chart      = "loki"
-  version    = var.deployment_config.loki_scalable_config.loki_scalable_version
+  repository      = "https://grafana.github.io/helm-charts"
+  chart           = "loki"
+  version         = var.deployment_config.loki_scalable_config.loki_scalable_version
   values = [
     templatefile("${path.module}/helm/values/loki_scalable/${var.deployment_config.loki_scalable_config.loki_scalable_version}.yaml", {
       s3_bucket_name            = module.loki_scalable_s3_bucket[0].s3_bucket_id,
@@ -107,7 +107,7 @@ resource "helm_release" "promtail" {
   chart           = "promtail"
   version         = var.deployment_config.promtail_config.promtail_version
   values = [
-    templatefile("${path.module}/helm/values/promtail/${var.deployment_config.promtail_config.promtail_version}.yaml",{}),
+    templatefile("${path.module}/helm/values/promtail/${var.deployment_config.promtail_config.promtail_version}.yaml", {}),
     var.deployment_config.promtail_config.promtail_values
   ]
 }

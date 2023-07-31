@@ -249,8 +249,8 @@ grafana:
     #     url: http://loki:3100
     #     access: proxy
 
-  additionalDataSources: 
-   ${indent(4, loki_datasource_config)}  
+  additionalDataSources:
+   ${indent(4, loki_datasource_config)}
 
   persistence:
     enabled: true
@@ -642,7 +642,7 @@ additionalPrometheusRulesMap:
           labels:
             severity: warning
           annotations:
-            summary: Jenkins server is unhealthy 
+            summary: Jenkins server is unhealthy
             description: "Check jenkins health. Current health values is {{ $value }}"
         - alert: JenkinsOutdatedPlugins
           expr: jenkins_plugins_withUpdate > 20
@@ -686,7 +686,7 @@ additionalPrometheusRulesMap:
           annotations:
             summary: ElasticSearch node {{ $labels.name }} heap usage is high
             description: The heap usage in {{ $labels.name }} is less than 15% for 10m.
-            
+
       - name: Rabbitmq
         rules:
         - alert: RabbitmqNodeDown
