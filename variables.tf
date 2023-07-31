@@ -87,7 +87,7 @@ variable "exporter_config" {
     druid          = false
     elasticsearch  = true
     json           = false
-    kafka          = true
+    kafka          = false
     mongodb        = true
     mysql          = true
     nats           = false
