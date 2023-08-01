@@ -225,19 +225,19 @@ resource "helm_release" "json_exporter" {
   depends_on = [helm_release.prometheus_grafana]
 }
 
-resource "helm_release" "kafka_exporter" {
-  count      = var.exporter_config.kafka ? 1 : 0
-  name       = "kafka-exporter"
-  chart      = "prometheus-kafka-exporter"
-  version    = "1.6.0"
-  timeout    = 600
-  namespace  = var.pgl_namespace
-  repository = "https://prometheus-community.github.io/helm-charts"
-  values = [
-    file("${path.module}/helm/values/kafka.yaml")
-  ]
-  depends_on = [helm_release.prometheus_grafana]
-}
+# resource "helm_release" "kafka_exporter" {
+#   count      = var.exporter_config.kafka ? 1 : 0
+#   name       = "kafka-exporter"
+#   chart      = "prometheus-kafka-exporter"
+#   version    = "1.6.0"
+#   timeout    = 600
+#   namespace  = var.pgl_namespace
+#   repository = "https://prometheus-community.github.io/helm-charts"
+#   values = [
+#     file("${path.module}/helm/values/kafka.yaml")
+#   ]
+#   depends_on = [helm_release.prometheus_grafana]
+# }
 
 resource "helm_release" "nats_exporter" {
   count      = var.exporter_config.nats ? 1 : 0
