@@ -267,20 +267,6 @@ resource "helm_release" "pingdom_exporter" {
   depends_on = [helm_release.prometheus_grafana]
 }
 
-resource "helm_release" "postgres_exporter" {
-  count      = var.exporter_config.postgres ? 0 : 0
-  name       = "postgres-exporter"
-  chart      = "prometheus-postgres-exporter"
-  version    = "3.0.3"
-  timeout    = 600
-  namespace  = var.pgl_namespace
-  repository = "https://prometheus-community.github.io/helm-charts"
-  values = [
-    file("${path.module}/helm/values/postgres.yaml")
-  ]
-  depends_on = [helm_release.prometheus_grafana]
-}
-
 resource "helm_release" "pushgateway" {
   count      = var.exporter_config.push_gateway ? 1 : 0
   name       = "pushgateway"
