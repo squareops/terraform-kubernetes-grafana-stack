@@ -514,7 +514,7 @@ resource "kubernetes_config_map" "rabbitmq_dashboard" {
 }
 
 resource "kubernetes_config_map" "loki_dashboard" {
-  count = (var.loki_enabled || var.loki_scalable_enabled) && var.deployment_config.grafana_enabled ? 1 : 0
+  count = var.loki_enabled || var.loki_scalable_enabled && var.deployment_config.grafana_enabled ? 1 : 0
   depends_on = [
     helm_release.prometheus_grafana,
     helm_release.loki

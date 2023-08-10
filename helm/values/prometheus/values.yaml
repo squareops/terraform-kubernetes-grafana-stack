@@ -243,8 +243,6 @@ grafana:
 
   grafana.ini:
     max_idle_connections: 500
-    dashboards:
-      min_refresh_interval: ${min_refresh_interval}
     server:
       enable_gzip: true
 

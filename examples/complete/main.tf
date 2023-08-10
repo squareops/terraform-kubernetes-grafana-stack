@@ -1,5 +1,5 @@
 locals {
-  name        = "sonarqube"
+  name        = "grafana"
   region      = "us-east-2"
   environment = "prod"
   additional_tags = {
