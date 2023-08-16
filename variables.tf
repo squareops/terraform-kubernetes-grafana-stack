@@ -50,7 +50,6 @@ variable "deployment_config" {
     loki_values_yaml                    = ""
     blackbox_values_yaml                = ""
     grafana_mimir_values_yaml           = ""
-    dashboard_refresh_interval          = ""
     grafana_enabled                     = true
     prometheus_hostname                 = ""
     prometheus_internal_ingress_enabled = false

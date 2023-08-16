@@ -45,7 +45,6 @@ module "pgl" {
     loki_values_yaml                    = ""
     blackbox_values_yaml                = ""
     grafana_mimir_values_yaml           = ""
-    dashboard_refresh_interval          = "300"
     grafana_enabled                     = true
     prometheus_hostname                 = "prometh.squareops.in"
     prometheus_internal_ingress_enabled = false

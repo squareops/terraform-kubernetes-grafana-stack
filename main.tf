@@ -80,7 +80,6 @@ resource "helm_release" "prometheus_grafana" {
       hostname               = "${var.deployment_config.hostname}",
       grafana_enabled        = "${var.deployment_config.grafana_enabled}",
       storage_class_name     = "${var.deployment_config.storage_class_name}",
-      min_refresh_interval   = "${var.deployment_config.dashboard_refresh_interval}",
       grafana_admin_password = "${random_password.grafana_password.result}",
       loki_datasource_config = var.loki_scalable_enabled ? local.loki_datasource_config : ""
     }),
@@ -91,7 +90,6 @@ resource "helm_release" "prometheus_grafana" {
       grafana_enabled                    = "${var.deployment_config.grafana_enabled}",
       storage_class_name                 = "${var.deployment_config.storage_class_name}",
       prometheus_hostname                = "${var.deployment_config.prometheus_hostname}",
-      min_refresh_interval               = "${var.deployment_config.dashboard_refresh_interval}",
       grafana_admin_password             = "${random_password.grafana_password.result}",
       enable_prometheus_internal_ingress = "${var.deployment_config.prometheus_internal_ingress_enabled}",
       loki_datasource_config             = var.loki_scalable_enabled ? local.loki_datasource_config : ""
