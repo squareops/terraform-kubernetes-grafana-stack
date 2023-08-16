@@ -1,6 +1,7 @@
 resource "aws_iam_role" "loki_scalable_role" {
-  count = var.loki_scalable_enabled ? 1 : 0
-  name  = join("-", [var.cluster_name, "loki-scalable"])
+  count      = var.loki_scalable_enabled ? 1 : 0
+  depends_on = [helm_release.prometheus_grafana, helm_release.grafana_mimir]
+  name       = join("-", [var.cluster_name, "loki-scalable"])
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -43,6 +44,7 @@ resource "aws_iam_role" "loki_scalable_role" {
 
 module "loki_scalable_s3_bucket" {
   count                                 = var.loki_scalable_enabled ? 1 : 0
+  depends_on                            = [helm_release.prometheus_grafana, helm_release.grafana_mimir]
   source                                = "terraform-aws-modules/s3-bucket/aws"
   version                               = "3.7.0"
   bucket                                = var.deployment_config.loki_scalable_config.s3_bucket_name
@@ -75,7 +77,9 @@ resource "helm_release" "loki_scalable" {
   count = var.loki_scalable_enabled ? 1 : 0
   depends_on = [
     kubernetes_namespace.monitoring,
-    module.loki_scalable_s3_bucket
+    module.loki_scalable_s3_bucket,
+    helm_release.prometheus_grafana,
+    helm_release.grafana_mimir
   ]
   name            = "loki-scalable"
   namespace       = var.pgl_namespace
@@ -97,7 +101,9 @@ resource "helm_release" "loki_scalable" {
 resource "helm_release" "promtail" {
   count = var.loki_scalable_enabled ? 1 : 0
   depends_on = [
-    kubernetes_namespace.monitoring
+    kubernetes_namespace.monitoring,
+    helm_release.prometheus_grafana,
+    helm_release.grafana_mimir
   ]
   name            = "promtail"
   namespace       = var.pgl_namespace

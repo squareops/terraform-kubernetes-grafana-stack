@@ -647,7 +647,7 @@ resource "null_resource" "grafana_homepage" {
 
 resource "kubernetes_config_map" "istio_control_plane_dashboard" {
   depends_on = [helm_release.prometheus_grafana]
-  count = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
+  count      = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
   metadata {
     name      = "istio-control-plane-dashboard"
     namespace = var.pgl_namespace
@@ -666,7 +666,7 @@ resource "kubernetes_config_map" "istio_control_plane_dashboard" {
 
 resource "kubernetes_config_map" "istio_mesh_dashboard" {
   depends_on = [helm_release.prometheus_grafana]
-  count = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
+  count      = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
   metadata {
     name      = "istio-mesh-dashboard"
     namespace = var.pgl_namespace
@@ -686,7 +686,7 @@ resource "kubernetes_config_map" "istio_mesh_dashboard" {
 
 resource "kubernetes_config_map" "istio_performance_dashboard" {
   depends_on = [helm_release.prometheus_grafana]
-  count = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
+  count      = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
   metadata {
     name      = "istio-performance-dashboard"
     namespace = var.pgl_namespace
@@ -706,7 +706,7 @@ resource "kubernetes_config_map" "istio_performance_dashboard" {
 
 resource "kubernetes_config_map" "istio_service_dashboard" {
   depends_on = [helm_release.prometheus_grafana]
-  count = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
+  count      = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
   metadata {
     name      = "istio-service-dashboard"
     namespace = var.pgl_namespace
@@ -726,7 +726,7 @@ resource "kubernetes_config_map" "istio_service_dashboard" {
 
 resource "kubernetes_config_map" "istio_workload_dashboard" {
   depends_on = [helm_release.prometheus_grafana]
-  count = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
+  count      = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
   metadata {
     name      = "istio-workload-dashboard"
     namespace = var.pgl_namespace
@@ -746,7 +746,7 @@ resource "kubernetes_config_map" "istio_workload_dashboard" {
 
 resource "kubernetes_config_map" "kafka_dashboard" {
   depends_on = [helm_release.prometheus_grafana]
-  count = var.exporter_config.kafka && var.deployment_config.grafana_enabled ? 1 : 0
+  count      = var.exporter_config.kafka && var.deployment_config.grafana_enabled ? 1 : 0
   metadata {
     name      = "kafka-dashboard"
     namespace = var.pgl_namespace
