@@ -93,4 +93,3 @@ spec:
   selector:
     matchLabels:
       app: ethtool-exporter
-  

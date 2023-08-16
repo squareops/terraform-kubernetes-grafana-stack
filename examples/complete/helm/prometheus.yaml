@@ -15,7 +15,7 @@ alertmanager:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
-            - key: "PGL-Services"
+            - key: "Monitor-Services"
               operator: In
               values:
               - "true"
@@ -152,7 +152,7 @@ grafana:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "PGL-Services"
+          - key: "Monitor-Services"
             operator: In
             values:
             - "true"
@@ -163,7 +163,7 @@ kube-state-metrics:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "PGL-Services"
+          - key: "Monitor-Services"
             operator: In
             values:
             - "true"
@@ -174,7 +174,7 @@ prometheusOperator:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "PGL-Services"
+          - key: "Monitor-Services"
             operator: In
             values:
             - "true"
@@ -186,7 +186,7 @@ prometheus:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
-            - key: "PGL-Services"
+            - key: "Monitor-Services"
               operator: In
               values:
               - "true"

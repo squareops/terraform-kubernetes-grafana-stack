@@ -1,7 +1,7 @@
 locals {
-  name        = "sonarqube"
+  name        = "skaf"
   region      = "us-east-2"
-  environment = "prod"
+  environment = "dev"
   additional_tags = {
     Owner      = "organization_name"
     Expires    = "Never"
@@ -10,14 +10,14 @@ locals {
 }
 
 module "pgl" {
-  source                        = "https://github.com/sq-ia/terraform-kubernetes-grafana.git"
-  cluster_name                  = "cluster-name"
+  source                        = "../.."
+  cluster_name                  = "dev-skaf"
   kube_prometheus_stack_enabled = true
   loki_enabled                  = true
   loki_scalable_enabled         = false
   grafana_mimir_enabled         = true
   deployment_config = {
-    hostname                            = "grafanaa.squareops.in"
+    hostname                            = "grafanaa.dev.skaf.squareops.in"
     storage_class_name                  = "gp2"
     prometheus_values_yaml              = file("./helm/prometheus.yaml")
     loki_values_yaml                    = file("./helm/loki.yaml")

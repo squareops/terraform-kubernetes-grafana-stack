@@ -6,7 +6,7 @@ affinity:
     requiredDuringSchedulingIgnoredDuringExecution:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: "PGL-Services"
+        - key: "Monitor-Services"
           operator: In
           values:
           - "true"

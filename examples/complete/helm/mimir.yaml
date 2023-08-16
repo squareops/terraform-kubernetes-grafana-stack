@@ -20,7 +20,7 @@ distributor:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "PGL-Services"
+          - key: "Monitor-Services"
             operator: In
             values:
             - "true"
@@ -31,7 +31,7 @@ querier:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "PGL-Services"
+          - key: "Monitor-Services"
             operator: In
             values:
             - "true"
@@ -42,7 +42,7 @@ query_frontend:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
-            - key: "PGL-Services"
+            - key: "Monitor-Services"
               operator: In
               values:
               - "true"
@@ -53,7 +53,7 @@ ingester:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "PGL-Services"
+          - key: "Monitor-Services"
             operator: In
             values:
             - "true"
@@ -64,7 +64,7 @@ store_gateway:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "PGL-Services"
+          - key: "Monitor-Services"
             operator: In
             values:
             - "true"
@@ -75,7 +75,7 @@ compactor:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "PGL-Services"
+          - key: "Monitor-Services"
             operator: In
             values:
             - "true"
