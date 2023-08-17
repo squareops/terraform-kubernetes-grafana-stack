@@ -1,0 +1,95 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ethtool-exporter
+  labels:
+    app: ethtool-exporter
+spec:
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 100%
+  selector:
+    matchLabels:
+      app: ethtool-exporter
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9417'
+      labels:
+        app: ethtool-exporter
+    spec:
+      hostNetwork: true
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: ethtool-exporter
+        env:
+        - name: IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        image: drdivano/ethtool-exporter@sha256:39e0916b16de07f62c2becb917c94cbb3a6e124a577e1325505e4d0cdd550d7b
+        command:
+          - "sh"
+          - "-exc"
+          - "python3 /ethtool-exporter.py -l $(IP):9417 -I '(eth|em|eno|ens|enp)[0-9s]+'"
+        ports:
+        - containerPort: 9417
+          hostPort: 9417
+          name: http
+
+        resources:
+          limits:
+            cpu: 250m
+            memory: 100Mi
+          requests:
+            cpu: 10m
+            memory: 50Mi
+
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ethtool-exporter
+  name: ethtool-exporter
+spec:
+  clusterIP: None
+  ports:
+    - name: http
+      port: 9417
+  selector:
+    app: ethtool-exporter
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  annotations:
+    meta.helm.sh/release-name: prometheus-operator
+    meta.helm.sh/release-namespace: monitoring
+  labels:
+    app.kubernetes.io/component: metrics
+    app.kubernetes.io/instance: prometheus-operator
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: prometheus-node-exporter
+    app.kubernetes.io/part-of: prometheus-node-exporter
+    app.kubernetes.io/version: 1.3.1
+    helm.sh/chart: prometheus-node-exporter-4.4.2
+    jobLabel: node-exporter
+    release: prometheus-operator
+  name: eth-tool-service-monitor
+  namespace: monitoring
+spec:
+  endpoints:
+  - port: http
+    scheme: http
+  jobLabel: app
+  selector:
+    matchLabels:
+      app: ethtool-exporter

@@ -1,7 +1,7 @@
 resource "aws_iam_role" "loki_scalable_role" {
-  count = var.loki_scalable_enabled ? 1 : 0
+  count      = var.loki_scalable_enabled ? 1 : 0
   depends_on = [helm_release.prometheus_grafana, helm_release.grafana_mimir]
-  name  = join("-", [var.cluster_name, "loki-scalable"])
+  name       = join("-", [var.cluster_name, "loki-scalable"])
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
