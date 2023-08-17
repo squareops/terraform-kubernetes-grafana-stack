@@ -47,30 +47,31 @@ module "pgl" {
     }
   }
   exporter_config = {
-    json           = false
-    nats           = false
-    nifi           = false
-    snmp           = false
-    kafka          = false
-    druid          = false
-    mysql          = true
-    redis          = true
-    consul         = false
-    argocd         = true
-    statsd         = false
-    couchdb        = false
-    jenkins        = true
-    istio          = true
-    mongodb        = true
-    pingdom        = false
-    blackbox       = true
-    rabbitmq       = true
-    postgres       = false
-    conntrack      = false
-    cloudwatch     = false
-    stackdriver    = false
-    push_gateway   = false
-    elasticsearch  = false
-    prometheustosd = false
+    json             = false
+    nats             = false
+    nifi             = false
+    snmp             = false
+    kafka            = false
+    druid            = false
+    mysql            = true
+    redis            = true
+    consul           = false
+    argocd           = true
+    statsd           = false
+    couchdb          = false
+    jenkins          = true
+    istio            = true
+    mongodb          = true
+    pingdom          = false
+    blackbox         = true
+    rabbitmq         = true
+    postgres         = false
+    conntrack        = false
+    ethtool_exporter = true
+    cloudwatch       = false
+    stackdriver      = false
+    push_gateway     = false
+    elasticsearch    = false
+    prometheustosd   = false
   }
 }
