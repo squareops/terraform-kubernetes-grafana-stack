@@ -96,7 +96,7 @@ variable "exporter_config" {
     pingdom          = false
     postgres         = false
     prometheustosd   = false
-    ethtool_exporter = false
+    ethtool_exporter = true
     push_gateway     = false
     rabbitmq         = false
     redis            = true

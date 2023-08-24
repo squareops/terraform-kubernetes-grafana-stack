@@ -416,6 +416,48 @@ prometheus:
 additionalPrometheusRulesMap:
   nodes:
     groups:
+      - name: ethtool
+        rules:
+        - alert: conntrack_allowance_available
+          annotations:
+            description: conntrack_allowance_available is the number of tracked connections that can be established by the instance before hitting the Connections Tracked allowance of that instance type `{{$labels.instance }}`
+            summary: conntrack_allowance_available `{{ $labels.instance }}`
+          expr: node_net_ethtool{type="conntrack_allowance_available"} > 3000
+          for: 30s
+          labels:
+            severity: critical
+        - alert: conntrack_allowance_exceeded
+          annotations:
+            description: conntrack_allowance_exceeded is the number of packets dropped because connection tracking exceeded the maximum for the instance and new connections could not be established `{{$labels.instance }}`
+            summary: conntrack_allowance_exceeded `{{ $labels.instance }}`
+          expr: node_net_ethtool{type="conntrack_allowance_exceeded"} > 0
+          for: 30s
+          labels:
+            severity: critical
+        - alert: pps_allowance_exceeded
+          annotations:
+            description: pps_allowance_exceeded is the number of packets queued and/or dropped because the bidirectional PPS exceeded the maximum for the instance `{{$labels.instance }}`
+            summary: pps_allowance_exceeded `{{ $labels.instance }}`
+          expr: node_net_ethtool{type="pps_allowance_exceeded"} > 0
+          for: 30s
+          labels:
+            severity: critical
+        - alert: bw_in_allowance_exceeded
+          annotations:
+            description: bw_in_allowance_exceeded is the number of packets queued and/or dropped because the inbound aggregate bandwidth exceeded the maximum for the instance `{{$labels.instance }}`
+            summary: bw_in_allowance_exceeded `{{ $labels.instance }}`
+          expr: node_net_ethtool{type="bw_in_allowance_exceeded"} > 0
+          for: 30s
+          labels:
+            severity: critical
+        - alert: bw_out_allowance_exceeded
+          annotations:
+            description: bw_out_allowance_exceeded is the number of packets queued and/or dropped because the outbound aggregate bandwidth exceeded the maximum for the instance `{{$labels.instance }}`
+            summary: bw_out_allowance_exceeded `{{ $labels.instance }}`
+          expr: node_net_ethtool{type="bw_out_allowance_exceeded"} > 0
+          for: 30s
+          labels:
+            severity: critical
       - name: blackbox
         rules:
         - alert: BlackboxProbeFailed
