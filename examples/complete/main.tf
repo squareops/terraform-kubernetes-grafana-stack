@@ -1,5 +1,5 @@
 locals {
-  name        = "skaf"
+  name        = "name"
   region      = "us-east-2"
   environment = "dev"
   additional_tags = {
@@ -11,7 +11,7 @@ locals {
 
 module "pgl" {
   source                        = "../.."
-  cluster_name                  = "dev-skaf"
+  cluster_name                  = "cluster-name"
   kube_prometheus_stack_enabled = true
   loki_enabled                  = true
   loki_scalable_enabled         = false

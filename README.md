@@ -19,13 +19,13 @@ This module also includes alerting features that allow you to set up custom aler
 
 ## Supported Versions Table:
 
-| Resources                       |  Helm Chart Version                |     K8s supported version   |  
-| :-----:                         | :---                               |         :---                |
-| Kube-Prometheus-Stack           | **42.0.0**                         |    **1.23,1.24,1.25**           |
-| Prometheus-Blackbox-Exporter    | **42.0.0**                         |    **1.23,1.24,1.25**           |
-| Mimir                           | **3.2.0**                          |    **1.23,1.24,1.25**           |
-| Loki-Stack                      | **2.8.2**                          |    **1.23,1.24,1.25**           |
-| Loki-Scalable                   | **5.8.8**                          |    **1.23,1.24,1.25**           |
+| Resources                       |  Helm Chart Version                |     K8s supported version        |  
+| :-----:                         | :---                               |         :---                     |
+| Kube-Prometheus-Stack           | **42.0.0**                         |    **1.23,1.24,1.25,1.26,1.27**  |
+| Prometheus-Blackbox-Exporter    | **42.0.0**                         |    **1.23,1.24,1.25,1.26,1.27**  |
+| Mimir                           | **3.2.0**                          |    **1.23,1.24,1.25,1.26,1.27**  |
+| Loki-Stack                      | **2.8.2**                          |    **1.23,1.24,1.25,1.26,1.27**  |
+| Loki-Scalable                   | **5.8.8**                          |    **1.23,1.24,1.25,1.26,1.27**  |
 
 
 ## Usage Example
@@ -69,30 +69,32 @@ module "pgl" {
     }
   }
   exporter_config = {
-    json           = false
-    nats           = false
-    nifi           = false
-    snmp           = false
-    kafka          = false
-    druid          = false
-    mysql          = true
-    redis          = true
-    consul         = false
-    argocd         = true
-    statsd         = false
-    couchdb        = false
-    jenkins        = true
-    mongodb        = true
-    pingdom        = false
-    blackbox       = true
-    rabbitmq       = true
-    postgres       = false
-    conntrack      = false
-    cloudwatch     = false
-    stackdriver    = false
-    push_gateway   = false
-    elasticsearch  = false
-    prometheustosd = false
+    json             = false
+    nats             = false
+    nifi             = false
+    snmp             = false
+    druid            = false
+    istio            = true
+    kafka            = false
+    mysql            = true
+    redis            = true
+    argocd           = true
+    consul           = false
+    statsd           = false
+    couchdb          = false
+    jenkins          = true
+    mongodb          = true
+    pingdom          = false
+    rabbitmq         = true
+    blackbox         = true
+    postgres         = false
+    conntrack        = false
+    cloudwatch       = false
+    stackdriver      = false
+    push_gateway     = false
+    elasticsearch    = false
+    prometheustosd   = false
+    ethtool_exporter = true
   }
 }
 
@@ -112,7 +114,7 @@ The required IAM permissions to create resources from this module can be found [
   6. Once Prometheus and Grafana are deployed, the exporter can be configured to scrape metrics data from your application or system and send it to Prometheus.
   7. Finally, you can use Grafana to create custom dashboards and visualize the metrics data collected by Prometheus.
   8. If we enable internal ingress for prometheus and loki then we will be able to access it on private endpoint via vpn.
-  9. This module is compatible with EKS version 1.23, which is great news for users deploying the module on an EKS cluster running that version. Review the module's documentation, meet specific configuration requirements, and test thoroughly after deployment to ensure everything works as expected.
+  9. This module is compatible with EKS version 1.23,1.24,1.25,1.26,1.27 which is great news for users deploying the module on an EKS cluster running that version. Review the module's documentation, meet specific configuration requirements, and test thoroughly after deployment to ensure everything works as expected.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
