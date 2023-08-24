@@ -1,5 +1,5 @@
 locals {
-  name        = "name"
+  name        = "grafana"
   region      = "us-east-2"
   environment = "dev"
   additional_tags = {
