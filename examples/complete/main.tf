@@ -10,7 +10,7 @@ locals {
 }
 
 module "pgl" {
-  source                        = "../.."
+  source                        = "git@github.com:sq-ia/terraform-kubernetes-grafana.git"
   cluster_name                  = "cluster-name"
   kube_prometheus_stack_enabled = true
   loki_enabled                  = true
