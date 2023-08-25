@@ -47,7 +47,7 @@ module "s3_bucket_mimir" {
   version                               = "3.7.0"
   bucket                                = var.deployment_config.mimir_s3_bucket_config.s3_bucket_name
   force_destroy                         = true
-  attach_deny_insecure_transport_policy = false
+  attach_deny_insecure_transport_policy = true
   versioning = {
     enabled = var.deployment_config.mimir_s3_bucket_config.versioning_enabled
   }
