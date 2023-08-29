@@ -197,20 +197,6 @@ resource "helm_release" "druid_exporter" {
   depends_on = [helm_release.prometheus_grafana]
 }
 
-resource "helm_release" "elasticsearch_exporter" {
-  count      = var.exporter_config.elasticsearch ? 1 : 0
-  name       = "elasticsearch-exporter"
-  chart      = "prometheus-elasticsearch-exporter"
-  version    = "5.1.1"
-  timeout    = 600
-  namespace  = "elastic-system"
-  repository = "https://prometheus-community.github.io/helm-charts"
-  values = [
-    file("${path.module}/helm/values/elasticsearch-exporter.yaml")
-  ]
-  depends_on = [helm_release.prometheus_grafana]
-}
-
 resource "helm_release" "json_exporter" {
   count      = var.exporter_config.json ? 1 : 0
   name       = "json-exporter"
@@ -421,7 +407,7 @@ resource "kubernetes_config_map" "mongodb_dashboard" {
 resource "kubernetes_config_map" "elasticsearch_dashboard" {
   count = var.exporter_config.elasticsearch && var.deployment_config.grafana_enabled ? 1 : 0
   metadata {
-    name      = "elasticsearch-monitoring-dashboard"
+    name      = "elasticsearch-exporter"
     namespace = var.pgl_namespace
     labels = {
       "grafana_dashboard" : "1"
@@ -434,7 +420,43 @@ resource "kubernetes_config_map" "elasticsearch_dashboard" {
   data = {
     "es-exporter.json" = "${file("${path.module}/grafana/dashboards/es-exporter.json")}"
   }
-  depends_on = [helm_release.prometheus_grafana]
+}
+
+resource "kubernetes_config_map" "elasticsearch_cluster_stats_dashboard" {
+  count = var.exporter_config.elasticsearch && var.deployment_config.grafana_enabled ? 1 : 0
+  metadata {
+    name      = "elasticsearch-cluster-stats"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+  }
+
+  data = {
+    "es-cluster-stats.json" = "${file("${path.module}/grafana/dashboards/es-cluster-stats.json")}"
+  }
+}
+
+
+resource "kubernetes_config_map" "elasticsearch_exporter_quickstart_and_dashboard" {
+  count = var.exporter_config.elasticsearch && var.deployment_config.grafana_enabled ? 1 : 0
+  metadata {
+    name      = "elasticsearch-exporter-quickstart-and-dashboard"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+  }
+
+  data = {
+    "es-exporter-quickstart.json" = "${file("${path.module}/grafana/dashboards/elasticsearch-exporter-quickstart-and-dashboard.json")}"
+  }
 }
 
 resource "kubernetes_config_map" "mysql_dashboard" {
