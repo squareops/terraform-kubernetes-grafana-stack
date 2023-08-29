@@ -1505,11 +1505,6 @@
   "timezone": "",
   "title": "Istio Performance Dashboard",
   "uid": "vu8e0VWZk",
-<<<<<<< HEAD
   "version": 1,
   "weekStart": ""
 }
-=======
-  "version": 22
-}
->>>>>>> eck-exporter
