@@ -36,7 +36,7 @@ serviceAccount:
   # -- Override for the generated service account name.
   name: grafana-mimir-sa
   annotations:
-    eks.amazonaws.com/role-arn: "${s3_role_arn}"
+    ${annotations}
 
 
 # global:
@@ -62,6 +62,12 @@ mimir:
         region: ${s3_bucket_region}
         sse:
           type: "SSE-S3"
+      gcs:
+        bucket_name: ${gcs_bucket_name}
+      azure:
+        account_name: ${azure_storage_account_name}
+        container_name: ${azure_container_name}
+        account_key: ${azure_storage_key}
       tsdb:
         retention_period: 48h
 

@@ -1,7 +1,7 @@
 ## IAM Permission
 
 The Policy required to deploy this module:
-```hcl
+```json
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -34,4 +34,30 @@ The Policy required to deploy this module:
         }
     ]
 }
+```
+## Azure Role Permissions
+
+```json
+  permissions {
+    actions = [
+    "Microsoft.ManagedIdentity/userAssignedIdentities/delete",
+    "Microsoft.ManagedIdentity/userAssignedIdentities/read",
+    "Microsoft.ManagedIdentity/userAssignedIdentities/write",
+    "Microsoft.Resources/subscriptions/providers/read",
+    "Microsoft.Resources/subscriptions/resourcegroups/read"]
+    not_actions = []
+  }
+```
+
+## GCP IAM Permissions
+
+```json
+  permissions = [
+    "iam.serviceAccounts.create",
+    "iam.serviceAccounts.delete",
+    "iam.serviceAccounts.get",
+    "iam.serviceAccounts.update",
+    "resourcemanager.projects.getIamPolicy",
+    "resourcemanager.projects.setIamPolicy"
+  ]
 ```

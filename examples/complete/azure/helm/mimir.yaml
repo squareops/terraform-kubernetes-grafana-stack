@@ -1,0 +1,81 @@
+nginx:
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - host: mimir.ref.stg.skaf.squareops.in
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+        # empty, disabled.
+
+serviceMonitor:
+  enabled: true
+  interval: 10s
+
+distributor:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Monitor-Services"
+            operator: In
+            values:
+            - "true"
+
+querier:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Monitor-Services"
+            operator: In
+            values:
+            - "true"
+
+query_frontend:
+  affinity:
+    nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: "Monitor-Services"
+              operator: In
+              values:
+              - "true"
+
+ingester:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Monitor-Services"
+            operator: In
+            values:
+            - "true"
+
+store_gateway:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Monitor-Services"
+            operator: In
+            values:
+            - "true"
+
+compactor:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Monitor-Services"
+            operator: In
+            values:
+            - "true"

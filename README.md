@@ -19,7 +19,7 @@ This module also includes alerting features that allow you to set up custom aler
 
 ## Supported Versions Table:
 
-| Resources                       |  Helm Chart Version                |     K8s supported version        |  
+| Resources                       |  Helm Chart Version                |     K8s supported version (EKS, AKS & GKE)       |  
 | :-----:                         | :---                               |         :---                     |
 | Kube-Prometheus-Stack           | **42.0.0**                         |    **1.23,1.24,1.25,1.26,1.27**  |
 | Prometheus-Blackbox-Exporter    | **42.0.0**                         |    **1.23,1.24,1.25,1.26,1.27**  |
@@ -31,6 +31,20 @@ This module also includes alerting features that allow you to set up custom aler
 ## Usage Example
 
 ```hcl
+module "s3" {
+  source        = "https://github.com/sq-ia/terraform-kubernetes-grafana.git//modules/resources/aws"
+  cluster_name           = ""
+  s3_versioning          = true
+  loki_scalable_enabled  = false
+  loki_scalable_config   = {
+      loki_scalable_version = "5.8.8"
+      loki_scalable_values  = ""
+      s3_bucket_name        = "loki-scalable-bucket"
+      versioning_enabled    = "false"
+      s3_bucket_region      = "us-east-1"
+    }
+}
+
 module "pgl" {
   source                        = "https://github.com/sq-ia/terraform-kubernetes-grafana.git"
   cluster_name                  = "cluster-name"
@@ -61,7 +75,7 @@ module "pgl" {
       loki_scalable_values  = file("./helm/loki-scalable.yaml")
       s3_bucket_name        = ""
       versioning_enabled    = true
-      s3_bucket_region      = "local.region"
+      s3_bucket_region      = "us-east-1"
     }
     promtail_config = {
       promtail_version = "6.8.2"
@@ -100,7 +114,9 @@ module "pgl" {
 
 
 ```
-Refer [examples](https://github.com/sq-ia/terraform-kubernetes-grafana/tree/main/examples/complete) for more details.
+- Refer [AWS examples](https://github.com/sq-ia/terraform-kubernetes-grafana-stack/tree/main/examples/complete/aws) for more details.
+- Refer [Azure examples](https://github.com/sq-ia/terraform-kubernetes-grafana-stack/tree/main/examples/complete/azure) for more details.
+- Refer [GCP examples](https://github.com/sq-ia/terraform-kubernetes-grafana-stack/tree/main/examples/complete/gcp) for more details.
 
 ## IAM Permissions
 The required IAM permissions to create resources from this module can be found [here](https://github.com/sq-ia/terraform-kubernetes-grafana/blob/main/IAM.md)
@@ -114,7 +130,7 @@ The required IAM permissions to create resources from this module can be found [
   6. Once Prometheus and Grafana are deployed, the exporter can be configured to scrape metrics data from your application or system and send it to Prometheus.
   7. Finally, you can use Grafana to create custom dashboards and visualize the metrics data collected by Prometheus.
   8. If we enable internal ingress for prometheus and loki then we will be able to access it on private endpoint via vpn.
-  9. This module is compatible with EKS version 1.23,1.24,1.25,1.26,1.27 which is great news for users deploying the module on an EKS cluster running that version. Review the module's documentation, meet specific configuration requirements, and test thoroughly after deployment to ensure everything works as expected.
+  9. This module is compatible with EKS, AKS & GKE which is great news for users deploying the module on an AWS, Azure & GCP cloud. Review the module's documentation, meet specific configuration requirements, and test thoroughly after deployment to ensure everything works as expected.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements

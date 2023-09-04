@@ -1,0 +1,12 @@
+config:
+  clients:
+    - url: http://loki-gateway/loki/api/v1/push
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "Monitor-Services"
+          operator: In
+          values:
+          - "true"

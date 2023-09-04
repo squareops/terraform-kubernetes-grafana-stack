@@ -1,0 +1,17 @@
+loki:
+  resources:
+      limits:
+        cpu: 250m
+        memory: 700Mi
+      requests:
+        cpu: 100m
+        memory: 300Mi
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "Infra-Services"
+            operator: In
+            values:
+            - "true"
