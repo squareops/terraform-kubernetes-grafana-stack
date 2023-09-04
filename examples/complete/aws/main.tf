@@ -13,7 +13,7 @@ module "s3" {
   source                = "https://github.com/sq-ia/terraform-kubernetes-grafana.git//modules/resources/aws"
   cluster_name          = var.cluster_name
   s3_versioning         = var.deployment_config.mimir_bucket_config.versioning_enabled
-  loki_scalable_enabled = false
+  loki_scalable_enabled = true
   loki_scalable_config = {
     loki_scalable_version = "5.8.8"
     loki_scalable_values  = file("../../../helm/loki-scalable.yaml")
