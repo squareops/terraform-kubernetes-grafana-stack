@@ -8,11 +8,11 @@ data "azurerm_kubernetes_cluster" "primary" {
 resource "azurerm_user_assigned_identity" "oidc_identity" {
     resource_group_name = var.resource_group_name
     location = var.resource_group_location
-    name = "oidc-workload-identity"
+    name = format("%s-%s-%s", var.name, var.environment, "oidc-workload-identity")
 }
 
 resource "azurerm_federated_identity_credential" "example" {
-  name                = "workload-identity-credentials"
+  name                = format("%s-%s-%s", var.name, var.environment, "workload-identity-credentials")
   resource_group_name = var.resource_group_name
   audience            = ["api://AzureADTokenExchange"]
   issuer              = data.azurerm_kubernetes_cluster.primary.oidc_issuer_url

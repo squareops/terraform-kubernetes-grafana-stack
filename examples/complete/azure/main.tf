@@ -12,6 +12,7 @@ locals {
 module "azure" {
   source                  = "https://github.com/sq-ia/terraform-kubernetes-grafana.git//modules/resources/azure"
   environment             = local.environment
+  name                    = local.name
   resource_group_name     = ""
   resource_group_location = local.region
   aks_cluster_name        = ""

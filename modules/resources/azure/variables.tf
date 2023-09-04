@@ -23,3 +23,9 @@ variable "environment" {
   type        = string
   default = "dev"
 }
+
+variable "name" {
+  description = "Name of the user assigned identity"
+  type        = string
+  default = "dev"
+}

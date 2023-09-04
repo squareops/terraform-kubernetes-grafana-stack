@@ -37,7 +37,7 @@ The Policy required to deploy this module:
 ```
 ## Azure Role Permissions
 
-```json
+```hcl
   permissions {
     actions = [
     "Microsoft.ManagedIdentity/userAssignedIdentities/delete",
@@ -51,7 +51,7 @@ The Policy required to deploy this module:
 
 ## GCP IAM Permissions
 
-```json
+```hcl
   permissions = [
     "iam.serviceAccounts.create",
     "iam.serviceAccounts.delete",
