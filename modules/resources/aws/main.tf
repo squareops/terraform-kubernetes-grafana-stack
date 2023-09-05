@@ -13,7 +13,7 @@ data "aws_eks_cluster" "kubernetes_cluster" {
 }
 
 resource "aws_iam_role" "mimir_role" {
-  name  = join("-", [var.cluster_name, "mimir"])
+  name = join("-", [var.cluster_name, "mimir"])
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -83,8 +83,8 @@ module "s3_bucket_mimir" {
 }
 
 resource "aws_iam_role" "loki_scalable_role" {
-  count      = var.loki_scalable_enabled ? 1 : 0
-  name       = join("-", [var.cluster_name, "loki-scalable"])
+  count = var.loki_scalable_enabled ? 1 : 0
+  name  = join("-", [var.cluster_name, "loki-scalable"])
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -153,16 +153,4 @@ module "loki_scalable_s3_bucket" {
   # S3 Bucket Ownership Controls
   object_ownership         = "BucketOwnerPreferred"
   control_object_ownership = true
-}
-
-output "loki_scalable_role" {
-    value = aws_iam_role.loki_scalable_role  
-}
-
-output "role_arn" {
-  value = aws_iam_role.mimir_role.arn
-}
- 
-output "s3_bucket" {
-  value = module.s3_bucket_mimir.s3_bucket_id
 }

@@ -23,11 +23,11 @@ resource "google_service_account_iam_member" "pod_identity" {
 }
 
 module "gcs_buckets" {
-  source          = "terraform-google-modules/cloud-storage/google"
-  version         = "~> 4.0"
-  project_id      = var.project_id
-  names           = [format("%s-%s", var.project_id, var.GCP_GSA_NAME)]
-  prefix          = var.environment
+  source     = "terraform-google-modules/cloud-storage/google"
+  version    = "~> 4.0"
+  project_id = var.project_id
+  names      = [format("%s-%s", var.project_id, var.GCP_GSA_NAME)]
+  prefix     = var.environment
   versioning = {
     format("%s-%s", var.project_id, var.GCP_GSA_NAME) = var.deployment_config.mimir_bucket_config.versioning_enabled
   }
@@ -40,6 +40,6 @@ output "bucket_name" {
 }
 
 output "service_account" {
-  value = google_service_account.grafana_mimir.email
+  value       = google_service_account.grafana_mimir.email
   description = "Service Account Name"
 }

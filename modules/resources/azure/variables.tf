@@ -21,11 +21,11 @@ variable "aks_cluster_name" {
 variable "environment" {
   description = "Environment in which the infrastructure is being deployed (e.g., production, staging, development)"
   type        = string
-  default = "dev"
+  default     = "dev"
 }
 
 variable "name" {
   description = "Name of the user assigned identity"
   type        = string
-  default = "dev"
+  default     = "dev"
 }

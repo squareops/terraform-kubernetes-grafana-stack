@@ -1,11 +1,5 @@
-## Grafana Stack Example
-![squareops_avatar]
+# gcp
 
-[squareops_avatar]: https://squareops.com/wp-content/uploads/2022/12/squareops-logo.png
-
-### [SquareOps Technologies](https://squareops.com/) Your DevOps Partner for Accelerating cloud journey.
-<br>
-This example will be very useful for users who are new to a module and want to quickly learn how to use it. By reviewing the examples, users can gain a better understanding of how the module works, what features it supports, and how to customize it to their specific needs.
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
@@ -21,8 +15,8 @@ No requirements.
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_gcp"></a> [gcp](#module\_gcp) | https://github.com/sq-ia/terraform-kubernetes-grafana.git//modules/resources/gcp | n/a |
 | <a name="module_pgl"></a> [pgl](#module\_pgl) | git@github.com:sq-ia/terraform-kubernetes-grafana.git | n/a |
-| <a name="module_s3"></a> [s3](#module\_s3) | https://github.com/sq-ia/terraform-kubernetes-grafana.git//modules/resources/aws | n/a |
 
 ## Resources
 

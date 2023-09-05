@@ -6,7 +6,7 @@ variable "project_id" {
 variable "environment" {
   description = "Environment in which the infrastructure is being deployed (e.g., production, staging, development)"
   type        = string
-  default = "dev"
+  default     = "dev"
 }
 
 variable "GCP_GSA_NAME" {

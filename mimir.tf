@@ -10,15 +10,15 @@ resource "helm_release" "grafana_mimir" {
 
   values = [
     templatefile("${path.module}/helm/values/grafana_mimir/values.yaml", {
-      backend            = var.bucket_provider_type == "s3" ? "s3" : var.bucket_provider_type == "gcs" ? "gcs" : var.bucket_provider_type == "azure" ? "azure" : ""
-      gcs_bucket_name    = var.bucket_provider_type == "gcs" ? var.gcs_bucket_name : ""
-      s3_bucket_name        = var.bucket_provider_type == "s3" ? var.s3_bucket_name : ""
-      s3_bucket_region   = var.bucket_provider_type == "s3" ? var.deployment_config.mimir_bucket_config.s3_bucket_region : ""
+      backend                    = var.bucket_provider_type == "s3" ? "s3" : var.bucket_provider_type == "gcs" ? "gcs" : var.bucket_provider_type == "azure" ? "azure" : ""
+      gcs_bucket_name            = var.bucket_provider_type == "gcs" ? var.gcs_bucket_name : ""
+      s3_bucket_name             = var.bucket_provider_type == "s3" ? var.s3_bucket_name : ""
+      s3_bucket_region           = var.bucket_provider_type == "s3" ? var.deployment_config.mimir_bucket_config.s3_bucket_region : ""
       azure_storage_account_name = var.bucket_provider_type == "azure" ? var.azure_storage_account_name : ""
       azure_container_name       = var.bucket_provider_type == "azure" ? var.azure_container_name : ""
-      azure_storage_key       = var.bucket_provider_type == "azure" ? var.azure_storage_account_key : ""
-      annotations        = var.bucket_provider_type == "s3" ? "eks.amazonaws.com/role-arn: ${var.role_arn}" : var.bucket_provider_type == "gcs" ? "iam.gke.io/gcp-service-account: ${var.gcp_service_account}" : var.bucket_provider_type == "azure" ? "azure.workload.identity/client-id: ${var.az_service_account}" : ""
-      storage_class_name = "${var.deployment_config.storage_class_name}"
+      azure_storage_key          = var.bucket_provider_type == "azure" ? var.azure_storage_account_key : ""
+      annotations                = var.bucket_provider_type == "s3" ? "eks.amazonaws.com/role-arn: ${var.role_arn}" : var.bucket_provider_type == "gcs" ? "iam.gke.io/gcp-service-account: ${var.gcp_service_account}" : var.bucket_provider_type == "azure" ? "azure.workload.identity/client-id: ${var.az_service_account}" : ""
+      storage_class_name         = "${var.deployment_config.storage_class_name}"
     }),
     var.deployment_config.grafana_mimir_values_yaml
   ]

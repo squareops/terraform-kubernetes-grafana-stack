@@ -27,11 +27,11 @@ module "pgl" {
   grafana_mimir_enabled         = false
   cluster_name                  = ""
   # MIMER config
-  bucket_provider_type          = "azure"
-  azure_storage_account_name    = ""
-  azure_container_name          = ""
-  azure_storage_account_key     = ""
-  az_service_account            = module.azure.azure_service_account
+  bucket_provider_type       = "azure"
+  azure_storage_account_name = ""
+  azure_container_name       = ""
+  azure_storage_account_key  = ""
+  az_service_account         = module.azure.azure_service_account
   deployment_config = {
     hostname                            = "grafanaa.az.skaf.squareops.in"
     storage_class_name                  = "infra-service-sc"

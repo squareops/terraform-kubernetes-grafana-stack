@@ -12,14 +12,14 @@ locals {
 module "s3" {
   source                = "https://github.com/sq-ia/terraform-kubernetes-grafana.git//modules/resources/aws"
   cluster_name          = var.cluster_name
-  s3_versioning         = var.deployment_config.mimir_bucket_config.versioning_enabled
+  s3_versioning         = true
   loki_scalable_enabled = true
   loki_scalable_config = {
     loki_scalable_version = "5.8.8"
-    loki_scalable_values  = file("../../../helm/loki-scalable.yaml")
+    loki_scalable_values  = file("./helm/loki-scalable.yaml")
     s3_bucket_name        = "${local.environment}-${local.name}-loki-scalable-bucket"
-    versioning_enabled    = "false"
-    s3_bucket_region      = "local.region"
+    versioning_enabled    = false
+    s3_bucket_region      = local.region
   }
 }
 
