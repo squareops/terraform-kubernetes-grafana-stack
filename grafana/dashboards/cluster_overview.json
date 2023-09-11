@@ -226,7 +226,7 @@
             "type": "prometheus",
             "uid": "$datasource"
           },
-          "expr": "sum(container_fs_usage_bytes{device=~\"^/dev/.*$\",id=~\"/.*\"})/sum(node_filesystem_size_bytes{mountpoint=\"/\",fstype!=\"rootfs\"})*100",
+          "expr": "(sum(node_filesystem_size_bytes{mountpoint=\"/\",fstype!=\"rootfs\"}) - sum(node_filesystem_free_bytes{mountpoint=\"/\",fstype!=\"rootfs\"}))/sum(node_filesystem_size_bytes{mountpoint=\"/\",fstype!=\"rootfs\"})*100",
           "refId": "A"
         }
       ],
@@ -732,7 +732,7 @@
             "type": "prometheus",
             "uid": "$datasource"
           },
-          "expr": "sum(container_fs_usage_bytes{device=~\"^/dev/.*$\",id=~\"/.*\"})",
+          "expr": "sum(node_filesystem_size_bytes{mountpoint=\"/\",fstype!=\"rootfs\"}) - sum(node_filesystem_free_bytes{mountpoint=\"/\",fstype!=\"rootfs\"})",
           "refId": "A"
         }
       ],
