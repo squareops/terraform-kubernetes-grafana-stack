@@ -4,8 +4,8 @@ defaultRules:
   create: true
   rules:
     alertmanager: true
-    etcd: true
-    configReloaders: true
+    etcd: false
+    configReloaders: false
     general: true
     k8s: true
     kubeApiserverAvailability: true
@@ -753,3 +753,30 @@ additionalPrometheusRulesMap:
           labels:
             rulesgroup: rabbitmq
             severity: warning
+      
+      - name: PodResource
+        rules:
+        - alert: MemoryHigh
+          expr: ((sum(container_memory_working_set_bytes) by (container, pod, namespace) / sum(cluster:namespace:pod_memory:active:kube_pod_container_resource_limits) by (container, pod, namespace)) * 100) > 85
+          for: 0m
+          labels:
+            severity: critical
+          annotations:
+            summary: "High Memory Utilization Detected"
+            description: "Memory utilization is above 85% for pod {{$labels.pod}} with container {{$labels.container}} in namespace {{$labels.namespace}}"
+        - alert: CPUHigh
+          expr: ((sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate) by (container, pod, namespace) / sum(cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits) by (container, pod, namespace)) * 100) > 85
+          for: 0m
+          labels:
+            severity: critical
+          annotations:
+            summary: "High CPU Utilization Detected"
+            description: "CPU utilization is above 85% for pod {{$labels.pod}} with container {{$labels.container}} in namespace {{$labels.namespace}}"
+        - alert: OOMKiled
+          expr: kube_pod_container_status_last_terminated_reason{reason="OOMKilled"}
+          for: 0m
+          labels:
+            severity: critical
+          annotations:
+            summary: OOMkilled pod `{{ $labels.pod }}`
+            description: "Pod {{ $labels.pod }} with container {{$labels.container}} in namespace {{$labels.namespace}} killed due to OutOfMemory"               
