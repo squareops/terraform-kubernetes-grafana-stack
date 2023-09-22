@@ -172,7 +172,9 @@ grafana:
     repository: grafana/grafana
     # Overrides the Grafana image tag whose default is the chart appVersion
     tag: "9.0.4"
-
+  serviceAccount:
+    annotations:
+      ${annotations}
   priorityClassName: grafana-pod-critical
   defaultDashboardsTimezone: browser
   replicas: 1
@@ -195,6 +197,11 @@ grafana:
       enabled: true
       label: grafana_dashboard
       labelValue: "1"
+      folder: /tmp/dashboards
+      folderAnnotation: grafana_folder
+      provider:
+        allowUiUpdates: true
+        foldersFromFilesStructure: true
 
       ## Annotations for Grafana dashboard configmaps
       ##
@@ -204,8 +211,6 @@ grafana:
           enabled: false
         etcd:
           enabled: false
-      provider:
-        allowUiUpdates: false
     datasources:
       enabled: true
       defaultDatasourceEnabled: true
@@ -251,6 +256,7 @@ grafana:
 
   additionalDataSources:
    ${indent(4, loki_datasource_config)}
+   ${indent(4, cw_datasource_config)}
 
   persistence:
     enabled: true

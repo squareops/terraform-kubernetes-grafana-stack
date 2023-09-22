@@ -80,7 +80,6 @@ variable "exporter_config" {
   type = map(any)
   default = {
     blackbox         = true
-    cloudwatch       = false
     conntrack        = false
     consul           = false
     couchdb          = false
@@ -106,7 +105,7 @@ variable "exporter_config" {
     jenkins          = false
     argocd           = false
   }
-  description = "allows enabling/disabling various exporters for scraping metrics, including CloudWatch, Consul, MongoDB, Redis, and StatsD."
+  description = "allows enabling/disabling various exporters for scraping metrics, including Consul, MongoDB, Redis, and StatsD."
 }
 
 variable "pgl_namespace" {
@@ -115,23 +114,12 @@ variable "pgl_namespace" {
   description = "Name of the Kubernetes namespace where the Grafana deployment will be deployed."
 }
 
-variable "aws_cw_secret" {
+variable "cloudwatch_enabled" {
   default     = false
   type        = bool
-  description = "Whether or not to create a Kubernetes secret for the CloudWatch exporter."
+  description = "Whether or not to add CloudWatch as datasource and add some default dashboards for AWS in Grafana."
 }
 
-variable "aws_access_key_id" {
-  default     = ""
-  type        = string
-  description = "AWS access key to use when creating the CloudWatch secret."
-}
-
-variable "aws_secret_key_id" {
-  default     = ""
-  type        = string
-  description = "AWS secret key to use when creating the CloudWatch secret."
-}
 
 variable "cluster_name" {
   type        = string

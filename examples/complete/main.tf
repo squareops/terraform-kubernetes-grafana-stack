@@ -15,7 +15,8 @@ module "pgl" {
   kube_prometheus_stack_enabled = true
   loki_enabled                  = true
   loki_scalable_enabled         = false
-  grafana_mimir_enabled         = true
+  grafana_mimir_enabled         = false
+  cloudwatch_enabled            = false
   deployment_config = {
     hostname                            = "grafanaa.dev.skaf.squareops.in"
     storage_class_name                  = "gp2"
@@ -67,7 +68,6 @@ module "pgl" {
     blackbox         = true
     postgres         = false
     conntrack        = false
-    cloudwatch       = false
     stackdriver      = false
     push_gateway     = false
     elasticsearch    = false
