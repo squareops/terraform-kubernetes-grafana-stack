@@ -144,3 +144,81 @@ variable "loki_scalable_enabled" {
   type        = bool
   description = "Specify whether or not to deploy the loki scalable"
 }
+
+variable "bucket_provider_type" {
+  type        = string
+  default     = "gcs"
+  description = "Choose what type of provider you want (s3, gcs)" // SUPPORTS ONLY: aws, gcp
+}
+
+variable "project_id" {
+  description = "Google Cloud project ID"
+  type        = string
+  default     = ""
+}
+
+variable "environment" {
+  description = "Environment in which the infrastructure is being deployed (e.g., production, staging, development)"
+  type        = string
+  default     = "dev"
+}
+
+variable "azure_storage_account_name" {
+  description = "Azure storage account name"
+  type        = string
+  default     = ""
+}
+
+variable "azure_container_name" {
+  description = "Azure storage account name"
+  type        = string
+  default     = ""
+}
+
+variable "azure_storage_account_key" {
+  description = "Azure storage account key"
+  type        = string
+  default     = ""
+}
+
+variable "gcs_bucket_name" {
+  description = "GCP bucket name"
+  type        = string
+  default     = ""
+}
+
+variable "s3_bucket_name" {
+  description = "AWS S3 bucket name"
+  type        = string
+  default     = ""
+}
+
+variable "role_arn" {
+  description = "AWS role arn for the service account annotations"
+  type        = string
+  default     = ""
+}
+
+variable "gcp_service_account" {
+  description = ""
+  type        = string
+  default     = ""
+}
+
+variable "az_service_account" {
+  description = ""
+  type        = string
+  default     = ""
+}
+
+variable "loki_scalable_s3_bucket_name" {
+  description = "Loki scalable bucket name"
+  type        = string
+  default     = ""
+}
+
+variable "loki_scalable_role" {
+  description = "Loki scalable IAM role"
+  type        = string
+  default     = ""
+}

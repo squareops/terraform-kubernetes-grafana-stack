@@ -1,75 +1,3 @@
-resource "aws_iam_role" "mimir_role" {
-  count = var.grafana_mimir_enabled ? 1 : 0
-  name  = join("-", [var.cluster_name, "mimir"])
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Principal = {
-          Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.oidc_provider}"
-        },
-        Action = "sts:AssumeRoleWithWebIdentity",
-        Condition = {
-          StringEquals = {
-            "${local.oidc_provider}:aud" = "sts.amazonaws.com",
-            "${local.oidc_provider}:sub" = "system:serviceaccount:monitoring:grafana-mimir-sa"
-          }
-        }
-      }
-    ]
-  })
-  inline_policy {
-    name = "AllowS3PutObject"
-    policy = jsonencode({
-      Version = "2012-10-17"
-      Statement = [
-        {
-          Action = [
-            "s3:ListBucket",
-            "s3:GetObject",
-            "s3:DeleteObject",
-            "s3:PutObject",
-            "s3:AbortMultipartUpload",
-            "s3:ListMultipartUploadParts"
-          ]
-          Effect   = "Allow"
-          Resource = "*"
-        }
-      ]
-    })
-  }
-}
-
-module "s3_bucket_mimir" {
-  count                                 = var.grafana_mimir_enabled ? 1 : 0
-  source                                = "terraform-aws-modules/s3-bucket/aws"
-  version                               = "3.7.0"
-  bucket                                = var.deployment_config.mimir_s3_bucket_config.s3_bucket_name
-  force_destroy                         = true
-  attach_deny_insecure_transport_policy = true
-  versioning = {
-    enabled = var.deployment_config.mimir_s3_bucket_config.versioning_enabled
-  }
-
-  server_side_encryption_configuration = {
-    rule = {
-      apply_server_side_encryption_by_default = {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-  # S3 bucket-level Public Access Block configuration
-  block_public_acls       = true
-  ignore_public_acls      = true
-  block_public_policy     = true
-  restrict_public_buckets = true
-
-  # S3 Bucket Ownership Controls
-  object_ownership         = "BucketOwnerPreferred"
-  control_object_ownership = true
-}
-
 resource "helm_release" "grafana_mimir" {
   count      = var.grafana_mimir_enabled ? 1 : 0
   depends_on = [kubernetes_namespace.monitoring]
@@ -82,10 +10,15 @@ resource "helm_release" "grafana_mimir" {
 
   values = [
     templatefile("${path.module}/helm/values/grafana_mimir/values.yaml", {
-      s3_role_arn        = aws_iam_role.mimir_role[0].arn,
-      s3_bucket_name     = module.s3_bucket_mimir[0].s3_bucket_id,
-      s3_bucket_region   = var.deployment_config.mimir_s3_bucket_config.s3_bucket_region,
-      storage_class_name = "${var.deployment_config.storage_class_name}"
+      backend                    = var.bucket_provider_type == "s3" ? "s3" : var.bucket_provider_type == "gcs" ? "gcs" : var.bucket_provider_type == "azure" ? "azure" : ""
+      gcs_bucket_name            = var.bucket_provider_type == "gcs" ? var.gcs_bucket_name : ""
+      s3_bucket_name             = var.bucket_provider_type == "s3" ? var.s3_bucket_name : ""
+      s3_bucket_region           = var.bucket_provider_type == "s3" ? var.deployment_config.mimir_bucket_config.s3_bucket_region : ""
+      azure_storage_account_name = var.bucket_provider_type == "azure" ? var.azure_storage_account_name : ""
+      azure_container_name       = var.bucket_provider_type == "azure" ? var.azure_container_name : ""
+      azure_storage_key          = var.bucket_provider_type == "azure" ? var.azure_storage_account_key : ""
+      annotations                = var.bucket_provider_type == "s3" ? "eks.amazonaws.com/role-arn: ${var.role_arn}" : var.bucket_provider_type == "gcs" ? "iam.gke.io/gcp-service-account: ${var.gcp_service_account}" : var.bucket_provider_type == "azure" ? "azure.workload.identity/client-id: ${var.az_service_account}" : ""
+      storage_class_name         = "${var.deployment_config.storage_class_name}"
     }),
     var.deployment_config.grafana_mimir_values_yaml
   ]

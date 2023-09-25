@@ -27,7 +27,7 @@ loki:
       memory: 300Mi
   persistence:
     enabled: true
-    storageClassName: gp2
+    storageClassName: ${storage_class_name}
     size: "15Gi"
   ingress:
     enabled: "${enable_loki_internal_ingress}"

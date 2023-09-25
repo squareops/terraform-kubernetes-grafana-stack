@@ -1,25 +1,11 @@
 locals {
-  oidc_provider = replace(
-    data.aws_eks_cluster.kubernetes_cluster.identity[0].oidc[0].issuer,
-    "/^https:///",
-    ""
-  )
-
   loki_datasource_config = <<EOF
-
 - name: Loki
   access: proxy
   type: loki
   url: http://loki-read-headless:3100
   EOF
 }
-
-data "aws_caller_identity" "current" {}
-
-data "aws_eks_cluster" "kubernetes_cluster" {
-  name = var.cluster_name
-}
-
 
 resource "random_password" "grafana_password" {
   length  = 20
@@ -44,6 +30,7 @@ resource "helm_release" "loki" {
   values = [
     templatefile("${path.module}/helm/values/loki/values.yaml", {
       loki_hostname                = var.deployment_config.loki_hostname,
+      storage_class_name           = var.deployment_config.storage_class_name,
       enable_loki_internal_ingress = var.deployment_config.loki_internal_ingress_enabled
     }),
     var.deployment_config.loki_values_yaml

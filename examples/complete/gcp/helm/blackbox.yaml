@@ -1,0 +1,20 @@
+serviceMonitor:
+  targets:
+   - name: robo-shop                    # Human readable URL that will appear in Prometheus / AlertManager
+     url:  https://roboshop.ref.stg.skaf.squareops.in
+   - name: robo-shop-shipping
+     url:  https://roboshop.ref.stg.skaf.squareops.in/api/shipping/codes/
+   - name: robo-shop-ratings
+     url:  https://roboshop.ref.stg.skaf.squareops.in/api/ratings/api/fetch/*
+   - name: robo-shop-catalogue
+     url: https://roboshop.ref.stg.skaf.squareops.in/api/catalogue/products/*
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "Monitor-Services"
+          operator: In
+          values:
+          - "true"
