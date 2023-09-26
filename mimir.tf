@@ -105,6 +105,9 @@ resource "kubernetes_config_map" "mimir-overview_dashboard" {
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
     }
+    annotations = {
+      "grafana_folder": "Mimir"
+    }
   }
 
   data = {
@@ -125,6 +128,9 @@ resource "kubernetes_config_map" "mimir-compactor_dashboard" {
       "app" : "kube-prometheus-stack-grafana"
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "Mimir"
     }
   }
 
@@ -147,6 +153,9 @@ resource "kubernetes_config_map" "mimir-object-store_dashboard" {
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
     }
+    annotations = {
+      "grafana_folder": "Mimir"
+    }
   }
 
   data = {
@@ -167,6 +176,9 @@ resource "kubernetes_config_map" "mimir-queries_dashboard" {
       "app" : "kube-prometheus-stack-grafana"
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "Mimir"
     }
   }
 
@@ -189,6 +201,9 @@ resource "kubernetes_config_map" "mimir-writes-resources_dashboard" {
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
     }
+    annotations = {
+      "grafana_folder": "Mimir"
+    }
   }
 
   data = {
@@ -209,6 +224,9 @@ resource "kubernetes_config_map" "mimir-writes_dashboard" {
       "app" : "kube-prometheus-stack-grafana"
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "Mimir"
     }
   }
 
@@ -231,6 +249,9 @@ resource "kubernetes_config_map" "mimir-reads_dashboard" {
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
     }
+    annotations = {
+      "grafana_folder": "Mimir"
+    }
   }
 
   data = {
@@ -251,6 +272,9 @@ resource "kubernetes_config_map" "mimir-reads-resources_dashboard" {
       "app" : "kube-prometheus-stack-grafana"
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "Mimir"
     }
   }
 

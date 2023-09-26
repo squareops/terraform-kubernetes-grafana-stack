@@ -12,6 +12,16 @@ locals {
   type: loki
   url: http://loki-read-headless:3100
   EOF
+  
+  cw_datasource_config = <<EOF
+
+- name: CloudWatch
+  type: cloudwatch
+  jsonData:
+    authType: default
+    defaultRegion: us-east-2
+  EOF
+
 }
 
 data "aws_caller_identity" "current" {}
@@ -31,6 +41,7 @@ resource "kubernetes_namespace" "monitoring" {
     name = var.pgl_namespace
   }
 }
+
 resource "helm_release" "loki" {
   count           = var.loki_enabled ? 1 : 0
   depends_on      = [kubernetes_namespace.monitoring]
@@ -82,7 +93,9 @@ resource "helm_release" "prometheus_grafana" {
       storage_class_name     = "${var.deployment_config.storage_class_name}",
       min_refresh_interval   = "${var.deployment_config.dashboard_refresh_interval}",
       grafana_admin_password = "${random_password.grafana_password.result}",
-      loki_datasource_config = var.loki_scalable_enabled ? local.loki_datasource_config : ""
+      loki_datasource_config             = var.loki_scalable_enabled ? local.loki_datasource_config : "",
+      cw_datasource_config               = var.cloudwatch_enabled ? local.cw_datasource_config : ""
+      annotations                        = var.cloudwatch_enabled ? "eks.amazonaws.com/role-arn: ${aws_iam_role.cloudwatch_role[0].arn}" : ""
     }),
     var.deployment_config.prometheus_values_yaml
     ] : [
@@ -94,7 +107,9 @@ resource "helm_release" "prometheus_grafana" {
       min_refresh_interval               = "${var.deployment_config.dashboard_refresh_interval}",
       grafana_admin_password             = "${random_password.grafana_password.result}",
       enable_prometheus_internal_ingress = "${var.deployment_config.prometheus_internal_ingress_enabled}",
-      loki_datasource_config             = var.loki_scalable_enabled ? local.loki_datasource_config : ""
+      loki_datasource_config             = var.loki_scalable_enabled ? local.loki_datasource_config : "",
+      cw_datasource_config               = var.cloudwatch_enabled ? local.cw_datasource_config : ""
+      annotations                        = var.cloudwatch_enabled ? "eks.amazonaws.com/role-arn: ${aws_iam_role.cloudwatch_role[0].arn}" : ""
     }),
     var.deployment_config.prometheus_values_yaml
   ]
@@ -110,35 +125,300 @@ resource "kubernetes_priority_class" "priority_class" {
   preemption_policy = "PreemptLowerPriority"
 }
 
-resource "kubernetes_secret" "cloudwatch_cred" {
-  metadata {
-    name      = "cloudwatch-secret"
-    namespace = var.pgl_namespace
+resource "aws_iam_role" "cloudwatch_role" {
+  count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
+  name  = join("-", [var.cluster_name, "cloudwatch"])
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.oidc_provider}"
+        },
+        Action = "sts:AssumeRoleWithWebIdentity",
+        Condition = {
+          StringEquals = {
+            "${local.oidc_provider}:aud" = "sts.amazonaws.com",
+            "${local.oidc_provider}:sub" = "system:serviceaccount:monitoring:prometheus-operator-grafana"
+          }
+        }
+      }
+    ]
+  })
+  inline_policy {
+    name = "AllowCWReadAccess"
+    policy = jsonencode({
+      Version = "2012-10-17"
+      Statement = [
+        {
+          Action = [
+            "cloudwatch:Describe*",
+            "cloudwatch:Get*",
+            "cloudwatch:List*",
+            "ec2:DescribeTags",
+            "logs:DescribeLogGroups",
+            "logs:Get*",
+            "logs:List*",
+            "logs:StartQuery",
+            "logs:StopQuery",
+            "logs:Describe*",
+            "logs:TestMetricFilter",
+            "logs:FilterLogEvents",
+            "logs:StartLiveTail",
+            "logs:StopLiveTail",
+            "oam:ListSinks",
+            "sns:Get*",
+            "sns:List*"
+          ]
+          Effect   = "Allow"
+          Resource = "*"
+        }
+      ]
+    })
   }
-  data = {
-    access_key = var.aws_access_key_id
-    secret_key = var.aws_secret_key_id
-  }
-  type       = "Opaque"
-  count      = var.aws_cw_secret ? 1 : 0
-  depends_on = [kubernetes_namespace.monitoring]
 }
 
-resource "helm_release" "cloudwatch_exporter" {
-  count      = var.exporter_config.cloudwatch ? 1 : 0
-  name       = "cloudwatch-operator"
-  chart      = "prometheus-cloudwatch-exporter"
-  version    = "0.19.2"
-  timeout    = 600
-  namespace  = var.pgl_namespace
-  repository = "https://prometheus-community.github.io/helm-charts"
-  values = [
-    file("${path.module}/helm/values/cloudwatch.yaml")
-  ]
-  depends_on = [
-    kubernetes_secret.cloudwatch_cred,
-    helm_release.prometheus_grafana
-  ]
+resource "kubernetes_config_map" "aws_rds" {
+  count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
+  metadata {
+    name      = "aws-rds"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "AWS"
+    }
+  }
+
+  data = {
+    "aws_rds.json" = "${file("${path.module}/grafana/dashboards/aws_rds.json")}"
+  }
+  depends_on = [helm_release.prometheus_grafana]
+}
+
+resource "kubernetes_config_map" "elasticache_redis" {
+  count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
+  metadata {
+    name      = "elasticache-redis"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "AWS"
+    }
+  }
+
+  data = {
+    "elasticache_redis.json" = "${file("${path.module}/grafana/dashboards/elasticache_redis.json")}"
+  }
+  depends_on = [helm_release.prometheus_grafana]
+}
+
+resource "kubernetes_config_map" "aws_lambda" {
+  count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
+  metadata {
+    name      = "aws-lambda"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "AWS"
+    }
+  }
+
+  data = {
+    "aws_lambda.json" = "${file("${path.module}/grafana/dashboards/aws_lambda.json")}"
+  }
+  depends_on = [helm_release.prometheus_grafana]
+}
+
+resource "kubernetes_config_map" "aws_s3" {
+  count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
+  metadata {
+    name      = "aws-s3"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "AWS"
+    }
+  }
+
+  data = {
+    "aws_s3.json" = "${file("${path.module}/grafana/dashboards/aws_s3.json")}"
+  }
+  depends_on = [helm_release.prometheus_grafana]
+}
+
+resource "kubernetes_config_map" "aws_dynamodb" {
+  count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
+  metadata {
+    name      = "aws-dynamodb"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "AWS"
+    }
+  }
+
+  data = {
+    "aws_dynamodb.json" = "${file("${path.module}/grafana/dashboards/aws_dynamodb.json")}"
+  }
+  depends_on = [helm_release.prometheus_grafana]
+}
+
+resource "kubernetes_config_map" "aws_sqs" {
+  count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
+  metadata {
+    name      = "aws-sqs"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "AWS"
+    }
+  }
+
+  data = {
+    "aws_sqs.json" = "${file("${path.module}/grafana/dashboards/aws_sqs.json")}"
+  }
+  depends_on = [helm_release.prometheus_grafana]
+}
+
+resource "kubernetes_config_map" "aws_cw_logs" {
+  count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
+  metadata {
+    name      = "aws-cw-logs"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "AWS"
+    }
+  }
+
+  data = {
+    "aws_cw_logs.json" = "${file("${path.module}/grafana/dashboards/aws_cw_logs.json")}"
+  }
+  depends_on = [helm_release.prometheus_grafana]
+}
+
+resource "kubernetes_config_map" "aws_efs" {
+  count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
+  metadata {
+    name      = "aws-efs"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "AWS"
+    }
+  }
+
+  data = {
+    "aws_efs.json" = "${file("${path.module}/grafana/dashboards/aws_efs.json")}"
+  }
+  depends_on = [helm_release.prometheus_grafana]
+}
+
+resource "kubernetes_config_map" "aws_ebs" {
+  count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
+  metadata {
+    name      = "aws-ebs"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "AWS"
+    }
+  }
+
+  data = {
+    "aws_ebs.json" = "${file("${path.module}/grafana/dashboards/aws_ebs.json")}"
+  }
+  depends_on = [helm_release.prometheus_grafana]
+}
+
+resource "kubernetes_config_map" "aws_nlb" {
+  count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
+  metadata {
+    name      = "aws-nlb"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "AWS"
+    }
+  }
+
+  data = {
+    "aws_nlb.json" = "${file("${path.module}/grafana/dashboards/aws_nlb.json")}"
+  }
+  depends_on = [helm_release.prometheus_grafana]
+}
+
+resource "kubernetes_config_map" "aws_sns" {
+  count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
+  metadata {
+    name      = "aws-sns"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "AWS"
+    }
+  }
+
+  data = {
+    "aws_sns.json" = "${file("${path.module}/grafana/dashboards/aws_sns.json")}"
+  }
+  depends_on = [helm_release.prometheus_grafana]
 }
 
 resource "helm_release" "conntrak_stats_exporter" {
@@ -397,6 +677,9 @@ resource "kubernetes_config_map" "mongodb_dashboard" {
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
     }
+    annotations = {
+      "grafana_folder": "DataSources"
+    }
   }
 
   data = {
@@ -414,6 +697,9 @@ resource "kubernetes_config_map" "elasticsearch_dashboard" {
       "app" : "kube-prometheus-stack-grafana"
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "Management"
     }
   }
 
@@ -471,6 +757,9 @@ resource "kubernetes_config_map" "mysql_dashboard" {
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
     }
+    annotations = {
+      "grafana_folder": "DataSources"
+    }
   }
 
   data = {
@@ -489,6 +778,9 @@ resource "kubernetes_config_map" "postgres_dashboard" {
       "app" : "kube-prometheus-stack-grafana"
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "DataSources"
     }
   }
 
@@ -509,6 +801,9 @@ resource "kubernetes_config_map" "redis_dashboard" {
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
     }
+    annotations = {
+      "grafana_folder": "DataSources"
+    }
   }
 
   data = {
@@ -527,6 +822,9 @@ resource "kubernetes_config_map" "rabbitmq_dashboard" {
       "app" : "kube-prometheus-stack-grafana"
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "DataSources"
     }
   }
 
@@ -549,6 +847,9 @@ resource "kubernetes_config_map" "loki_dashboard" {
       "app" : "kube-prometheus-stack-grafana"
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "Logs"
     }
   }
 
@@ -592,6 +893,9 @@ resource "kubernetes_config_map" "jenkins_dashboard" {
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
     }
+    annotations = {
+      "grafana_folder": "Management"
+    }
   }
 
   data = {
@@ -612,6 +916,9 @@ resource "kubernetes_config_map" "argocd_dashboard" {
       "app" : "kube-prometheus-stack-grafana"
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "Management"
     }
   }
 
@@ -679,6 +986,9 @@ resource "kubernetes_config_map" "istio_control_plane_dashboard" {
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
     }
+    annotations = {
+      "grafana_folder": "Istio"
+    }
   }
 
   data = {
@@ -717,6 +1027,9 @@ resource "kubernetes_config_map" "istio_performance_dashboard" {
       "app" : "kube-prometheus-stack-grafana"
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "Istio"
     }
   }
 
@@ -777,6 +1090,9 @@ resource "kubernetes_config_map" "kafka_dashboard" {
       "app" : "kube-prometheus-stack-grafana"
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "DataSources"
     }
   }
 
