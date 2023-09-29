@@ -171,7 +171,7 @@ grafana:
   image:
     repository: grafana/grafana
     # Overrides the Grafana image tag whose default is the chart appVersion
-    tag: "9.0.4"
+    tag: "10.1.0"
   serviceAccount:
     annotations:
       ${annotations}

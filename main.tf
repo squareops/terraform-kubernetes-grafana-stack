@@ -708,23 +708,26 @@ resource "kubernetes_config_map" "elasticsearch_dashboard" {
   }
 }
 
-resource "kubernetes_config_map" "elasticsearch_cluster_stats_dashboard" {
-  count = var.exporter_config.elasticsearch && var.deployment_config.grafana_enabled ? 1 : 0
-  metadata {
-    name      = "elasticsearch-cluster-stats"
-    namespace = var.pgl_namespace
-    labels = {
-      "grafana_dashboard" : "1"
-      "app" : "kube-prometheus-stack-grafana"
-      "chart" : "kube-prometheus-stack-35.2.0"
-      "release" : "prometheus-operator"
-    }
-  }
+# resource "kubernetes_config_map" "elasticsearch_cluster_stats_dashboard" {
+#   count = var.exporter_config.elasticsearch && var.deployment_config.grafana_enabled ? 1 : 0
+#   metadata {
+#     name      = "elasticsearch-cluster-stats"
+#     namespace = var.pgl_namespace
+#     labels = {
+#       "grafana_dashboard" : "1"
+#       "app" : "kube-prometheus-stack-grafana"
+#       "chart" : "kube-prometheus-stack-35.2.0"
+#       "release" : "prometheus-operator"
+#     }
+#     annotations = {
+#       "grafana_folder": "Management"
+#     }
+#   }
 
-  data = {
-    "es-cluster-stats.json" = "${file("${path.module}/grafana/dashboards/es-cluster-stats.json")}"
-  }
-}
+#   data = {
+#     "es-cluster-stats.json" = "${file("${path.module}/grafana/dashboards/es-cluster-stats.json")}"
+#   }
+# }
 
 
 resource "kubernetes_config_map" "elasticsearch_exporter_quickstart_and_dashboard" {
@@ -737,6 +740,9 @@ resource "kubernetes_config_map" "elasticsearch_exporter_quickstart_and_dashboar
       "app" : "kube-prometheus-stack-grafana"
       "chart" : "kube-prometheus-stack-35.2.0"
       "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "Management"
     }
   }
 

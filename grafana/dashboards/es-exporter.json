@@ -1597,7 +1597,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(elasticsearch_jvm_gc_collection_seconds_count{cluster=~\"$cluster\", name=~\"$node\", gc=\"young\"}[$__interval])",
+          "expr": "rate(elasticsearch_jvm_gc_collection_seconds_count{cluster=~\"$cluster\", name=~\"$node\", gc=\"young\"}[$__rate_interval])",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{ name }}",
@@ -1677,7 +1677,7 @@
           "datasource": {
             "uid": "$datasource"
           },
-          "expr": "rate(elasticsearch_jvm_gc_collection_seconds_count{cluster=~\"$cluster\", name=~\"$node\", gc=\"old\"}[$__interval])",
+          "expr": "rate(elasticsearch_jvm_gc_collection_seconds_count{cluster=~\"$cluster\", name=~\"$node\", gc=\"old\"}[$__rate_interval])",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{ name }}",
@@ -1762,7 +1762,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(elasticsearch_jvm_gc_collection_seconds_sum{cluster=~\"$cluster\", name=~\"$node\", gc=\"young\"}[$__interval])) by (name) / sum(rate(elasticsearch_jvm_gc_collection_seconds_count{cluster=~\"$cluster\", name=~\"$node\", gc=\"young\"}[$__interval])) by (name)\nor\nsum(irate(elasticsearch_jvm_gc_collection_seconds_sum{cluster=~\"$cluster\", name=~\"$node\", gc=\"young\"}[5m])) by (name) / sum(irate(elasticsearch_jvm_gc_collection_seconds_count{cluster=~\"$cluster\", name=~\"$node\", gc=\"young\"}[5m])) by (name)",
+          "expr": "sum(rate(elasticsearch_jvm_gc_collection_seconds_sum{cluster=~\"$cluster\", name=~\"$node\", gc=\"young\"}[$__rate_interval])) by (name) / sum(rate(elasticsearch_jvm_gc_collection_seconds_count{cluster=~\"$cluster\", name=~\"$node\", gc=\"young\"}[$__rate_interval])) by (name)\nor\nsum(irate(elasticsearch_jvm_gc_collection_seconds_sum{cluster=~\"$cluster\", name=~\"$node\", gc=\"young\"}[5m])) by (name) / sum(irate(elasticsearch_jvm_gc_collection_seconds_count{cluster=~\"$cluster\", name=~\"$node\", gc=\"young\"}[5m])) by (name)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -1850,7 +1850,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(elasticsearch_jvm_gc_collection_seconds_sum{cluster=~\"$cluster\", name=~\"$node\", gc=\"old\"}[$__interval])) by (name) / sum(rate(elasticsearch_jvm_gc_collection_seconds_count{cluster=~\"$cluster\", name=~\"$node\", gc=\"old\"}[$__interval])) by (name)\nor\nsum(irate(elasticsearch_jvm_gc_collection_seconds_sum{cluster=~\"$cluster\", name=~\"$node\", gc=\"old\"}[5m])) by (name) / sum(irate(elasticsearch_jvm_gc_collection_seconds_count{cluster=~\"$cluster\", name=~\"$node\", gc=\"old\"}[5m])) by (name)",
+          "expr": "sum(rate(elasticsearch_jvm_gc_collection_seconds_sum{cluster=~\"$cluster\", name=~\"$node\", gc=\"old\"}[$__rate_interval])) by (name) / sum(rate(elasticsearch_jvm_gc_collection_seconds_count{cluster=~\"$cluster\", name=~\"$node\", gc=\"old\"}[$__rate_interval])) by (name)\nor\nsum(irate(elasticsearch_jvm_gc_collection_seconds_sum{cluster=~\"$cluster\", name=~\"$node\", gc=\"old\"}[5m])) by (name) / sum(irate(elasticsearch_jvm_gc_collection_seconds_count{cluster=~\"$cluster\", name=~\"$node\", gc=\"old\"}[5m])) by (name)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -1966,7 +1966,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(elasticsearch_thread_pool_completed_count{cluster=~\"$cluster\", type!=\"management\", name=~\"$node\"}[$__interval])) by (type) or sum(irate(elasticsearch_thread_pool_completed_count{cluster=~\"$cluster\", type!=\"management\", name=~\"$node\"}[5m])) by (type)",
+          "expr": "sum(rate(elasticsearch_thread_pool_completed_count{cluster=~\"$cluster\", type!=\"management\", name=~\"$node\"}[$__rate_interval])) by (type) or sum(irate(elasticsearch_thread_pool_completed_count{cluster=~\"$cluster\", type!=\"management\", name=~\"$node\"}[5m])) by (type)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -2225,7 +2225,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(elasticsearch_thread_pool_completed_count{cluster=~\"$cluster\", name=~\"$node\"}[$__interval])) by (type)",
+          "expr": "sum(rate(elasticsearch_thread_pool_completed_count{cluster=~\"$cluster\", name=~\"$node\"}[$__rate_interval])) by (type)",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{ type }}",
@@ -2311,7 +2311,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(elasticsearch_thread_pool_rejected_count{cluster=~\"$cluster\", type!=\"management\", name=~\"$node\"}[$__interval])) by (type)",
+          "expr": "sum(rate(elasticsearch_thread_pool_rejected_count{cluster=~\"$cluster\", type!=\"management\", name=~\"$node\"}[$__rate_interval])) by (type)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -2427,7 +2427,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(elasticsearch_transport_rx_packets_total{cluster=~\"$cluster\", name=~\"$node\"}[$__interval])",
+          "expr": "rate(elasticsearch_transport_rx_packets_total{cluster=~\"$cluster\", name=~\"$node\"}[$__rate_interval])",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{ name }} RX",
@@ -2439,7 +2439,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(elasticsearch_transport_tx_packets_total{cluster=~\"$cluster\", name=~\"$node\"}[$__interval]) * -1",
+          "expr": "rate(elasticsearch_transport_tx_packets_total{cluster=~\"$cluster\", name=~\"$node\"}[$__rate_interval]) * -1",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{ name }} TX",
@@ -2524,7 +2524,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(elasticsearch_transport_rx_size_bytes_total{cluster=~\"$cluster\", name=~\"$node\"}[$__interval])",
+          "expr": "rate(elasticsearch_transport_rx_size_bytes_total{cluster=~\"$cluster\", name=~\"$node\"}[$__rate_interval])",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -2536,7 +2536,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(elasticsearch_transport_tx_size_bytes_total{cluster=~\"$cluster\", name=~\"$node\"}[$__interval]) * -1 ",
+          "expr": "rate(elasticsearch_transport_tx_size_bytes_total{cluster=~\"$cluster\", name=~\"$node\"}[$__rate_interval]) * -1 ",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{ name }} TX",
@@ -2642,7 +2642,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(elasticsearch_indices_search_query_time_seconds{cluster=\"$cluster\", name=~\"$node\"}[$__interval])) / sum(rate(elasticsearch_indices_search_query_total{cluster=\"$cluster\", name=~\"$node\"}[$__interval]))",
+          "expr": "sum(rate(elasticsearch_indices_search_query_time_seconds{cluster=\"$cluster\", name=~\"$node\"}[$__rate_interval])) / sum(rate(elasticsearch_indices_search_query_total{cluster=\"$cluster\", name=~\"$node\"}[$__rate_interval]))",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -2655,7 +2655,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(elasticsearch_indices_search_fetch_time_seconds{cluster=\"$cluster\", name=~\"$node\"}[$__interval])) / sum(rate(elasticsearch_indices_search_fetch_total{cluster=\"$cluster\", name=~\"$node\"}[$__interval]))",
+          "expr": "sum(rate(elasticsearch_indices_search_fetch_time_seconds{cluster=\"$cluster\", name=~\"$node\"}[$__rate_interval])) / sum(rate(elasticsearch_indices_search_fetch_total{cluster=\"$cluster\", name=~\"$node\"}[$__rate_interval]))",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
@@ -2740,7 +2740,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(elasticsearch_indices_get_time_seconds{cluster=\"$cluster\", name=~\"$node\"}[$__interval])) by (name) / sum(rate(elasticsearch_indices_get_total{cluster=\"$cluster\", name=~\"$node\"}[$__interval])) by (name) \nor\nsum(irate(elasticsearch_indices_get_time_seconds{cluster=\"$cluster\", name=~\"$node\"}[5m])) by (name)  / sum(irate(elasticsearch_indices_get_total{cluster=\"$cluster\", name=~\"$node\"}[5m])) by (name) ",
+          "expr": "sum(rate(elasticsearch_indices_get_time_seconds{cluster=\"$cluster\", name=~\"$node\"}[$__rate_interval])) by (name) / sum(rate(elasticsearch_indices_get_total{cluster=\"$cluster\", name=~\"$node\"}[$__rate_interval])) by (name) \nor\nsum(irate(elasticsearch_indices_get_time_seconds{cluster=\"$cluster\", name=~\"$node\"}[5m])) by (name)  / sum(irate(elasticsearch_indices_get_total{cluster=\"$cluster\", name=~\"$node\"}[5m])) by (name) ",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{ name }}",
@@ -2824,7 +2824,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(elasticsearch_indices_indexing_index_time_seconds_total{cluster=\"$cluster\", name=~\"$node\"}[$__interval])) / sum(rate(elasticsearch_indices_indexing_index_total{cluster=\"$cluster\", name=~\"$node\"}[$__interval]))\nor\nsum(irate(elasticsearch_indices_indexing_index_time_seconds_total{cluster=\"$cluster\", name=~\"$node\"}[5m])) / sum(irate(elasticsearch_indices_indexing_index_total{cluster=\"$cluster\", name=~\"$node\"}[5m]))",
+          "expr": "sum(rate(elasticsearch_indices_indexing_index_time_seconds_total{cluster=\"$cluster\", name=~\"$node\"}[$__rate_interval])) / sum(rate(elasticsearch_indices_indexing_index_total{cluster=\"$cluster\", name=~\"$node\"}[$__rate_interval]))\nor\nsum(irate(elasticsearch_indices_indexing_index_time_seconds_total{cluster=\"$cluster\", name=~\"$node\"}[5m])) / sum(irate(elasticsearch_indices_indexing_index_total{cluster=\"$cluster\", name=~\"$node\"}[5m]))",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "index",
@@ -2835,7 +2835,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(elasticsearch_indices_indexing_delete_time_seconds_total{cluster=\"$cluster\", name=~\"$node\"}[$__interval])) / sum(rate(elasticsearch_indices_indexing_delete_total{cluster=\"$cluster\", name=~\"$node\"}[$__interval]))\nor\nsum(irate(elasticsearch_indices_indexing_delete_time_seconds_total{cluster=\"$cluster\", name=~\"$node\"}[5m])) / sum(irate(elasticsearch_indices_indexing_delete_total{cluster=\"$cluster\", name=~\"$node\"}[5m]))",
+          "expr": "sum(rate(elasticsearch_indices_indexing_delete_time_seconds_total{cluster=\"$cluster\", name=~\"$node\"}[$__rate_interval])) / sum(rate(elasticsearch_indices_indexing_delete_total{cluster=\"$cluster\", name=~\"$node\"}[$__rate_interval]))\nor\nsum(irate(elasticsearch_indices_indexing_delete_time_seconds_total{cluster=\"$cluster\", name=~\"$node\"}[5m])) / sum(irate(elasticsearch_indices_indexing_delete_total{cluster=\"$cluster\", name=~\"$node\"}[5m]))",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "delete",
@@ -2924,7 +2924,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(elasticsearch_indices_merges_total_time_seconds_total{cluster=\"$cluster\", name=~\"$node\"}[$__interval])) by (name) / sum(rate(elasticsearch_indices_merges_total{cluster=\"$cluster\", name=~\"$node\"}[$__interval])) by (name)\nor\nsum(irate(elasticsearch_indices_merges_total_time_seconds_total{cluster=\"$cluster\", name=~\"$node\"}[5m])) by (name) / sum(irate(elasticsearch_indices_merges_total\t{cluster=\"$cluster\", name=~\"$node\"}[5m])) by (name)",
+          "expr": "sum(rate(elasticsearch_indices_merges_total_time_seconds_total{cluster=\"$cluster\", name=~\"$node\"}[$__rate_interval])) by (name) / sum(rate(elasticsearch_indices_merges_total{cluster=\"$cluster\", name=~\"$node\"}[$__rate_interval])) by (name)\nor\nsum(irate(elasticsearch_indices_merges_total_time_seconds_total{cluster=\"$cluster\", name=~\"$node\"}[5m])) by (name) / sum(irate(elasticsearch_indices_merges_total\t{cluster=\"$cluster\", name=~\"$node\"}[5m])) by (name)",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{ name }} time",
@@ -2935,7 +2935,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(elasticsearch_indices_merges_total_size_bytes_total{cluster=\"$cluster\", name=~\"$node\"}[$__interval])) by (name) / sum(rate(elasticsearch_indices_merges_total{cluster=\"$cluster\", name=~\"$node\"}[$__interval])) by (name)\nor\nsum(irate(elasticsearch_indices_merges_total_size_bytes_total{cluster=\"$cluster\", name=~\"$node\"}[5m])) by (name) / sum(irate(elasticsearch_indices_merges_total\t{cluster=\"$cluster\", name=~\"$node\"}[5m])) by (name)",
+          "expr": "sum(rate(elasticsearch_indices_merges_total_size_bytes_total{cluster=\"$cluster\", name=~\"$node\"}[$__rate_interval])) by (name) / sum(rate(elasticsearch_indices_merges_total{cluster=\"$cluster\", name=~\"$node\"}[$__rate_interval])) by (name)\nor\nsum(irate(elasticsearch_indices_merges_total_size_bytes_total{cluster=\"$cluster\", name=~\"$node\"}[5m])) by (name) / sum(irate(elasticsearch_indices_merges_total\t{cluster=\"$cluster\", name=~\"$node\"}[5m])) by (name)",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{ name }} size",
@@ -3015,7 +3015,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(elasticsearch_indices_flush_time_seconds{cluster=\"$cluster\", name=~\"$node\"}[$__interval])) / sum(rate(elasticsearch_indices_flush_total\t{cluster=\"$cluster\", name=~\"$node\"}[$__interval]))\nor\nsum(irate(elasticsearch_indices_flush_time_seconds{cluster=\"$cluster\", name=~\"$node\"}[5m])) / sum(irate(elasticsearch_indices_flush_total\t{cluster=\"$cluster\", name=~\"$node\"}[5m]))",
+          "expr": "sum(rate(elasticsearch_indices_flush_time_seconds{cluster=\"$cluster\", name=~\"$node\"}[$__rate_interval])) / sum(rate(elasticsearch_indices_flush_total\t{cluster=\"$cluster\", name=~\"$node\"}[$__rate_interval]))\nor\nsum(irate(elasticsearch_indices_flush_time_seconds{cluster=\"$cluster\", name=~\"$node\"}[5m])) / sum(irate(elasticsearch_indices_flush_total\t{cluster=\"$cluster\", name=~\"$node\"}[5m]))",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "flush",
@@ -3098,7 +3098,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(elasticsearch_indices_refresh_time_seconds_total{cluster=\"$cluster\", name=~\"$node\"}[$__interval])) by (name) / sum(rate(elasticsearch_indices_refresh_total\t{cluster=\"$cluster\", name=~\"$node\"}[$__interval])) by (name)\nor\nsum(irate(elasticsearch_indices_refresh_time_seconds_total{cluster=\"$cluster\", name=~\"$node\"}[5m])) by (name) / sum(irate(elasticsearch_indices_refresh_total\t{cluster=\"$cluster\", name=~\"$node\"}[5m])) by (name)",
+          "expr": "sum(rate(elasticsearch_indices_refresh_time_seconds_total{cluster=\"$cluster\", name=~\"$node\"}[$__rate_interval])) by (name) / sum(rate(elasticsearch_indices_refresh_total\t{cluster=\"$cluster\", name=~\"$node\"}[$__rate_interval])) by (name)\nor\nsum(irate(elasticsearch_indices_refresh_time_seconds_total{cluster=\"$cluster\", name=~\"$node\"}[5m])) by (name) / sum(irate(elasticsearch_indices_refresh_total\t{cluster=\"$cluster\", name=~\"$node\"}[5m])) by (name)",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "refresh",
@@ -3210,7 +3210,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(elasticsearch_indices_fielddata_evictions{cluster=~\"$cluster\", name=~\"$node\"}[$__interval])) by (name)",
+          "expr": "sum(rate(elasticsearch_indices_fielddata_evictions{cluster=~\"$cluster\", name=~\"$node\"}[$__rate_interval])) by (name)",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{ name }} evictions",
@@ -3409,7 +3409,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(elasticsearch_indices_query_cache_count{cluster=~\"$cluster\", name=~\"$node\"}[$__interval])) by (name, cache)",
+          "expr": "sum(rate(elasticsearch_indices_query_cache_count{cluster=~\"$cluster\", name=~\"$node\"}[$__rate_interval])) by (name, cache)",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{ name }} {{ cache }}",
@@ -3492,7 +3492,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(elasticsearch_indices_query_cache_evictions{cluster=~\"$cluster\", name=~\"$node\"}[$__interval])\nor\nirate(elasticsearch_indices_query_cache_evictions{cluster=~\"$cluster\", name=~\"$node\"}[5m])",
+          "expr": "rate(elasticsearch_indices_query_cache_evictions{cluster=~\"$cluster\", name=~\"$node\"}[$__rate_interval])\nor\nirate(elasticsearch_indices_query_cache_evictions{cluster=~\"$cluster\", name=~\"$node\"}[5m])",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{ name }}",
@@ -3767,7 +3767,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(elasticsearch_indices_request_cache_count{cluster=~\"$cluster\", name=~\"$node\"}[$__interval])) by (name, cache)",
+          "expr": "sum(rate(elasticsearch_indices_request_cache_count{cluster=~\"$cluster\", name=~\"$node\"}[$__rate_interval])) by (name, cache)",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{ name }} {{ cache }}",
@@ -3851,7 +3851,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(elasticsearch_indices_request_cache_evictions{cluster=~\"$cluster\", name=~\"$node\"}[$__interval])) by (name)",
+          "expr": "sum(rate(elasticsearch_indices_request_cache_evictions{cluster=~\"$cluster\", name=~\"$node\"}[$__rate_interval])) by (name)",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{ name }}",
@@ -4002,90 +4002,6 @@
           "format": "short",
           "logBase": 1,
           "min": 0,
-          "show": true
-        },
-        {
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "description": "Count of documents with only primary shards",
-      "fill": 1,
-      "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 12,
-        "y": 126
-      },
-      "id": 87,
-      "legend": {
-        "alignAsTable": true,
-        "avg": false,
-        "current": true,
-        "hideEmpty": true,
-        "max": false,
-        "min": false,
-        "rightSide": true,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 2,
-      "links": [],
-      "nullPointMode": "null",
-      "percentage": false,
-      "pointradius": 5,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "sum(elasticsearch_indices_docs_primary{instance=~\"$node\"}) by (index)",
-          "format": "time_series",
-          "intervalFactor": 2,
-          "legendFormat": "{{ index }}",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "title": "Primary Docs",
-      "tooltip": {
-        "shared": true,
-        "sort": 2,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "logBase": 1,
           "show": true
         },
         {
@@ -4256,7 +4172,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(elasticsearch_indices_store_throttle_time_seconds_total{cluster=~\"$cluster\"}[$__interval])",
+          "expr": "rate(elasticsearch_indices_store_throttle_time_seconds_total{cluster=~\"$cluster\"}[$__rate_interval])",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{ name }}",
@@ -4281,93 +4197,6 @@
           "format": "s",
           "logBase": 1,
           "min": "0",
-          "show": true
-        },
-        {
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "description": "Current size of stored index data in bytes with only primary shards on all nodes",
-      "fill": 1,
-      "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 0,
-        "y": 141
-      },
-      "id": 98,
-      "legend": {
-        "alignAsTable": true,
-        "avg": false,
-        "current": true,
-        "hideEmpty": true,
-        "hideZero": false,
-        "max": false,
-        "min": false,
-        "rightSide": true,
-        "show": true,
-        "sort": "current",
-        "sortDesc": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 2,
-      "links": [],
-      "nullPointMode": "null",
-      "percentage": false,
-      "pointradius": 5,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "sum(elasticsearch_indices_store_size_bytes_primary{instance=~\"$node\"}) by (index)",
-          "format": "time_series",
-          "intervalFactor": 2,
-          "legendFormat": "{{ index }}",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "title": "Primary index data size",
-      "tooltip": {
-        "shared": true,
-        "sort": 2,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "decbytes",
-          "logBase": 1,
           "show": true
         },
         {
@@ -4735,7 +4564,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(elasticsearch_indices_translog_operations{cluster=~\"$cluster\", name=~\"$node\"}[$__interval])",
+          "expr": "rate(elasticsearch_indices_translog_operations{cluster=~\"$cluster\", name=~\"$node\"}[$__rate_interval])",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{ name }}",
@@ -4819,7 +4648,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(elasticsearch_indices_translog_size_in_bytes{cluster=~\"$cluster\", name=~\"$node\"}[$__interval])",
+          "expr": "rate(elasticsearch_indices_translog_size_in_bytes{cluster=~\"$cluster\", name=~\"$node\"}[$__rate_interval])",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{ name }}",
@@ -5012,7 +4841,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(elasticsearch_breakers_tripped{cluster=~\"$cluster\", name=~\"$node\"}[$__interval])) by (name, breaker)",
+          "expr": "sum(rate(elasticsearch_breakers_tripped{cluster=~\"$cluster\", name=~\"$node\"}[$__rate_interval])) by (name, breaker)",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{ name }} {{ breaker }}",
