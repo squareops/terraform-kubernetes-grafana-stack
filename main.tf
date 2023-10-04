@@ -399,6 +399,138 @@ resource "kubernetes_config_map" "aws_nlb" {
   depends_on = [helm_release.prometheus_grafana]
 }
 
+resource "kubernetes_config_map" "aws_alb" {
+  count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
+  metadata {
+    name      = "aws-alb"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "AWS"
+    }
+  }
+
+  data = {
+    "aws_alb.json" = "${file("${path.module}/grafana/dashboards/aws_alb.json")}"
+  }
+  depends_on = [helm_release.prometheus_grafana]
+}
+
+resource "kubernetes_config_map" "aws_acm" {
+  count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
+  metadata {
+    name      = "aws-acm"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "AWS"
+    }
+  }
+
+  data = {
+    "aws_acm.json" = "${file("${path.module}/grafana/dashboards/aws_acm.json")}"
+  }
+  depends_on = [helm_release.prometheus_grafana]
+}
+
+resource "kubernetes_config_map" "aws_inspector" {
+  count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
+  metadata {
+    name      = "aws-inspector"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "AWS"
+    }
+  }
+
+  data = {
+    "aws_inspector.json" = "${file("${path.module}/grafana/dashboards/aws_inspector.json")}"
+  }
+  depends_on = [helm_release.prometheus_grafana]
+}
+
+resource "kubernetes_config_map" "aws_cloudfront" {
+  count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
+  metadata {
+    name      = "aws-cloudfront"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "AWS"
+    }
+  }
+
+  data = {
+    "aws_cloudfront.json" = "${file("${path.module}/grafana/dashboards/aws_cloudfront.json")}"
+  }
+  depends_on = [helm_release.prometheus_grafana]
+}
+
+resource "kubernetes_config_map" "aws_nat" {
+  count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
+  metadata {
+    name      = "aws-nat"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "AWS"
+    }
+  }
+
+  data = {
+    "aws_nat.json" = "${file("${path.module}/grafana/dashboards/aws_nat.json")}"
+  }
+  depends_on = [helm_release.prometheus_grafana]
+}
+
+resource "kubernetes_config_map" "aws_rabbitmq" {
+  count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
+  metadata {
+    name      = "aws-rabbitmq"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-35.2.0"
+      "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder": "AWS"
+    }
+  }
+
+  data = {
+    "aws_rabbitmq.json" = "${file("${path.module}/grafana/dashboards/aws_rabbitmq.json")}"
+  }
+  depends_on = [helm_release.prometheus_grafana]
+}
+
 resource "kubernetes_config_map" "aws_sns" {
   count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
   metadata {
