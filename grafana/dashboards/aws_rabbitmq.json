@@ -1,0 +1,2974 @@
+{
+    "__inputs": [
+      {
+        "name": "DS_CLOUDWATCH",
+        "label": "CloudWatch",
+        "description": "",
+        "type": "datasource",
+        "pluginId": "cloudwatch",
+        "pluginName": "CloudWatch"
+      }
+    ],
+    "__elements": [],
+    "__requires": [
+      {
+        "type": "datasource",
+        "id": "cloudwatch",
+        "name": "CloudWatch",
+        "version": "1.0.0"
+      },
+      {
+        "type": "grafana",
+        "id": "grafana",
+        "name": "Grafana",
+        "version": "8.3.1"
+      },
+      {
+        "type": "panel",
+        "id": "graph",
+        "name": "Graph (old)",
+        "version": ""
+      },
+      {
+        "type": "panel",
+        "id": "stat",
+        "name": "Stat",
+        "version": ""
+      },
+      {
+        "type": "panel",
+        "id": "timeseries",
+        "name": "Time series",
+        "version": ""
+      }
+    ],
+    "annotations": {
+      "list": [
+        {
+          "actionPrefix": "",
+          "alarmNamePrefix": "",
+          "alias": "",
+          "datasource": "-- Grafana --",
+          "dimensions": {},
+          "enable": true,
+          "expression": "",
+          "hide": true,
+          "iconColor": "rgba(255, 96, 96, 1)",
+          "id": "",
+          "limit": 100,
+          "matchAny": true,
+          "matchExact": true,
+          "metricName": "",
+          "name": "outages",
+          "namespace": "AWS/AmazonMQ",
+          "period": "",
+          "prefixMatching": false,
+          "region": "us-west-2",
+          "showIn": 0,
+          "statistic": "Average",
+          "tags": [
+            "outage"
+          ],
+          "target": {
+            "limit": 100,
+            "matchAny": true,
+            "tags": [
+              "outage"
+            ],
+            "type": "tags"
+          },
+          "type": "tags"
+        },
+        {
+          "actionPrefix": "",
+          "alarmNamePrefix": "",
+          "alias": "",
+          "builtIn": 1,
+          "datasource": "-- Grafana --",
+          "dimensions": {},
+          "enable": true,
+          "expression": "",
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "id": "",
+          "limit": 100,
+          "matchExact": true,
+          "metricName": "",
+          "name": "all",
+          "namespace": "",
+          "period": "",
+          "prefixMatching": false,
+          "region": "default",
+          "showIn": 0,
+          "statistic": "Average",
+          "target": {
+            "limit": 100,
+            "matchAny": false,
+            "tags": [],
+            "type": "dashboard"
+          },
+          "type": "dashboard"
+        }
+      ]
+    },
+    "description": "Visualize Amazon MQ (RabbitMQ) metrics",
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "gnetId": 15363,
+    "graphTooltip": 0,
+    "id": null,
+    "iteration": 1638968049259,
+    "links": [
+      {
+        "asDropdown": false,
+        "icon": "external link",
+        "includeVars": false,
+        "keepTime": false,
+        "tags": [
+          "metric definitions"
+        ],
+        "targetBlank": true,
+        "title": "Cloudwatch MQ metric definitions",
+        "tooltip": "",
+        "type": "link",
+        "url": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/security-logging-monitoring-cloudwatch.html"
+      }
+    ],
+    "liveNow": false,
+    "panels": [
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 14,
+        "panels": [],
+        "title": "Individual Queue Metrics [by Broker, Virtual host and Queue]",
+        "type": "row"
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": {
+          "type": "cloudwatch",
+          "uid": "$datasource"
+        },
+        "editable": true,
+        "error": false,
+        "fieldConfig": {
+          "defaults": {
+            "links": [],
+            "unit": "none"
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "grid": {},
+        "gridPos": {
+          "h": 11,
+          "w": 24,
+          "x": 0,
+          "y": 1
+        },
+        "hiddenSeries": false,
+        "id": 12,
+        "isNew": true,
+        "legend": {
+          "alignAsTable": true,
+          "avg": true,
+          "current": true,
+          "max": true,
+          "min": true,
+          "show": true,
+          "total": false,
+          "values": true
+        },
+        "lines": true,
+        "linewidth": 2,
+        "links": [],
+        "nullPointMode": "null as zero",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "8.3.1",
+        "pointradius": 5,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "alias": "{{label}}",
+            "application": {
+              "filter": ""
+            },
+            "datasource": {
+              "type": "cloudwatch",
+              "uid": "${DS_CLOUDWATCH}"
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "REMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"MessageCount\" \"Broker\"=\"$broker\" \"VirtualHost\"=\"$virtualhost\" \"Queue\"=\"$queue\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "queryMode": "Metrics",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "sqlExpression": "",
+            "statistic": "Average"
+          },
+          {
+            "alias": "{{label}}",
+            "application": {
+              "filter": ""
+            },
+            "datasource": {
+              "type": "cloudwatch",
+              "uid": "${DS_CLOUDWATCH}"
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "REMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"MessageReadyCount\" \"Broker\"=\"$broker\" Queue=\"$queue\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "hide": false,
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "queryMode": "Metrics",
+            "refId": "A",
+            "region": "$region",
+            "returnData": false,
+            "sqlExpression": "",
+            "statistic": "Average"
+          },
+          {
+            "alias": "{{label}}",
+            "application": {
+              "filter": ""
+            },
+            "datasource": {
+              "type": "cloudwatch",
+              "uid": "${DS_CLOUDWATCH}"
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "REMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"MessageUnacknowledgedCount\" \"Broker\"=\"$broker\" Queue=\"$queue\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "hide": false,
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "queryMode": "Metrics",
+            "refId": "B",
+            "region": "$region",
+            "returnData": false,
+            "sqlExpression": "",
+            "statistic": "Average"
+          },
+          {
+            "alias": "{{label}}",
+            "application": {
+              "filter": ""
+            },
+            "datasource": {
+              "type": "cloudwatch",
+              "uid": "${DS_CLOUDWATCH}"
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "REMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"ConsumerCount\" \"Broker\"=\"$broker\" Queue=\"$queue\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "hide": false,
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "queryMode": "Metrics",
+            "refId": "C",
+            "region": "$region",
+            "returnData": false,
+            "sqlExpression": "",
+            "statistic": "Average"
+          }
+        ],
+        "thresholds": [],
+        "timeRegions": [],
+        "title": "$queue",
+        "tooltip": {
+          "msResolution": false,
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "mode": "time",
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "$$hashKey": "object:87",
+            "decimals": 0,
+            "format": "none",
+            "logBase": 1,
+            "min": 0,
+            "show": true
+          },
+          {
+            "$$hashKey": "object:88",
+            "format": "short",
+            "logBase": 1,
+            "min": 0,
+            "show": false
+          }
+        ],
+        "yaxis": {
+          "align": false
+        }
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 12
+        },
+        "id": 44,
+        "panels": [],
+        "title": "All Queues Metrics [by Broker, Virtual host and Queue]",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "cloudwatch",
+          "uid": "$datasource"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": true,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "short"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 12,
+          "x": 0,
+          "y": 13
+        },
+        "id": 24,
+        "links": [],
+        "options": {
+          "legend": {
+            "calcs": [
+              "mean",
+              "lastNotNull",
+              "max",
+              "min"
+            ],
+            "displayMode": "table",
+            "placement": "right"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        },
+        "pluginVersion": "8.2.0",
+        "targets": [
+          {
+            "alias": "{{label}}",
+            "application": {
+              "filter": ""
+            },
+            "datasource": {
+              "type": "cloudwatch",
+              "uid": "${DS_CLOUDWATCH}"
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "REMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"MessageCount\" \"Broker\"=\"$broker\" \"VirtualHost\"=\"$virtualhost\" \"Queue\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "queryMode": "Metrics",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "sqlExpression": "",
+            "statistic": "Average"
+          }
+        ],
+        "title": "Message count",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "cloudwatch",
+          "uid": "$datasource"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": true,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "short"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 12,
+          "x": 12,
+          "y": 13
+        },
+        "id": 27,
+        "links": [],
+        "options": {
+          "legend": {
+            "calcs": [
+              "mean",
+              "lastNotNull",
+              "max",
+              "min"
+            ],
+            "displayMode": "table",
+            "placement": "right"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        },
+        "pluginVersion": "8.2.0",
+        "targets": [
+          {
+            "alias": "{{label}}",
+            "application": {
+              "filter": ""
+            },
+            "datasource": {
+              "type": "cloudwatch",
+              "uid": "${DS_CLOUDWATCH}"
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "REMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"ConsumerCount\" \"Broker\"=\"$broker\" \"VirtualHost\"=\"$virtualhost\" \"Queue\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "queryMode": "Metrics",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "sqlExpression": "",
+            "statistic": "Average"
+          }
+        ],
+        "title": "Consumer count",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "cloudwatch",
+          "uid": "$datasource"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": true,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "short"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 12,
+          "x": 0,
+          "y": 20
+        },
+        "id": 26,
+        "links": [],
+        "options": {
+          "legend": {
+            "calcs": [
+              "mean",
+              "lastNotNull",
+              "max",
+              "min"
+            ],
+            "displayMode": "table",
+            "placement": "right"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        },
+        "pluginVersion": "8.2.0",
+        "targets": [
+          {
+            "alias": "{{label}}",
+            "application": {
+              "filter": ""
+            },
+            "datasource": {
+              "type": "cloudwatch",
+              "uid": "${DS_CLOUDWATCH}"
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "REMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"MessageReadyCount\" \"Broker\"=\"$broker\" \"VirtualHost\"=\"$virtualhost\" \"Queue\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "queryMode": "Metrics",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "sqlExpression": "",
+            "statistic": "Average"
+          }
+        ],
+        "title": "Message Ready  count",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "cloudwatch",
+          "uid": "$datasource"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": true,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "short"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 12,
+          "x": 12,
+          "y": 20
+        },
+        "id": 25,
+        "links": [],
+        "options": {
+          "legend": {
+            "calcs": [
+              "mean",
+              "lastNotNull",
+              "max",
+              "min"
+            ],
+            "displayMode": "table",
+            "placement": "right"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        },
+        "pluginVersion": "8.2.0",
+        "targets": [
+          {
+            "alias": "{{label}}",
+            "application": {
+              "filter": ""
+            },
+            "datasource": {
+              "type": "cloudwatch",
+              "uid": "${DS_CLOUDWATCH}"
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "REMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"MessageUnacknowledgedCount\" \"Broker\"=\"$broker\" \"VirtualHost\"=\"$virtualhost\" \"Queue\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "queryMode": "Metrics",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "sqlExpression": "",
+            "statistic": "Average"
+          }
+        ],
+        "title": "Message Unacknowledged Count",
+        "type": "timeseries"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 27
+        },
+        "id": 19,
+        "panels": [],
+        "title": "Aggregated Broker level Metrics [by Broker]",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "uid": "$datasource"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 6,
+          "x": 0,
+          "y": 28
+        },
+        "id": 20,
+        "links": [],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "8.3.1",
+        "targets": [
+          {
+            "alias": "",
+            "application": {
+              "filter": ""
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "REMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"ExchangeCount\" \"Broker\"=\"$broker\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "statistic": "Average"
+          }
+        ],
+        "title": "Exchange count",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "uid": "$datasource"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 6,
+          "x": 6,
+          "y": 28
+        },
+        "id": 21,
+        "links": [],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "8.3.1",
+        "targets": [
+          {
+            "alias": "",
+            "application": {
+              "filter": ""
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "REMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"QueueCount\" \"Broker\"=\"$broker\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "statistic": "Average"
+          }
+        ],
+        "title": "Queue count",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "uid": "$datasource"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 6,
+          "x": 12,
+          "y": 28
+        },
+        "id": 22,
+        "links": [],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "8.3.1",
+        "targets": [
+          {
+            "alias": "",
+            "application": {
+              "filter": ""
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "REMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"ConnectionCount\" \"Broker\"=\"$broker\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "statistic": "Average"
+          }
+        ],
+        "title": "Connection count",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "uid": "$datasource"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 6,
+          "x": 18,
+          "y": 28
+        },
+        "id": 23,
+        "links": [],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "8.3.1",
+        "targets": [
+          {
+            "alias": "",
+            "application": {
+              "filter": ""
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "REMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"ChannelCount\" \"Broker\"=\"$broker\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "statistic": "Average"
+          }
+        ],
+        "title": "Channel count",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "uid": "$datasource"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 6,
+          "x": 0,
+          "y": 33
+        },
+        "id": 28,
+        "links": [],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "8.3.1",
+        "targets": [
+          {
+            "alias": "",
+            "application": {
+              "filter": ""
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "REMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"PublishRate\" \"Broker\"=\"$broker\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "statistic": "Average"
+          }
+        ],
+        "title": "Publish Rate",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "uid": "$datasource"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 6,
+          "x": 6,
+          "y": 33
+        },
+        "id": 29,
+        "links": [],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "8.3.1",
+        "targets": [
+          {
+            "alias": "",
+            "application": {
+              "filter": ""
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "REMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"ConfirmRate\" \"Broker\"=\"$broker\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "statistic": "Average"
+          }
+        ],
+        "title": "Confirm Rate",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "uid": "$datasource"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 6,
+          "x": 12,
+          "y": 33
+        },
+        "id": 30,
+        "links": [],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "8.3.1",
+        "targets": [
+          {
+            "alias": "",
+            "application": {
+              "filter": ""
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "REMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"AckRate\" \"Broker\"=\"$broker\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "statistic": "Average"
+          }
+        ],
+        "title": "Ack Rate",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "uid": "$datasource"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 6,
+          "x": 18,
+          "y": 33
+        },
+        "id": 48,
+        "links": [],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "8.3.1",
+        "targets": [
+          {
+            "alias": "",
+            "application": {
+              "filter": ""
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "SUM(REMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"ConsumerCount\" \"Broker\"=\"$broker\" \"Queue\" ', 'Average', 300)))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "statistic": "Average"
+          }
+        ],
+        "title": "Consumer count",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "uid": "$datasource"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 0,
+          "y": 38
+        },
+        "id": 45,
+        "links": [],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "8.3.1",
+        "targets": [
+          {
+            "alias": "",
+            "application": {
+              "filter": ""
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "SUM(REMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"MessageCount\" \"Broker\"=\"$broker\" \"Queue\" ', 'Average', 300)))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "statistic": "Average"
+          }
+        ],
+        "title": "Message count",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "uid": "$datasource"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 6,
+          "y": 38
+        },
+        "id": 46,
+        "links": [],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "8.3.1",
+        "targets": [
+          {
+            "alias": "",
+            "application": {
+              "filter": ""
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "SUM(REMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"MessageReadyCount\" \"Broker\"=\"$broker\" \"Queue\" ', 'Average', 300)))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "statistic": "Average"
+          }
+        ],
+        "title": "Message Ready count",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "uid": "$datasource"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 12,
+          "y": 38
+        },
+        "id": 47,
+        "links": [],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "8.3.1",
+        "targets": [
+          {
+            "alias": "",
+            "application": {
+              "filter": ""
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "SUM(REMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"MessageUnacknowledgedCount\" \"Broker\"=\"$broker\" \"Queue\" ', 'Average', 300)))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "statistic": "Average"
+          }
+        ],
+        "title": "Message Unacknowledged count",
+        "type": "stat"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 44
+        },
+        "id": 32,
+        "panels": [],
+        "title": "Node / Instance Metrics [by Broker]",
+        "type": "row"
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": {
+          "type": "cloudwatch",
+          "uid": "$datasource"
+        },
+        "editable": true,
+        "error": false,
+        "fieldConfig": {
+          "defaults": {
+            "links": [],
+            "unit": "percent"
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "grid": {},
+        "gridPos": {
+          "h": 5,
+          "w": 12,
+          "x": 0,
+          "y": 45
+        },
+        "hiddenSeries": false,
+        "id": 33,
+        "isNew": true,
+        "legend": {
+          "alignAsTable": true,
+          "avg": true,
+          "current": true,
+          "max": true,
+          "min": true,
+          "show": true,
+          "total": false,
+          "values": true
+        },
+        "lines": true,
+        "linewidth": 2,
+        "links": [],
+        "nullPointMode": "null as zero",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "8.3.1",
+        "pointradius": 5,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "alias": "{{label}}",
+            "application": {
+              "filter": ""
+            },
+            "datasource": {
+              "type": "cloudwatch",
+              "uid": "${DS_CLOUDWATCH}"
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "\tREMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"SystemCpuUtilization\" \"Broker\"=\"$broker\" Node=\"$node\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "queryMode": "Metrics",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "sqlExpression": "",
+            "statistic": "Average"
+          }
+        ],
+        "thresholds": [],
+        "timeRegions": [],
+        "title": "System CPU Utilization",
+        "tooltip": {
+          "msResolution": false,
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "mode": "time",
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "$$hashKey": "object:87",
+            "decimals": 0,
+            "format": "percent",
+            "logBase": 1,
+            "min": 0,
+            "show": true
+          },
+          {
+            "$$hashKey": "object:88",
+            "format": "short",
+            "logBase": 1,
+            "min": 0,
+            "show": false
+          }
+        ],
+        "yaxis": {
+          "align": false
+        }
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": {
+          "type": "cloudwatch",
+          "uid": "$datasource"
+        },
+        "editable": true,
+        "error": false,
+        "fieldConfig": {
+          "defaults": {
+            "links": []
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "grid": {},
+        "gridPos": {
+          "h": 5,
+          "w": 12,
+          "x": 12,
+          "y": 45
+        },
+        "hiddenSeries": false,
+        "id": 38,
+        "isNew": true,
+        "legend": {
+          "alignAsTable": true,
+          "avg": true,
+          "current": true,
+          "max": true,
+          "min": true,
+          "show": true,
+          "total": false,
+          "values": true
+        },
+        "lines": true,
+        "linewidth": 2,
+        "links": [],
+        "nullPointMode": "null as zero",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "8.3.1",
+        "pointradius": 5,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "alias": "{{label}}",
+            "application": {
+              "filter": ""
+            },
+            "datasource": {
+              "type": "cloudwatch",
+              "uid": "${DS_CLOUDWATCH}"
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "\tREMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"RabbitMQFdUsed\" \"Broker\"=\"$broker\" Node=\"$node\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "queryMode": "Metrics",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "sqlExpression": "",
+            "statistic": "Average"
+          }
+        ],
+        "thresholds": [],
+        "timeRegions": [],
+        "title": "File descriptors used",
+        "tooltip": {
+          "msResolution": false,
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "mode": "time",
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "$$hashKey": "object:87",
+            "decimals": 0,
+            "format": "none",
+            "logBase": 1,
+            "min": 0,
+            "show": true
+          },
+          {
+            "$$hashKey": "object:88",
+            "format": "short",
+            "logBase": 1,
+            "min": 0,
+            "show": false
+          }
+        ],
+        "yaxis": {
+          "align": false
+        }
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": {
+          "type": "cloudwatch",
+          "uid": "$datasource"
+        },
+        "editable": true,
+        "error": false,
+        "fieldConfig": {
+          "defaults": {
+            "links": []
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "grid": {},
+        "gridPos": {
+          "h": 5,
+          "w": 12,
+          "x": 0,
+          "y": 50
+        },
+        "hiddenSeries": false,
+        "id": 34,
+        "isNew": true,
+        "legend": {
+          "alignAsTable": true,
+          "avg": true,
+          "current": true,
+          "max": true,
+          "min": true,
+          "show": true,
+          "total": false,
+          "values": true
+        },
+        "lines": true,
+        "linewidth": 2,
+        "links": [],
+        "nullPointMode": "null as zero",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "8.3.1",
+        "pointradius": 5,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "alias": "{{label}}",
+            "application": {
+              "filter": ""
+            },
+            "datasource": {
+              "type": "cloudwatch",
+              "uid": "${DS_CLOUDWATCH}"
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "\tREMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"RabbitMQMemLimit\" \"Broker\"=\"$broker\" Node=\"$node\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "queryMode": "Metrics",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "sqlExpression": "",
+            "statistic": "Average"
+          }
+        ],
+        "thresholds": [],
+        "timeRegions": [],
+        "title": "Memory Limit",
+        "tooltip": {
+          "msResolution": false,
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "mode": "time",
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "$$hashKey": "object:87",
+            "decimals": 0,
+            "format": "decbytes",
+            "logBase": 1,
+            "min": 0,
+            "show": true
+          },
+          {
+            "$$hashKey": "object:88",
+            "format": "short",
+            "logBase": 1,
+            "min": 0,
+            "show": false
+          }
+        ],
+        "yaxis": {
+          "align": false
+        }
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": {
+          "type": "cloudwatch",
+          "uid": "$datasource"
+        },
+        "editable": true,
+        "error": false,
+        "fieldConfig": {
+          "defaults": {
+            "links": []
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "grid": {},
+        "gridPos": {
+          "h": 5,
+          "w": 12,
+          "x": 12,
+          "y": 50
+        },
+        "hiddenSeries": false,
+        "id": 35,
+        "isNew": true,
+        "legend": {
+          "alignAsTable": true,
+          "avg": true,
+          "current": true,
+          "max": true,
+          "min": true,
+          "show": true,
+          "total": false,
+          "values": true
+        },
+        "lines": true,
+        "linewidth": 2,
+        "links": [],
+        "nullPointMode": "null as zero",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "8.3.1",
+        "pointradius": 5,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "alias": "{{label}}",
+            "application": {
+              "filter": ""
+            },
+            "datasource": {
+              "type": "cloudwatch",
+              "uid": "${DS_CLOUDWATCH}"
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "\tREMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"RabbitMQMemUsed\" \"Broker\"=\"$broker\" Node=\"$node\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "queryMode": "Metrics",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "sqlExpression": "",
+            "statistic": "Average"
+          }
+        ],
+        "thresholds": [],
+        "timeRegions": [],
+        "title": "Memory Used",
+        "tooltip": {
+          "msResolution": false,
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "mode": "time",
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "$$hashKey": "object:87",
+            "decimals": 0,
+            "format": "decbytes",
+            "logBase": 1,
+            "min": 0,
+            "show": true
+          },
+          {
+            "$$hashKey": "object:88",
+            "format": "short",
+            "logBase": 1,
+            "min": 0,
+            "show": false
+          }
+        ],
+        "yaxis": {
+          "align": false
+        }
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": {
+          "type": "cloudwatch",
+          "uid": "$datasource"
+        },
+        "editable": true,
+        "error": false,
+        "fieldConfig": {
+          "defaults": {
+            "links": []
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "grid": {},
+        "gridPos": {
+          "h": 5,
+          "w": 12,
+          "x": 0,
+          "y": 55
+        },
+        "hiddenSeries": false,
+        "id": 36,
+        "isNew": true,
+        "legend": {
+          "alignAsTable": true,
+          "avg": true,
+          "current": true,
+          "max": true,
+          "min": true,
+          "show": true,
+          "total": false,
+          "values": true
+        },
+        "lines": true,
+        "linewidth": 2,
+        "links": [],
+        "nullPointMode": "null as zero",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "8.3.1",
+        "pointradius": 5,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "alias": "{{label}}",
+            "application": {
+              "filter": ""
+            },
+            "datasource": {
+              "type": "cloudwatch",
+              "uid": "${DS_CLOUDWATCH}"
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "\tREMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"RabbitMQDiskFreeLimit\" \"Broker\"=\"$broker\" Node=\"$node\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "queryMode": "Metrics",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "sqlExpression": "",
+            "statistic": "Average"
+          }
+        ],
+        "thresholds": [],
+        "timeRegions": [],
+        "title": "Disk Free Limit",
+        "tooltip": {
+          "msResolution": false,
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "mode": "time",
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "$$hashKey": "object:87",
+            "decimals": 0,
+            "format": "decbytes",
+            "logBase": 1,
+            "min": 0,
+            "show": true
+          },
+          {
+            "$$hashKey": "object:88",
+            "format": "short",
+            "logBase": 1,
+            "min": 0,
+            "show": false
+          }
+        ],
+        "yaxis": {
+          "align": false
+        }
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": {
+          "type": "cloudwatch",
+          "uid": "$datasource"
+        },
+        "editable": true,
+        "error": false,
+        "fieldConfig": {
+          "defaults": {
+            "links": []
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "grid": {},
+        "gridPos": {
+          "h": 5,
+          "w": 12,
+          "x": 12,
+          "y": 55
+        },
+        "hiddenSeries": false,
+        "id": 37,
+        "isNew": true,
+        "legend": {
+          "alignAsTable": true,
+          "avg": true,
+          "current": true,
+          "max": true,
+          "min": true,
+          "show": true,
+          "total": false,
+          "values": true
+        },
+        "lines": true,
+        "linewidth": 2,
+        "links": [],
+        "nullPointMode": "null as zero",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "8.3.1",
+        "pointradius": 5,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "alias": "{{label}}",
+            "application": {
+              "filter": ""
+            },
+            "datasource": {
+              "type": "cloudwatch",
+              "uid": "${DS_CLOUDWATCH}"
+            },
+            "dimensions": {
+              "TargetGroup": "*"
+            },
+            "expression": "\tREMOVE_EMPTY(SEARCH('Namespace=\"AWS/AmazonMQ\" MetricName=\"RabbitMQDiskFree\" \"Broker\"=\"$broker\" Node=\"$node\" ', 'Average', 300))",
+            "functions": [],
+            "group": {
+              "filter": ""
+            },
+            "highResolution": false,
+            "host": {
+              "filter": ""
+            },
+            "id": "",
+            "item": {
+              "filter": ""
+            },
+            "matchExact": true,
+            "metricEditorMode": 1,
+            "metricName": "HealthyHostCount",
+            "metricQueryType": 0,
+            "mode": 0,
+            "namespace": "AWS/AmazonMQ",
+            "options": {
+              "showDisabledItems": false
+            },
+            "period": "",
+            "queryMode": "Metrics",
+            "refId": "D",
+            "region": "$region",
+            "returnData": false,
+            "sqlExpression": "",
+            "statistic": "Average"
+          }
+        ],
+        "thresholds": [],
+        "timeRegions": [],
+        "title": "Disk Free",
+        "tooltip": {
+          "msResolution": false,
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "mode": "time",
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "$$hashKey": "object:87",
+            "decimals": 0,
+            "format": "decbytes",
+            "logBase": 1,
+            "min": 0,
+            "show": true
+          },
+          {
+            "$$hashKey": "object:88",
+            "format": "short",
+            "logBase": 1,
+            "min": 0,
+            "show": false
+          }
+        ],
+        "yaxis": {
+          "align": false
+        }
+      }
+    ],
+    "refresh": false,
+    "schemaVersion": 33,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": [
+        {
+          "current": {
+            "selected": false,
+            "text": "CloudWatch",
+            "value": "CloudWatch"
+          },
+          "hide": 0,
+          "includeAll": false,
+          "label": "Datasource",
+          "multi": false,
+          "name": "datasource",
+          "options": [],
+          "query": "cloudwatch",
+          "queryValue": "",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "type": "datasource"
+        },
+        {
+          "current": {},
+          "datasource": {
+            "uid": "$datasource"
+          },
+          "definition": "regions()",
+          "hide": 0,
+          "includeAll": false,
+          "label": "Region",
+          "multi": false,
+          "name": "region",
+          "options": [],
+          "query": "regions()",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 0,
+          "tagValuesQuery": "",
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        },
+        {
+          "current": {},
+          "datasource": {
+            "uid": "$datasource"
+          },
+          "definition": "dimension_values($region,AWS/AmazonMQ, SystemCpuUtilization, Broker)",
+          "hide": 0,
+          "includeAll": false,
+          "label": "Broker",
+          "multi": false,
+          "name": "broker",
+          "options": [],
+          "query": "dimension_values($region,AWS/AmazonMQ, SystemCpuUtilization, Broker)",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 1,
+          "tagValuesQuery": "",
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        },
+        {
+          "current": {},
+          "datasource": {
+            "uid": "${DS_CLOUDWATCH}"
+          },
+          "definition": "dimension_values($region, AWS/AmazonMQ, SystemCpuUtilization, Node, {\"Broker\":\"$broker\"})",
+          "hide": 0,
+          "includeAll": false,
+          "label": "Node",
+          "multi": false,
+          "name": "node",
+          "options": [],
+          "query": "dimension_values($region, AWS/AmazonMQ, SystemCpuUtilization, Node, {\"Broker\":\"$broker\"})",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 1,
+          "tagValuesQuery": "",
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        },
+        {
+          "current": {},
+          "datasource": {
+            "uid": "$datasource"
+          },
+          "definition": "dimension_values($region,AWS/AmazonMQ, ConsumerCount, VirtualHost, {\"Broker\":\"$broker\"})",
+          "hide": 0,
+          "includeAll": false,
+          "label": "Virtual Host",
+          "multi": false,
+          "name": "virtualhost",
+          "options": [],
+          "query": "dimension_values($region,AWS/AmazonMQ, ConsumerCount, VirtualHost, {\"Broker\":\"$broker\"})",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 1,
+          "tagValuesQuery": "",
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        },
+        {
+          "current": {},
+          "datasource": {
+            "uid": "$datasource"
+          },
+          "definition": "dimension_values($region,AWS/AmazonMQ, ConsumerCount, Queue, {\"Broker\":\"$broker\"})",
+          "hide": 0,
+          "includeAll": false,
+          "label": "Queue",
+          "multi": false,
+          "name": "queue",
+          "options": [],
+          "query": "dimension_values($region,AWS/AmazonMQ, ConsumerCount, Queue, {\"Broker\":\"$broker\"})",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 1,
+          "tagValuesQuery": "",
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        }
+      ]
+    },
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "time_options": [
+        "5m",
+        "15m",
+        "1h",
+        "6h",
+        "12h",
+        "24h",
+        "2d",
+        "7d",
+        "30d"
+      ]
+    },
+    "timezone": "browser",
+    "title": "Amazon MQ [RabbitMQ engine] - Cloudwatch",
+    "uid": "oRnJLTh7z",
+    "version": 3,
+    "weekStart": ""
+  }
