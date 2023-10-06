@@ -1,0 +1,4 @@
+name: otel-collector
+otlp:
+  endPoint: tempo-distributor.monitoring.svc.cluster.local
+  port: 4317
