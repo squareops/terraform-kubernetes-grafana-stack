@@ -17,6 +17,15 @@ module "pgl" {
   loki_scalable_enabled         = false
   grafana_mimir_enabled         = false
   cloudwatch_enabled            = false
+  otel_config = {
+    otel_operator_enabled  = true
+    otel_collector_enabled = true
+  }
+  tempo_config = {
+    tempo_enabled    = true
+    s3_bucket_name   = "grafana-tempo-skaf"
+    s3_bucket_region = "us-east-2"
+  }
   deployment_config = {
     hostname                            = "grafanaa.dev.skaf.squareops.in"
     storage_class_name                  = "gp2"

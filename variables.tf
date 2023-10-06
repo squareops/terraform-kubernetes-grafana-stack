@@ -76,6 +76,27 @@ variable "deployment_config" {
   description = "Configuration options for the Prometheus, Alertmanager, Loki, and Grafana deployments, including the hostname, storage class name, dashboard refresh interval, and S3 bucket configuration for Mimir."
 }
 
+variable "otel_config" {
+  type = map(any)
+  default = {
+    otel_operator_enabled  = true
+    otel_collector_enabled = true
+  }
+  description = "Configuration options for Opentelemetry and its resources"
+}
+variable "tempo_config" {
+  type = map(any)
+  default = {
+    tempo_enabled    = true
+    s3_bucket_name   = "grafana-tempo-skaf"
+    s3_bucket_region = "us-east-2"
+  }
+  description = "Configuration options for Grafana Tempo"
+}
+
+
+
+
 variable "exporter_config" {
   type = map(any)
   default = {

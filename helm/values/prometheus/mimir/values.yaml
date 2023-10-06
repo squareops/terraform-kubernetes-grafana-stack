@@ -361,6 +361,7 @@ prometheusOperator:
 
 prometheus:
   prometheusSpec:
+    enableRemoteWriteReceiver: true
     storageSpec:
       volumeClaimTemplate:
         spec:
@@ -786,7 +787,7 @@ additionalPrometheusRulesMap:
           labels:
             rulesgroup: rabbitmq
             severity: warning
-      
+
       - name: PodResource
         rules:
         - alert: MemoryHigh
@@ -812,5 +813,4 @@ additionalPrometheusRulesMap:
             severity: critical
           annotations:
             summary: OOMkilled pod `{{ $labels.pod }}`
-            description: "Pod {{ $labels.pod }} with container {{$labels.container}} in namespace {{$labels.namespace}} killed due to OutOfMemory"               
-
+            description: "Pod {{ $labels.pod }} with container {{$labels.container}} in namespace {{$labels.namespace}} killed due to OutOfMemory"
