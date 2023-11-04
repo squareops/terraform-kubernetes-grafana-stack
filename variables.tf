@@ -132,3 +132,9 @@ variable "loki_scalable_enabled" {
   type        = bool
   description = "Specify whether or not to deploy the loki scalable"
 }
+
+variable "days" {
+  description = "No of Days after which mimir data in S3 has to be deleted"
+  type        = number
+  default     = 90
+}
