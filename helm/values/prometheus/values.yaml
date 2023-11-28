@@ -576,12 +576,12 @@ additionalPrometheusRulesMap:
       - name: mongodb
         rules:
         - alert: MongoServerDown
-          expr: mongodb_up == 0
+          expr: up{job="mongodb-metrics"} == 0
           for: 1s
           labels:
             severity: warning
           annotations:
-            summary: Mongo server detected down by instance {{$labels.instance}}
+            summary: Mongo server detected down by instance {{$labels.instance}} in {{$labels.namespace}}
         - alert: HighLatency
           expr: rate(mongodb_mongod_op_latencies_latency_total[5m]) / rate(mongodb_mongod_op_latencies_ops_total[5m]) > 35000
           for: 10m
@@ -766,29 +766,3 @@ additionalPrometheusRulesMap:
             rulesgroup: rabbitmq
             severity: warning
       
-      - name: PodResource
-        rules:
-        - alert: MemoryHigh
-          expr: ((sum by(container, pod, namespace) (container_memory_working_set_bytes{namespace!="elastic-system"}) * 100) / sum by(container, pod, namespace) (cluster:namespace:pod_memory:active:kube_pod_container_resource_limits{namespace!="elastic-system"})) > 85
-          for: 0m
-          labels:
-            severity: critical
-          annotations:
-            summary: "High Memory Utilization Detected"
-            description: "Memory utilization is above 85% for pod {{$labels.pod}} with container {{$labels.container}} in namespace {{$labels.namespace}}"
-        - alert: CPUHigh
-          expr: ((sum by(container, pod, namespace) (node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{namespace!="elastic-system"}) * 100) / sum by(container, pod, namespace) (cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits{namespace!="elastic-system"})) > 85
-          for: 0m
-          labels:
-            severity: critical
-          annotations:
-            summary: "High CPU Utilization Detected"
-            description: "CPU utilization is above 85% for pod {{$labels.pod}} with container {{$labels.container}} in namespace {{$labels.namespace}}"
-        - alert: OOMKiled
-          expr: kube_pod_container_status_last_terminated_reason{reason="OOMKilled", namespace!="elastic-system"}
-          for: 0m
-          labels:
-            severity: critical
-          annotations:
-            summary: OOMkilled pod `{{ $labels.pod }}`
-            description: "Pod {{ $labels.pod }} with container {{$labels.container}} in namespace {{$labels.namespace}} killed due to OutOfMemory"               
