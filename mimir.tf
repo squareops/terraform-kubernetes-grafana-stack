@@ -51,7 +51,15 @@ module "s3_bucket_mimir" {
   versioning = {
     enabled = var.deployment_config.mimir_s3_bucket_config.versioning_enabled
   }
-
+  lifecycle_rule = [
+    {
+      id      = "mimir_s3"
+      enabled = true
+      expiration = {
+      days = var.deployment_config.mimir_s3_bucket_config.s3_object_expiration
+    }
+    }
+    ]
   server_side_encryption_configuration = {
     rule = {
       apply_server_side_encryption_by_default = {

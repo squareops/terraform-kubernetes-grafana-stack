@@ -34,6 +34,7 @@ module "pgl" {
       s3_bucket_name     = "${local.environment}-${local.name}-mimir-bucket"
       versioning_enabled = "false"
       s3_bucket_region   = local.region
+      s3_object_expiration = 90
     }
     loki_scalable_config = {
       loki_scalable_version = "5.8.8"
