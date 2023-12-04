@@ -61,6 +61,7 @@ variable "deployment_config" {
       s3_bucket_name     = ""
       versioning_enabled = ""
       s3_bucket_region   = ""
+      s3_object_expiration = ""
     }
     loki_scalable_config = {
       loki_scalable_version = "5.8.8"
