@@ -58,9 +58,9 @@ variable "deployment_config" {
     loki_internal_ingress_enabled       = false
     loki_hostname                       = ""
     mimir_s3_bucket_config = {
-      s3_bucket_name     = ""
-      versioning_enabled = ""
-      s3_bucket_region   = ""
+      s3_bucket_name       = ""
+      versioning_enabled   = ""
+      s3_bucket_region     = ""
       s3_object_expiration = ""
     }
     loki_scalable_config = {
@@ -75,9 +75,9 @@ variable "deployment_config" {
       promtail_values  = ""
     }
     tempo_config = {
-      s3_bucket_name   = ""
+      s3_bucket_name     = ""
       versioning_enabled = false
-      s3_bucket_region = ""
+      s3_bucket_region   = ""
     }
     otel_config = {
       otel_operator_enabled  = false
@@ -145,7 +145,7 @@ variable "loki_scalable_enabled" {
 }
 
 variable "tempo_enabled" {
-  type = bool
-  default = false
+  type        = bool
+  default     = false
   description = "Enable Grafana Tempo"
 }

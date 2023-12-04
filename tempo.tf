@@ -24,8 +24,8 @@ resource "helm_release" "otel-collector" {
 }
 
 resource "aws_iam_role" "s3_tempo_role" {
-  count      = var.tempo_enabled ? 1 : 0
-  name = join("-", [var.cluster_name, "tempo"])
+  count = var.tempo_enabled ? 1 : 0
+  name  = join("-", [var.cluster_name, "tempo"])
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -81,7 +81,7 @@ resource "helm_release" "tempo" {
 }
 
 module "s3_bucket_temp" {
-  count      = var.tempo_enabled ? 1 : 0
+  count                                 = var.tempo_enabled ? 1 : 0
   source                                = "terraform-aws-modules/s3-bucket/aws"
   version                               = "3.7.0"
   bucket                                = var.deployment_config.tempo_config.s3_bucket_name

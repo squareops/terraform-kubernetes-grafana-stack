@@ -751,4 +751,3 @@ additionalPrometheusRulesMap:
           labels:
             rulesgroup: rabbitmq
             severity: warning
-      

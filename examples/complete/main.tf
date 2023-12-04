@@ -33,9 +33,9 @@ module "pgl" {
     loki_internal_ingress_enabled       = false
     loki_hostname                       = "loki.dev.skaf.squareops.in"
     mimir_s3_bucket_config = {
-      s3_bucket_name     = "${local.environment}-${local.name}-mimir-bucket"
-      versioning_enabled = "false"
-      s3_bucket_region   = local.region
+      s3_bucket_name       = "${local.environment}-${local.name}-mimir-bucket"
+      versioning_enabled   = "false"
+      s3_bucket_region     = local.region
       s3_object_expiration = 90
     }
     loki_scalable_config = {
@@ -50,9 +50,9 @@ module "pgl" {
       promtail_values  = file("./helm/promtail.yaml")
     }
     tempo_config = {
-      s3_bucket_name   = "${local.environment}-${local.name}-tempo-skaf"
+      s3_bucket_name     = "${local.environment}-${local.name}-tempo-skaf"
       versioning_enabled = false
-      s3_bucket_region = local.region
+      s3_bucket_region   = local.region
     }
     otel_config = {
       otel_operator_enabled  = true
