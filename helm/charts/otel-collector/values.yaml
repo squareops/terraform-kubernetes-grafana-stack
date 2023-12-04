@@ -1,6 +1,6 @@
 name: otel-collector
 otlp:
-  endPoint: tempo-distributor.monitoring.svc.cluster.local
+  endPoint: tempo-distributor.${pgl_namespace}.svc.cluster.local
   port: 4317
 
 randomSamplingPercentage: 100

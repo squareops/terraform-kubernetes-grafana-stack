@@ -16,6 +16,11 @@ resource "helm_release" "otel-collector" {
   timeout    = 600
   namespace  = var.pgl_namespace
   depends_on = [helm_release.open-telemetry]
+  values = [
+    templatefile("${path.module}/helm/charts/otel-collector/values.yaml", {
+      pgl_namespace = var.pgl_namespace
+    })
+  ]
 }
 
 resource "aws_iam_role" "s3_tempo_role" {
