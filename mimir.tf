@@ -56,10 +56,10 @@ module "s3_bucket_mimir" {
       id      = "mimir_s3"
       enabled = true
       expiration = {
-      days = var.deployment_config.mimir_s3_bucket_config.s3_object_expiration
+        days = var.deployment_config.mimir_s3_bucket_config.s3_object_expiration
+      }
     }
-    }
-    ]
+  ]
   server_side_encryption_configuration = {
     rule = {
       apply_server_side_encryption_by_default = {
@@ -114,7 +114,7 @@ resource "kubernetes_config_map" "mimir-overview_dashboard" {
       "release" : "prometheus-operator"
     }
     annotations = {
-      "grafana_folder": "Mimir"
+      "grafana_folder" : "Mimir"
     }
   }
 
@@ -138,7 +138,7 @@ resource "kubernetes_config_map" "mimir-compactor_dashboard" {
       "release" : "prometheus-operator"
     }
     annotations = {
-      "grafana_folder": "Mimir"
+      "grafana_folder" : "Mimir"
     }
   }
 
@@ -162,7 +162,7 @@ resource "kubernetes_config_map" "mimir-object-store_dashboard" {
       "release" : "prometheus-operator"
     }
     annotations = {
-      "grafana_folder": "Mimir"
+      "grafana_folder" : "Mimir"
     }
   }
 
@@ -186,7 +186,7 @@ resource "kubernetes_config_map" "mimir-queries_dashboard" {
       "release" : "prometheus-operator"
     }
     annotations = {
-      "grafana_folder": "Mimir"
+      "grafana_folder" : "Mimir"
     }
   }
 
@@ -210,7 +210,7 @@ resource "kubernetes_config_map" "mimir-writes-resources_dashboard" {
       "release" : "prometheus-operator"
     }
     annotations = {
-      "grafana_folder": "Mimir"
+      "grafana_folder" : "Mimir"
     }
   }
 
@@ -234,7 +234,7 @@ resource "kubernetes_config_map" "mimir-writes_dashboard" {
       "release" : "prometheus-operator"
     }
     annotations = {
-      "grafana_folder": "Mimir"
+      "grafana_folder" : "Mimir"
     }
   }
 
@@ -258,7 +258,7 @@ resource "kubernetes_config_map" "mimir-reads_dashboard" {
       "release" : "prometheus-operator"
     }
     annotations = {
-      "grafana_folder": "Mimir"
+      "grafana_folder" : "Mimir"
     }
   }
 
@@ -282,7 +282,7 @@ resource "kubernetes_config_map" "mimir-reads-resources_dashboard" {
       "release" : "prometheus-operator"
     }
     annotations = {
-      "grafana_folder": "Mimir"
+      "grafana_folder" : "Mimir"
     }
   }
 
