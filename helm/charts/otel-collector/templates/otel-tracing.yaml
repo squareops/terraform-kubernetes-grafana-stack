@@ -1,0 +1,12 @@
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: otel-tracing
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "10"
+spec:
+  tracing:
+  - providers:
+    - name: otel-tracing
+    randomSamplingPercentage: {{ .Values.randomSamplingPercentage }}

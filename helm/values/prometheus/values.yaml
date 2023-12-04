@@ -224,8 +224,9 @@ grafana:
     #     access: proxy
 
   additionalDataSources:
-   ${indent(4, loki_datasource_config)}
-   ${indent(4, cw_datasource_config)}
+   ${indent(3, loki_datasource_config)}
+   ${indent(3, cw_datasource_config)}
+   ${indent(3, tempo_datasource_config)}
 
   persistence:
     enabled: true
@@ -332,6 +333,7 @@ prometheusOperator:
 
 prometheus:
   prometheusSpec:
+    enableRemoteWriteReceiver: true
     storageSpec:
       volumeClaimTemplate:
         spec:

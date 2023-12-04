@@ -1,0 +1,39 @@
+metricsGenerator:
+  enabled: true
+  config:
+    storage:
+      path: /var/tempo/wal
+      remote_write_flush_deadline: 1m
+      remote_write:
+       - url: http://prometheus-operator-kube-p-prometheus.monitoring:9090/api/v1/write
+
+traces:
+  otlp:
+    http:
+      enabled: true
+    grpc:
+      enabled: true
+  configs:
+  - name: default
+    automatic_logging:
+      backend: stdout
+      roots: false
+
+metaMonitoring:
+  serviceMonitor:
+    enabled: true
+    labels:
+      release: prometheus-operator
+      prometheus: system
+
+
+distributor:
+  config:
+    log_received_traces: true
+    log_received_spans:
+      enabled: true
+      include_all_attributes: true
+
+global_overrides:
+  metrics_generator_processors:
+    - service-graphs

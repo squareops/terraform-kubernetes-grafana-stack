@@ -50,6 +50,7 @@ variable "deployment_config" {
     loki_values_yaml                    = ""
     blackbox_values_yaml                = ""
     grafana_mimir_values_yaml           = ""
+    tempo_values_yaml                   = ""
     dashboard_refresh_interval          = ""
     grafana_enabled                     = true
     prometheus_hostname                 = ""
@@ -71,6 +72,15 @@ variable "deployment_config" {
     promtail_config = {
       promtail_version = "6.8.2"
       promtail_values  = ""
+    }
+    tempo_config = {
+      s3_bucket_name   = ""
+      versioning_enabled = false
+      s3_bucket_region = ""
+    }
+    otel_config = {
+      otel_operator_enabled  = false
+      otel_collector_enabled = false
     }
   }
   description = "Configuration options for the Prometheus, Alertmanager, Loki, and Grafana deployments, including the hostname, storage class name, dashboard refresh interval, and S3 bucket configuration for Mimir."
@@ -131,4 +141,10 @@ variable "loki_scalable_enabled" {
   default     = false
   type        = bool
   description = "Specify whether or not to deploy the loki scalable"
+}
+
+variable "tempo_enabled" {
+  type = bool
+  default = false
+  description = "Enable Grafana Tempo"
 }

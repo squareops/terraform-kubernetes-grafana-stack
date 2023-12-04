@@ -11,6 +11,13 @@ locals {
   access: proxy
   type: loki
   url: http://loki-read-headless:3100
+  jsonData:
+    derivedFields:
+      - datasourceName: Tempo
+        matcherRegex: "traceID=00-([^\\-]+)-"
+        name: traceID
+        url: "$${__value.raw}"
+        datasourceUid: tempo
   EOF
   
   cw_datasource_config = <<EOF
@@ -20,6 +27,19 @@ locals {
   jsonData:
     authType: default
     defaultRegion: us-east-2
+  EOF
+
+  tempo_datasource_config = <<EOF
+- name: Tempo
+  access: proxy
+  type: tempo
+  uid: tempo
+  url: http://tempo-query-frontend:3100
+  jsonData:
+    httpMethod: GET
+    serviceMap:
+      datasourceUid: 'prometheus'
+  version: 1
   EOF
 
 }
@@ -94,6 +114,7 @@ resource "helm_release" "prometheus_grafana" {
       min_refresh_interval   = "${var.deployment_config.dashboard_refresh_interval}",
       grafana_admin_password = "${random_password.grafana_password.result}",
       loki_datasource_config             = var.loki_scalable_enabled ? local.loki_datasource_config : "",
+      tempo_datasource_config            = var.tempo_enabled ? local.tempo_datasource_config : "",
       cw_datasource_config               = var.cloudwatch_enabled ? local.cw_datasource_config : ""
       annotations                        = var.cloudwatch_enabled ? "eks.amazonaws.com/role-arn: ${aws_iam_role.cloudwatch_role[0].arn}" : ""
     }),
@@ -108,6 +129,7 @@ resource "helm_release" "prometheus_grafana" {
       grafana_admin_password             = "${random_password.grafana_password.result}",
       enable_prometheus_internal_ingress = "${var.deployment_config.prometheus_internal_ingress_enabled}",
       loki_datasource_config             = var.loki_scalable_enabled ? local.loki_datasource_config : "",
+      tempo_datasource_config            = var.tempo_enabled ? local.tempo_datasource_config : "",
       cw_datasource_config               = var.cloudwatch_enabled ? local.cw_datasource_config : ""
       annotations                        = var.cloudwatch_enabled ? "eks.amazonaws.com/role-arn: ${aws_iam_role.cloudwatch_role[0].arn}" : ""
     }),
