@@ -75,9 +75,10 @@ variable "deployment_config" {
       promtail_values  = ""
     }
     tempo_config = {
-      s3_bucket_name     = ""
-      versioning_enabled = false
-      s3_bucket_region   = ""
+      s3_bucket_name       = ""
+      versioning_enabled   = false
+      s3_bucket_region     = ""
+      s3_object_expiration = ""
     }
     otel_config = {
       otel_operator_enabled  = false
@@ -134,6 +135,7 @@ variable "cloudwatch_enabled" {
 
 variable "cluster_name" {
   type        = string
+  default     = "demo"
   description = "Specifies the name of the EKS cluster."
 }
 
