@@ -76,6 +76,7 @@ module "pgl" {
       s3_bucket_name     = ""
       versioning_enabled = true
       s3_bucket_region   = ""
+      s3_object_expiration = "90"
     }
     otel_config = {
       otel_operator_enabled  = true
