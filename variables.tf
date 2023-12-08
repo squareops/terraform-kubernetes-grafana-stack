@@ -135,7 +135,6 @@ variable "cloudwatch_enabled" {
 
 variable "cluster_name" {
   type        = string
-  default     = "demo"
   description = "Specifies the name of the EKS cluster."
 }
 
