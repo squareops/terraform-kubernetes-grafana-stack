@@ -91,6 +91,16 @@ module "s3_bucket_temp" {
     enabled = var.deployment_config.tempo_config.versioning_enabled
   }
 
+  lifecycle_rule = [
+    {
+      id      = "tempo_s3"
+      enabled = true
+      expiration = {
+        days = var.deployment_config.tempo_config.s3_object_expiration
+      }
+    }
+  ]
+
   server_side_encryption_configuration = {
     rule = {
       apply_server_side_encryption_by_default = {

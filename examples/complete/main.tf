@@ -50,9 +50,10 @@ module "pgl" {
       promtail_values  = file("./helm/promtail.yaml")
     }
     tempo_config = {
-      s3_bucket_name     = "${local.environment}-${local.name}-tempo-skaf"
-      versioning_enabled = false
-      s3_bucket_region   = local.region
+      s3_bucket_name       = "${local.environment}-${local.name}-tempo-skaf"
+      versioning_enabled   = false
+      s3_bucket_region     = local.region
+      s3_object_expiration = "90"
     }
     otel_config = {
       otel_operator_enabled  = true
