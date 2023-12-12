@@ -399,7 +399,15 @@ prometheus:
       #   - target_label: __address__
       #     replacement: blackbox-exporter-prometheus-blackbox-exporter:9115
 
-
+prometheus-node-exporter:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 300Mi
+    requests:
+      cpu: 10m
+      memory: 50Mi
+      
 additionalPrometheusRulesMap:
   nodes:
     groups:
