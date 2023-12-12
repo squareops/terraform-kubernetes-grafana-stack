@@ -4,3 +4,21 @@ otlp:
   port: 4317
 
 randomSamplingPercentage: 100
+
+resources:
+  limits:
+    cpu: 250m
+    memory: 512Mi
+  requests:
+    cpu: 50m
+    memory: 100Mi
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "grafana-services"
+          operator: In
+          values:
+          - "true"

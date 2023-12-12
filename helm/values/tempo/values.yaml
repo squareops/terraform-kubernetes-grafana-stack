@@ -1,4 +1,11 @@
 metricsGenerator:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 200m
+      memory: 500Mi
   enabled: true
   config:
     storage:
@@ -40,6 +47,78 @@ metaMonitoring:
       release: prometheus-operator
       prometheus: system
 
+memcached:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 200m
+      memory: 500Mi
+
+compactor:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 150Mi
+    limits:
+      cpu: 200m
+      memory: 500Mi
+  # autoscaling:
+  #   enabled: true
+    
+ingester:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 200Mi
+    limits:
+      cpu: 200m
+      memory: 500Mi
+  # autoscaling:
+  #   # -- Enable autoscaling for the ingester. WARNING: Autoscaling ingesters can result in lost data. Only do this if you know what you're doing.
+  #   enabled: false
+  #   # -- Minimum autoscaling replicas for the ingester
+  #   minReplicas: 2
+  #   # -- Maximum autoscaling replicas for the ingester
+  #   maxReplicas: 3
+  #   # -- Autoscaling behavior configuration for the ingester
+  #   behavior: {}
+  #   # -- Target CPU utilisation percentage for the ingester
+  #   targetCPUUtilizationPercentage: 60
+  #   # -- Target memory utilisation percentage for the ingester
+  #   targetMemoryUtilizationPercentage:
+
+querier:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 200m
+      memory: 300Mi
+
+queryFrontend:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 200m
+      memory: 300Mi
+  # autoscaling:
+  #   # -- Enable autoscaling for the query-frontend
+  #   enabled: false
+  #   # -- Minimum autoscaling replicas for the query-frontend
+  #   minReplicas: 1
+  #   # -- Maximum autoscaling replicas for the query-frontend
+  #   maxReplicas: 3
+  #   # -- Autoscaling behavior configuration for the query-frontend
+  #   behavior: {}
+  #   # -- Target CPU utilisation percentage for the query-frontend
+  #   targetCPUUtilizationPercentage: 60
+  #   # -- Target memory utilisation percentage for the query-frontend
+  #   targetMemoryUtilizationPercentage:
 
 distributor:
   config:
@@ -47,6 +126,26 @@ distributor:
     log_received_spans:
       enabled: true
       include_all_attributes: true
+  resources:
+      requests:
+        cpu: 50m
+        memory: 100Mi
+      limits:
+        cpu: 200m
+        memory: 300Mi
+  # autoscaling:
+  #   # -- Enable autoscaling for the distributor
+  #   enabled: true
+  #   # -- Minimum autoscaling replicas for the distributor
+  #   minReplicas: 1
+  #   # -- Maximum autoscaling replicas for the distributor
+  #   maxReplicas: 3
+  #   # -- Autoscaling behavior configuration for the distributor
+  #   behavior: {}
+  #   # -- Target CPU utilisation percentage for the distributor
+  #   targetCPUUtilizationPercentage: 60
+  #   # -- Target memory utilisation percentage for the distributor
+  #   targetMemoryUtilizationPercentage:
 
 global_overrides:
   metrics_generator_processors:
