@@ -8,7 +8,7 @@ resource "helm_release" "open-telemetry" {
   repository = "https://open-telemetry.github.io/opentelemetry-helm-charts"
   depends_on = [helm_release.prometheus_grafana]
   values = [
-    templatefile("${path.module}/helm/charts/values/otel-operator.yaml", {
+    templatefile("${path.module}/helm/values/otel-operator.yaml", {
       pgl_namespace = var.pgl_namespace
     })
   ]
