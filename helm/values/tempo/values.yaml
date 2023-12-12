@@ -1,4 +1,11 @@
 metricsGenerator:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 200m
+      memory: 500Mi
   enabled: true
   config:
     storage:
@@ -41,15 +48,6 @@ metaMonitoring:
       prometheus: system
 
 memcached:
-  resources:
-    requests:
-      cpu: 50m
-      memory: 100Mi
-    limits:
-      cpu: 200m
-      memory: 500Mi
-
-metricsGenerator:
   resources:
     requests:
       cpu: 50m
