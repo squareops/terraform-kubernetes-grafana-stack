@@ -166,6 +166,24 @@ alertmanager:
 
 ## Node affinity for particular node in which labels key is "Infra-Services" and value is "true" and creating PVC
 
+nginx:
+  resources:
+      limits:
+        cpu: 100m
+        memory: 250Mi
+      requests:
+        cpu: 10m
+        memory: 50Mi
+
+grafana-agent-operator:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 500Mi
+    requests:
+      cpu: 50m
+      memory: 200Mi
+
 grafana:
   enabled: ${grafana_enabled}
   image:
