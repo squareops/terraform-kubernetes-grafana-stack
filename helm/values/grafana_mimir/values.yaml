@@ -1,6 +1,6 @@
 metaMonitoring:
   prometheusRule:
-    enabled: true
+    enabled: false
     mimirAlerts: true
     mimirRules: true
     groups:
@@ -22,9 +22,9 @@ metaMonitoring:
       - expr: sum(rate(cortex_request_duration_seconds_count[1m])) by (cluster, job)
         record: cluster_job:cortex_request_duration_seconds_count:sum_rate
   serviceMonitor:
-    enabled: true
+    enabled: false
   grafanaAgent:
-    enabled: true
+    enabled: false
     installOperator: true
     metrics:
       additionalRemoteWriteConfigs:
