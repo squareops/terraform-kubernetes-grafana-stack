@@ -327,7 +327,15 @@ prometheusOperator:
             values:
             - "true"
 
-
+nodeExporter:
+  enabled: true
+  resources:
+    limits:
+      cpu: 100m
+      memory: 300Mi
+    requests:
+      cpu: 50m
+      memory: 100Mi
 
 ## Prometheus dynamic volume provisioning
 

@@ -78,8 +78,7 @@ resource "helm_release" "loki_scalable" {
   depends_on = [
     kubernetes_namespace.monitoring,
     module.loki_scalable_s3_bucket,
-    helm_release.prometheus_grafana,
-    helm_release.grafana_mimir
+    helm_release.prometheus_grafana
   ]
   name            = "loki-scalable"
   namespace       = var.pgl_namespace
@@ -102,8 +101,7 @@ resource "helm_release" "promtail" {
   count = var.loki_scalable_enabled ? 1 : 0
   depends_on = [
     kubernetes_namespace.monitoring,
-    helm_release.prometheus_grafana,
-    helm_release.grafana_mimir
+    helm_release.prometheus_grafana
   ]
   name            = "promtail"
   namespace       = var.pgl_namespace
