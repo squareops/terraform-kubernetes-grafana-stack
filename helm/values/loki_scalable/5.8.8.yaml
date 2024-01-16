@@ -18,7 +18,12 @@ monitoring:
   selfMonitoring:
     enabled: true
     grafanaAgent:
-      installOperator: false
+      installOperator: true
+      annotations: {}
+      labels: {}
+      enableConfigReadAPI: false
+      priorityClassName: null
+      tolerations: []
     podLogs:
       apiVersion: monitoring.grafana.com/v1alpha1
       annotations: {}
