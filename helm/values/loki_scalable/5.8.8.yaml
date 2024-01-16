@@ -146,27 +146,3 @@ gateway:
             operator: In
             values:
             - "true"
-      
-monitoring:
-  selfMonitoring:
-    enabled: true
-    tenant:
-      name: "self-monitoring"
-      secretNamespace: "{{ .Release.Namespace }}"
-    grafanaAgent:
-      installOperator: true
-      annotations: {}
-      labels: {}
-      enableConfigReadAPI: false
-      priorityClassName: null
-      tolerations: []
-    podLogs:
-      apiVersion: monitoring.grafana.com/v1alpha1
-      annotations: {}
-      labels: {}
-      relabelings: []
-    logsInstance:
-      annotations: {}
-      labels: {}
-      clients: null
-
