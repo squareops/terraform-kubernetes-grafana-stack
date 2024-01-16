@@ -1124,13 +1124,13 @@ resource "time_sleep" "wait_60_sec" {
 }
 
 resource "null_resource" "grafana_homepage" {
-count      = var.deployment_config.grafana_enabled ? 1 : 0
-depends_on = [time_sleep.wait_60_sec]
-provisioner "local-exec" {
-interpreter = ["/bin/bash", "-c"]
-command     = <<EOT
-curl -H 'Content-Type: application/json' -X PUT "https://${nonsensitive(data.kubernetes_secret.prometheus-operator-grafana[0].data["admin-user"])}:${nonsensitive(data.kubernetes_secret.prometheus-operator-grafana[0].data["admin-password"])}@${var.deployment_config.hostname}/api/org/preferences" -d'{ "theme": "",  "homeDashboardUId": "grafana_home_dashboard",  "timezone":"utc"}'
-EOT
+  count      = var.deployment_config.grafana_enabled ? 1 : 0
+  depends_on = [time_sleep.wait_60_sec]
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+    command     = <<EOT
+    curl -H 'Content-Type: application/json' -X PUT "https://${nonsensitive(data.kubernetes_secret.prometheus-operator-grafana[0].data["admin-user"])}:${nonsensitive(data.kubernetes_secret.prometheus-operator-grafana[0].data["admin-password"])}@${var.deployment_config.hostname}/api/org/preferences" -d'{ "theme": "",  "homeDashboardUId": "grafana_home_dashboard",  "timezone":"utc"}'
+    EOT
   }
 }
 
