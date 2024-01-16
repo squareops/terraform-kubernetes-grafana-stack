@@ -19,6 +19,15 @@ monitoring:
     enabled: true
     grafanaAgent:
       installOperator: false
+    podLogs:
+      apiVersion: monitoring.grafana.com/v1alpha1
+      annotations: {}
+      labels: {}
+      relabelings: []
+    logsInstance:
+      annotations: {}
+      labels: {}
+      clients: null
   serviceMonitor:
     labels:
       release: "prometheus-operator"
@@ -30,6 +39,8 @@ monitoring:
     enabled: true
     annotations:
       eks.amazonaws.com/role-arn: ${loki_scalable_s3_role_arn}
+
+
 
 write:
   # -- Number of replicas for the write
