@@ -664,7 +664,7 @@ additionalPrometheusRulesMap:
             summary: Redis disconnected slaves (instance {{ $labels.instance }})
             description: "Redis not replicating for all slaves. Consider reviewing the redis replication status.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
         - alert: RedisTooManyConnections
-          expr: redis_connected_clients > 100
+          expr: redis_connected_clients > 1750
           for: 2m
           labels:
             severity: warning
