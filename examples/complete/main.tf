@@ -13,11 +13,11 @@ module "pgl" {
   source                        = "git@github.com:sq-ia/terraform-kubernetes-grafana.git"
   cluster_name                  = "cluster-name"
   kube_prometheus_stack_enabled = true
-  loki_enabled                  = true
+  loki_enabled                  = false
   loki_scalable_enabled         = false
   grafana_mimir_enabled         = false
   cloudwatch_enabled            = true
-  tempo_enabled                 = true
+  tempo_enabled                 = false
   deployment_config = {
     hostname                            = "grafana.dev.skaf.squareops.in"
     storage_class_name                  = "gp2"
@@ -35,7 +35,7 @@ module "pgl" {
     mimir_s3_bucket_config = {
       s3_bucket_name       = "${local.environment}-${local.name}-mimir-bucket"
       versioning_enabled   = "false"
-      s3_bucket_region     = local.region
+      s3_bucket_region     = "${local.region}"
       s3_object_expiration = 90
     }
     loki_scalable_config = {
@@ -43,7 +43,7 @@ module "pgl" {
       loki_scalable_values  = file("./helm/loki-scalable.yaml")
       s3_bucket_name        = "${local.environment}-${local.name}-loki-scalable-bucket"
       versioning_enabled    = "false"
-      s3_bucket_region      = local.region
+      s3_bucket_region      = "${local.region}"
     }
     promtail_config = {
       promtail_version = "6.8.2"
@@ -56,8 +56,8 @@ module "pgl" {
       s3_object_expiration = "90"
     }
     otel_config = {
-      otel_operator_enabled  = true
-      otel_collector_enabled = true
+      otel_operator_enabled  = false
+      otel_collector_enabled = false
     }
   }
   exporter_config = {
@@ -85,6 +85,6 @@ module "pgl" {
     push_gateway     = false
     elasticsearch    = false
     prometheustosd   = false
-    ethtool_exporter = true
+    ethtool_exporter = false
   }
 }
