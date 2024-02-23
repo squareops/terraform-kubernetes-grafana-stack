@@ -18,7 +18,7 @@ storage:
     backend: s3
     s3:
       bucket: ${tempo_s3_bucket_name}
-      endpoint: s3.dualstack.${s3_bucket_region}.amazonaws.com
+      endpoint: s3.${s3_bucket_region}.amazonaws.com
       region: ${s3_bucket_region}
       insecure: false
 serviceAccount:
