@@ -58,7 +58,7 @@ mimir:
       backend: s3
       s3:
         bucket_name: ${s3_bucket_name}
-        endpoint: s3.amazonaws.com
+        endpoint: s3.${s3_bucket_region}.amazonaws.com
         region: ${s3_bucket_region}
         sse:
           type: "SSE-S3"
