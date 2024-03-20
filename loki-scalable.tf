@@ -88,7 +88,7 @@ module "loki_scalable_s3_bucket" {
   count                                 = var.loki_scalable_enabled ? 1 : 0
   depends_on                            = [helm_release.prometheus_grafana, helm_release.grafana_mimir]
   source                                = "terraform-aws-modules/s3-bucket/aws"
-  version                               = "3.7.0"
+  version                               = "4.1.0"
   bucket                                = var.deployment_config.loki_scalable_config.s3_bucket_name
   force_destroy                         = var.loki_scalable_s3_bucket_force_destroy
   attach_deny_insecure_transport_policy = var.loki_scalable_s3_bucket_attach_deny_insecure_transport_policy

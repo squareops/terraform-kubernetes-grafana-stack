@@ -86,22 +86,13 @@ resource "aws_s3_bucket_lifecycle_configuration" "mimir_s3_bucket_lifecycle_rule
 module "s3_bucket_mimir" {
   count                                 = var.grafana_mimir_enabled ? 1 : 0
   source                                = "terraform-aws-modules/s3-bucket/aws"
-  version                               = "3.7.0"
+  version                               = "4.1.0"
   bucket                                = var.deployment_config.mimir_s3_bucket_config.s3_bucket_name
   force_destroy                         = var.mimir_s3_bucket_force_destroy
   attach_deny_insecure_transport_policy = var.mimir_s3_bucket_attach_deny_insecure_transport_policy
   versioning = {
     enabled = var.deployment_config.mimir_s3_bucket_config.versioning_enabled
   }
-  # lifecycle_rule = [
-  #   {
-  #     id      = "mimir_s3"
-  #     enabled = true
-  #     expiration = {
-  #       days = var.deployment_config.mimir_s3_bucket_config.s3_object_expiration
-  #     }
-  #   }
-  # ]
   server_side_encryption_configuration = {
     rule = {
       apply_server_side_encryption_by_default = {
