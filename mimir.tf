@@ -41,25 +41,67 @@ resource "aws_iam_role" "mimir_role" {
   }
 }
 
+resource "aws_s3_bucket_object_lock_configuration" "mimir-s3-bucket-object_lock" {
+  count  = var.grafana_mimir_enabled  && var.mimir_s3_bucket_enable_object_lock ? 1 : 0
+  bucket = var.grafana_mimir_enabled ? module.s3_bucket_mimir[0].s3_bucket_id : null
+    rule {
+      default_retention {
+        mode  = var.mimir_s3_bucket_object_lock_mode
+        days  = var.mimir_s3_bucket_object_lock_days > 0 ? var.mimir_s3_bucket_object_lock_days : var.mimir_s3_bucket_object_lock_years * 365
+      }
+    }
+  }
+
+resource "aws_s3_bucket_lifecycle_configuration" "mimir_s3_bucket_lifecycle_rules" {
+  bucket = var.grafana_mimir_enabled ? module.s3_bucket_mimir[0].s3_bucket_id : null
+  
+  dynamic "rule" {
+    for_each = var.mimir_s3_bucket_lifecycle_rules
+
+    content {
+      id = rule.value.id
+
+      expiration {
+        days = rule.value.expiration_days
+      }
+
+      filter {
+        prefix = rule.value.filter_prefix
+      }
+
+      status = rule.value.status
+
+      dynamic "transition" {
+        for_each = rule.value.transitions
+
+        content {
+          days          = transition.value.days
+          storage_class = transition.value.storage_class
+        }
+      }
+    }
+  }
+}
+
 module "s3_bucket_mimir" {
   count                                 = var.grafana_mimir_enabled ? 1 : 0
   source                                = "terraform-aws-modules/s3-bucket/aws"
   version                               = "3.7.0"
   bucket                                = var.deployment_config.mimir_s3_bucket_config.s3_bucket_name
-  force_destroy                         = true
-  attach_deny_insecure_transport_policy = true
+  force_destroy                         = var.mimir_s3_bucket_force_destroy
+  attach_deny_insecure_transport_policy = var.mimir_s3_bucket_attach_deny_insecure_transport_policy
   versioning = {
     enabled = var.deployment_config.mimir_s3_bucket_config.versioning_enabled
   }
-  lifecycle_rule = [
-    {
-      id      = "mimir_s3"
-      enabled = true
-      expiration = {
-        days = var.deployment_config.mimir_s3_bucket_config.s3_object_expiration
-      }
-    }
-  ]
+  # lifecycle_rule = [
+  #   {
+  #     id      = "mimir_s3"
+  #     enabled = true
+  #     expiration = {
+  #       days = var.deployment_config.mimir_s3_bucket_config.s3_object_expiration
+  #     }
+  #   }
+  # ]
   server_side_encryption_configuration = {
     rule = {
       apply_server_side_encryption_by_default = {
@@ -68,14 +110,14 @@ module "s3_bucket_mimir" {
     }
   }
   # S3 bucket-level Public Access Block configuration
-  block_public_acls       = true
-  ignore_public_acls      = true
-  block_public_policy     = true
-  restrict_public_buckets = true
+  block_public_acls       = var.mimir_s3_bucket_block_public_acls
+  block_public_policy     = var.mimir_s3_bucket_block_public_policy
+  ignore_public_acls      = var.mimir_s3_bucket_ignore_public_acls
+  restrict_public_buckets = var.mimir_s3_bucket_restrict_public_buckets
 
   # S3 Bucket Ownership Controls
-  object_ownership         = "BucketOwnerPreferred"
-  control_object_ownership = true
+  object_ownership         = var.mimir_s3_bucket_object_ownership
+  control_object_ownership = var.mimir_s3_bucket_control_object_ownership
 }
 
 resource "helm_release" "grafana_mimir" {

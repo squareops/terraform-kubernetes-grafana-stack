@@ -42,14 +42,56 @@ resource "aws_iam_role" "loki_scalable_role" {
   }
 }
 
+resource "aws_s3_bucket_object_lock_configuration" "loki-scalable-s3-bucket-object_lock" {
+  count  = var.loki_scalable_enabled && var.loki_scalable_s3_bucket_enable_object_lock ? 1 : 0
+  bucket = var.loki_scalable_enabled ? module.loki_scalable_s3_bucket[0].s3_bucket_id : null
+    rule {
+      default_retention {
+        mode  = var.loki_scalable_s3_bucket_object_lock_mode
+        days  = var.loki_scalable_s3_bucket_object_lock_days > 0 ? var.loki_scalable_s3_bucket_object_lock_days : var.loki_scalable_s3_bucket_object_lock_years * 365
+      }
+    }
+  }
+
+resource "aws_s3_bucket_lifecycle_configuration" "loki_scalable_s3_bucket_lifecycle_rules" {
+  bucket = var.loki_scalable_enabled ? module.loki_scalable_s3_bucket[0].s3_bucket_id : null
+  
+  dynamic "rule" {
+    for_each = var.loki_scalable_s3_bucket_lifecycle_rules
+
+    content {
+      id = rule.value.id
+
+      expiration {
+        days = rule.value.expiration_days
+      }
+
+      filter {
+        prefix = rule.value.filter_prefix
+      }
+
+      status = rule.value.status
+
+      dynamic "transition" {
+        for_each = rule.value.transitions
+
+        content {
+          days          = transition.value.days
+          storage_class = transition.value.storage_class
+        }
+      }
+    }
+  }
+}
+
 module "loki_scalable_s3_bucket" {
   count                                 = var.loki_scalable_enabled ? 1 : 0
   depends_on                            = [helm_release.prometheus_grafana, helm_release.grafana_mimir]
   source                                = "terraform-aws-modules/s3-bucket/aws"
   version                               = "3.7.0"
   bucket                                = var.deployment_config.loki_scalable_config.s3_bucket_name
-  force_destroy                         = true
-  attach_deny_insecure_transport_policy = false
+  force_destroy                         = var.loki_scalable_s3_bucket_force_destroy
+  attach_deny_insecure_transport_policy = var.loki_scalable_s3_bucket_attach_deny_insecure_transport_policy
 
   versioning = {
     enabled = var.deployment_config.loki_scalable_config.versioning_enabled
@@ -63,10 +105,10 @@ module "loki_scalable_s3_bucket" {
     }
   }
   # S3 bucket-level Public Access Block configuration
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
+  block_public_acls       = var.loki_scalable_s3_bucket_block_public_acls
+  block_public_policy     = var.loki_scalable_s3_bucket_block_public_policy
+  ignore_public_acls      = var.loki_scalable_s3_bucket_ignore_public_acls
+  restrict_public_buckets = var.loki_scalable_s3_bucket_restrict_public_buckets
 
   # S3 Bucket Ownership Controls
   object_ownership         = "BucketOwnerPreferred"
