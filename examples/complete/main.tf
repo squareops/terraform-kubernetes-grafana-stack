@@ -1,7 +1,8 @@
 locals {
-  name        = "grafana"
-  region      = "us-west-2"
-  environment = "prod"
+  name           = "grafana"
+  region         = "ap-northeast-1"
+  aws_account_id = "767398031518"
+  environment    = "stg"
   additional_tags = {
     Owner      = "organization_name"
     Expires    = "Never"
@@ -63,32 +64,36 @@ locals {
   }
 }
 module "pgl" {
-  source                                     = "../../"
-  cluster_name                               = "proddd-eks"
-  kube_prometheus_stack_enabled              = true
-  loki_enabled                               = false
-  loki_scalable_enabled                      = true
-  grafana_mimir_enabled                      = true
-  cloudwatch_enabled                         = true
-  tempo_enabled                              = true
-  mimir_s3_bucket_lifecycle_rules            = local.mimir_s3_bucket_lifecycle_rules
-  mimir_s3_bucket_object_lock_mode           = "GOVERNANCE"
-  mimir_s3_bucket_object_lock_days           = "0"
-  mimir_s3_bucket_object_lock_years          = "2"
-  mimir_s3_bucket_enable_object_lock         = true
-  loki_scalable_s3_bucket_lifecycle_rules    = local.loki_scalable_s3_bucket_lifecycle_rules
-  loki_scalable_s3_bucket_object_lock_mode   = "GOVERNANCE"
-  loki_scalable_s3_bucket_object_lock_days   = "0"
-  loki_scalable_s3_bucket_object_lock_years  = "2"
-  loki_scalable_s3_bucket_enable_object_lock = true
-  tempo_s3_bucket_lifecycle_rules            = local.tempo_s3_bucket_lifecycle_rules
-  tempo_s3_bucket_object_lock_mode           = "GOVERNANCE"
-  tempo_s3_bucket_object_lock_days           = "0"
-  tempo_s3_bucket_object_lock_years          = "2"
-  tempo_s3_bucket_enable_object_lock         = true
+  source                                         = "https://github.com/sq-ia/terraform-kubernetes-grafana.git"
+  cluster_name                                   = "stg-rachit"
+  aws_account_id                                 = local.aws_account_id
+  kube_prometheus_stack_enabled                  = true
+  loki_enabled                                   = false
+  loki_scalable_enabled                          = true
+  grafana_mimir_enabled                          = true
+  cloudwatch_enabled                             = true
+  tempo_enabled                                  = true
+  mimir_s3_bucket_lifecycle_rule_enabled         = true
+  mimir_s3_bucket_lifecycle_rules                = local.mimir_s3_bucket_lifecycle_rules
+  mimir_s3_bucket_object_lock_mode               = "GOVERNANCE"
+  mimir_s3_bucket_object_lock_days               = "10"
+  mimir_s3_bucket_object_lock_years              = "0"
+  mimir_s3_bucket_enable_object_lock             = true
+  loki_scalable_s3_bucket_lifecycle_rule_enabled = true
+  loki_scalable_s3_bucket_lifecycle_rules        = local.loki_scalable_s3_bucket_lifecycle_rules
+  loki_scalable_s3_bucket_object_lock_mode       = "GOVERNANCE"
+  loki_scalable_s3_bucket_object_lock_days       = "10"
+  loki_scalable_s3_bucket_object_lock_years      = "0"
+  loki_scalable_s3_bucket_enable_object_lock     = true
+  tempo_s3_bucket_lifecycle_rule_enabled         = true
+  tempo_s3_bucket_lifecycle_rules                = local.tempo_s3_bucket_lifecycle_rules
+  tempo_s3_bucket_object_lock_mode               = "GOVERNANCE"
+  tempo_s3_bucket_object_lock_days               = "10"
+  tempo_s3_bucket_object_lock_years              = "0"
+  tempo_s3_bucket_enable_object_lock             = true
 
   deployment_config = {
-    hostname                            = "grafana-test.atmosly.in"
+    hostname                            = "grafana.test.atmosly.in"
     storage_class_name                  = "gp2"
     prometheus_values_yaml              = file("./helm/prometheus.yaml")
     loki_values_yaml                    = file("./helm/loki.yaml")
@@ -97,15 +102,14 @@ module "pgl" {
     tempo_values_yaml                   = file("./helm/tempo.yaml")
     dashboard_refresh_interval          = "10"
     grafana_enabled                     = true
-    prometheus_hostname                 = "prometh.ldc.squareops.in"
-    prometheus_internal_ingress_enabled = false
-    loki_internal_ingress_enabled       = false
-    loki_hostname                       = "loki.ldc.squareops.in"
+    prometheus_hostname                 = "prometh.test.atmosly.in"
+    prometheus_internal_ingress_enabled = true
+    loki_internal_ingress_enabled       = true
+    loki_hostname                       = "loki.test.atmosly.in"
     mimir_s3_bucket_config = {
-      s3_bucket_name       = "${local.environment}-${local.name}-mimir-s3-bucket"
-      versioning_enabled   = "true"
-      s3_bucket_region     = local.region
-      # s3_object_expiration = 90
+      s3_bucket_name     = "${local.environment}-${local.name}-mimir-s3-bucket"
+      versioning_enabled = "true"
+      s3_bucket_region   = local.region
     }
     loki_scalable_config = {
       loki_scalable_version = "5.8.8"
@@ -119,10 +123,9 @@ module "pgl" {
       promtail_values  = file("./helm/promtail.yaml")
     }
     tempo_config = {
-      s3_bucket_name       = "${local.environment}-${local.name}-tempo-bucket"
-      versioning_enabled   = true
-      s3_bucket_region     = local.region
-     # s3_object_expiration = "90"
+      s3_bucket_name     = "${local.environment}-${local.name}-tempo-bucket"
+      versioning_enabled = true
+      s3_bucket_region   = local.region
     }
     otel_config = {
       otel_operator_enabled  = true
