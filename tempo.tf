@@ -37,7 +37,7 @@ resource "aws_iam_role" "s3_tempo_role" {
       {
         Effect = "Allow",
         Principal = {
-          Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.oidc_provider}"
+          Federated = "arn:aws:iam::${var.aws_account_id}:oidc-provider/${local.oidc_provider}"
         },
         Action = "sts:AssumeRoleWithWebIdentity"
       }
@@ -88,17 +88,19 @@ resource "helm_release" "tempo" {
 resource "aws_s3_bucket_object_lock_configuration" "tempo-s3-bucket-object_lock" {
   count  = var.tempo_enabled && var.tempo_s3_bucket_enable_object_lock ? 1 : 0
   bucket = var.tempo_enabled ? module.s3_bucket_temp[0].s3_bucket_id : null
-    rule {
-      default_retention {
-        mode  = var.tempo_s3_bucket_object_lock_mode
-        days  = var.tempo_s3_bucket_object_lock_days > 0 ? var.tempo_s3_bucket_object_lock_days : var.tempo_s3_bucket_object_lock_years * 365
-      }
+  rule {
+    default_retention {
+      mode  = var.tempo_s3_bucket_object_lock_mode
+      days  = var.tempo_s3_bucket_object_lock_days > 0 ? var.tempo_s3_bucket_object_lock_days : null
+      years = var.tempo_s3_bucket_object_lock_years > 0 ? var.tempo_s3_bucket_object_lock_years : null
     }
   }
+}
 
 resource "aws_s3_bucket_lifecycle_configuration" "tempo_s3_bucket_lifecycle_rules" {
+  count  = var.tempo_s3_bucket_lifecycle_rule_enabled ? 1 : 0
   bucket = var.tempo_enabled ? module.s3_bucket_temp[0].s3_bucket_id : null
-  
+
   dynamic "rule" {
     for_each = var.tempo_s3_bucket_lifecycle_rules
 

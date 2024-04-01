@@ -8,13 +8,14 @@ resource "aws_iam_role" "loki_scalable_role" {
       {
         Effect = "Allow",
         Principal = {
-          Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.oidc_provider}"
+          Federated = "arn:aws:iam::${var.aws_account_id}:oidc-provider/${local.oidc_provider}"
+
         },
         Action = "sts:AssumeRoleWithWebIdentity",
         Condition = {
           StringEquals = {
             "${local.oidc_provider}:aud" = "sts.amazonaws.com",
-            "${local.oidc_provider}:sub" = "system:serviceaccount:monitoring:loki-canary"
+            "${local.oidc_provider}:sub" = "system:serviceaccount:${var.pgl_namespace}:loki-canary"
           }
         }
       }
@@ -45,17 +46,19 @@ resource "aws_iam_role" "loki_scalable_role" {
 resource "aws_s3_bucket_object_lock_configuration" "loki-scalable-s3-bucket-object_lock" {
   count  = var.loki_scalable_enabled && var.loki_scalable_s3_bucket_enable_object_lock ? 1 : 0
   bucket = var.loki_scalable_enabled ? module.loki_scalable_s3_bucket[0].s3_bucket_id : null
-    rule {
-      default_retention {
-        mode  = var.loki_scalable_s3_bucket_object_lock_mode
-        days  = var.loki_scalable_s3_bucket_object_lock_days > 0 ? var.loki_scalable_s3_bucket_object_lock_days : var.loki_scalable_s3_bucket_object_lock_years * 365
-      }
+  rule {
+    default_retention {
+      mode  = var.loki_scalable_s3_bucket_object_lock_mode
+      days  = var.loki_scalable_s3_bucket_object_lock_days > 0 ? var.loki_scalable_s3_bucket_object_lock_days : null
+      years = var.loki_scalable_s3_bucket_object_lock_years > 0 ? var.loki_scalable_s3_bucket_object_lock_years : null
     }
   }
+}
 
 resource "aws_s3_bucket_lifecycle_configuration" "loki_scalable_s3_bucket_lifecycle_rules" {
+  count  = var.loki_scalable_s3_bucket_lifecycle_rule_enabled ? 1 : 0
   bucket = var.loki_scalable_enabled ? module.loki_scalable_s3_bucket[0].s3_bucket_id : null
-  
+
   dynamic "rule" {
     for_each = var.loki_scalable_s3_bucket_lifecycle_rules
 
@@ -111,14 +114,14 @@ module "loki_scalable_s3_bucket" {
   restrict_public_buckets = var.loki_scalable_s3_bucket_restrict_public_buckets
 
   # S3 Bucket Ownership Controls
-  object_ownership         = "BucketOwnerPreferred"
-  control_object_ownership = true
+  object_ownership         = var.loki_scalable_s3_bucket_object_ownership
+  control_object_ownership = var.loki_scalable_s3_bucket_control_object_ownership
 }
 
 resource "helm_release" "loki_scalable" {
   count = var.loki_scalable_enabled ? 1 : 0
   depends_on = [
-    kubernetes_namespace.monitoring,
+    var.pgl_namespace,
     module.loki_scalable_s3_bucket,
     helm_release.prometheus_grafana
   ]

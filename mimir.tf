@@ -7,13 +7,13 @@ resource "aws_iam_role" "mimir_role" {
       {
         Effect = "Allow",
         Principal = {
-          Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.oidc_provider}"
+          Federated = "arn:aws:iam::${var.aws_account_id}:oidc-provider/${local.oidc_provider}"
         },
         Action = "sts:AssumeRoleWithWebIdentity",
         Condition = {
           StringEquals = {
             "${local.oidc_provider}:aud" = "sts.amazonaws.com",
-            "${local.oidc_provider}:sub" = "system:serviceaccount:monitoring:grafana-mimir-sa"
+            "${local.oidc_provider}:sub" = "system:serviceaccount:${var.pgl_namespace}:grafana-mimir-sa"
           }
         }
       }
@@ -42,19 +42,21 @@ resource "aws_iam_role" "mimir_role" {
 }
 
 resource "aws_s3_bucket_object_lock_configuration" "mimir-s3-bucket-object_lock" {
-  count  = var.grafana_mimir_enabled  && var.mimir_s3_bucket_enable_object_lock ? 1 : 0
+  count  = var.grafana_mimir_enabled && var.mimir_s3_bucket_enable_object_lock ? 1 : 0
   bucket = var.grafana_mimir_enabled ? module.s3_bucket_mimir[0].s3_bucket_id : null
-    rule {
-      default_retention {
-        mode  = var.mimir_s3_bucket_object_lock_mode
-        days  = var.mimir_s3_bucket_object_lock_days > 0 ? var.mimir_s3_bucket_object_lock_days : var.mimir_s3_bucket_object_lock_years * 365
-      }
+  rule {
+    default_retention {
+      mode  = var.mimir_s3_bucket_object_lock_mode
+      days  = var.mimir_s3_bucket_object_lock_days > 0 ? var.mimir_s3_bucket_object_lock_days : null
+      years = var.mimir_s3_bucket_object_lock_years > 0 ? var.mimir_s3_bucket_object_lock_years : null
     }
   }
+}
 
 resource "aws_s3_bucket_lifecycle_configuration" "mimir_s3_bucket_lifecycle_rules" {
+  count  = var.mimir_s3_bucket_lifecycle_rule_enabled ? 1 : 0
   bucket = var.grafana_mimir_enabled ? module.s3_bucket_mimir[0].s3_bucket_id : null
-  
+
   dynamic "rule" {
     for_each = var.mimir_s3_bucket_lifecycle_rules
 
@@ -113,7 +115,7 @@ module "s3_bucket_mimir" {
 
 resource "helm_release" "grafana_mimir" {
   count      = var.grafana_mimir_enabled ? 1 : 0
-  depends_on = [kubernetes_namespace.monitoring]
+  depends_on = [var.pgl_namespace]
   name       = "grafana-mimir"
   chart      = "mimir-distributed"
   version    = var.grafana_mimir_version
