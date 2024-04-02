@@ -44,6 +44,14 @@ monitoring:
     enabled: true
     annotations:
       eks.amazonaws.com/role-arn: ${loki_scalable_s3_role_arn}
+    
+    resources:
+      limits:
+        cpu: 200m
+        memory: 150Mi
+      requests:
+        cpu: 50m
+        memory: 50Mi
 
 
 
@@ -65,6 +73,13 @@ write:
             operator: In
             values:
             - "true"
+  resources:
+      limits:
+        cpu: 200m
+        memory: 500Mi
+      requests:
+        cpu: 100m
+        memory: 400Mi
 
 read:
   # -- Number of replicas for the read
@@ -96,6 +111,15 @@ read:
             values:
             - "true"
 
+  resources:
+      limits:
+        cpu: 200m
+        memory: 300Mi
+      requests:
+        cpu: 100m
+        memory: 200Mi
+    
+
 backend:
   # -- Number of replicas for the backend
   replicas: 2
@@ -114,6 +138,13 @@ backend:
             operator: In
             values:
             - "true"
+  resources:
+      limits:
+        cpu: 200m
+        memory: 200Mi
+      requests:
+        cpu: 100m
+        memory: 100Mi
 
 
 
@@ -151,3 +182,11 @@ gateway:
             operator: In
             values:
             - "true"
+
+  resources:
+      limits:
+        cpu: 200m
+        memory: 200Mi
+      requests:
+        cpu: 100m
+        memory: 100Mi
