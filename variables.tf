@@ -64,26 +64,34 @@ variable "deployment_config" {
     loki_internal_ingress_enabled       = false
     loki_hostname                       = ""
     mimir_s3_bucket_config = {
-      s3_bucket_name     = ""
-      versioning_enabled = ""
-      s3_bucket_region   = ""
-
+      s3_bucket_name                    = ""
+      versioning_enabled                = ""
+      s3_bucket_region                  = ""
+      mimir_s3_bucket_object_lock_mode  = ""
+      mimir_s3_bucket_object_lock_days  = ""
+      mimir_s3_bucket_object_lock_years = ""
     }
     loki_scalable_config = {
-      loki_scalable_version = "5.8.8"
-      loki_scalable_values  = ""
-      s3_bucket_name        = ""
-      versioning_enabled    = ""
-      s3_bucket_region      = ""
+      loki_scalable_version                     = "5.8.8"
+      loki_scalable_values                      = ""
+      s3_bucket_name                            = ""
+      versioning_enabled                        = ""
+      s3_bucket_region                          = ""
+      loki_scalable_s3_bucket_object_lock_mode  = ""
+      loki_scalable_s3_bucket_object_lock_days  = ""
+      loki_scalable_s3_bucket_object_lock_years = ""
     }
     promtail_config = {
       promtail_version = "6.8.2"
       promtail_values  = ""
     }
     tempo_config = {
-      s3_bucket_name     = ""
-      versioning_enabled = false
-      s3_bucket_region   = ""
+      s3_bucket_name                    = ""
+      versioning_enabled                = false
+      s3_bucket_region                  = ""
+      tempo_s3_bucket_object_lock_mode  = ""
+      tempo_s3_bucket_object_lock_days  = ""
+      tempo_s3_bucket_object_lock_years = ""
     }
     otel_config = {
       otel_operator_enabled  = false
@@ -138,7 +146,7 @@ variable "cloudwatch_enabled" {
 }
 
 
-variable "cluster_name" {
+variable "eks_cluster_name" {
   type        = string
   description = "Specifies the name of the EKS cluster."
 }
@@ -307,46 +315,10 @@ variable "mimir_s3_bucket_enable_object_lock" {
   default     = true
 }
 
-variable "mimir_s3_bucket_object_lock_mode" {
-  description = "Default Object Lock retention mode you want to apply to new objects placed in the mimir S3 bucket. Valid values: COMPLIANCE, GOVERNANCE."
-  type        = string
-  default     = "GOVERNANCE"
-}
-
-variable "mimir_s3_bucket_object_lock_days" {
-  description = "Optional, Required if years is not specified Number of days that you want to specify for the default retention period for mimir S3 bucket."
-  type        = number
-  default     = 0
-}
-
-variable "mimir_s3_bucket_object_lock_years" {
-  description = "Optional, Required if days is not specified Number of years that you want to specify for the default retention period for mimir S3 buckets.."
-  type        = number
-  default     = 0
-}
-
 variable "tempo_s3_bucket_enable_object_lock" {
   description = "Whether to enable object lock for tempo S3 bucket."
   type        = bool
   default     = true
-}
-
-variable "tempo_s3_bucket_object_lock_mode" {
-  description = "Default Object Lock retention mode you want to apply to new objects placed in the tempo S3 bucket. Valid values: COMPLIANCE, GOVERNANCE."
-  type        = string
-  default     = "GOVERNANCE"
-}
-
-variable "tempo_s3_bucket_object_lock_days" {
-  description = "Optional, Required if years is not specified. Number of days that you want to specify for the default retention period in tempo S3 bucket."
-  type        = number
-  default     = 0
-}
-
-variable "tempo_s3_bucket_object_lock_years" {
-  description = "Optional, Required if days is not specified. Number of years that you want to specify for the default retention period in tempo S3 bucket."
-  type        = number
-  default     = 0
 }
 
 variable "loki_scalable_s3_bucket_enable_object_lock" {
@@ -355,179 +327,86 @@ variable "loki_scalable_s3_bucket_enable_object_lock" {
   default     = true
 }
 
-variable "loki_scalable_s3_bucket_object_lock_mode" {
-  description = "Default Object Lock retention mode you want to apply to new objects placed in the loki-scalable S3 bucket. Valid values: COMPLIANCE, GOVERNANCE."
-  type        = string
-  default     = "GOVERNANCE"
-}
-
-variable "loki_scalable_s3_bucket_object_lock_days" {
-  description = "Optional, Required if years is not specified. Number of days that you want to specify for the default retention period in loki-scalable S3 bucket."
-  type        = number
-  default     = 0
-}
-
-variable "loki_scalable_s3_bucket_object_lock_years" {
-  description = "Optional, Required if days is not specified. Number of years that you want to specify for the default retention period in loki-scalable S3 bucket."
-  type        = number
-  default     = 0
+variable "tempo_s3_bucket_lifecycle_rules" {
+  description = "A map of lifecycle rules for tempo AWS S3 bucket."
+  type = map(object({
+    status                            = bool
+    lifecycle_configuration_rule_name = string
+    enable_glacier_transition         = optional(bool, false)
+    enable_deeparchive_transition     = optional(bool, false)
+    enable_standard_ia_transition     = optional(bool, false)
+    enable_one_zone_ia                = optional(bool, false)
+    enable_current_object_expiration  = optional(bool, false)
+    enable_intelligent_tiering        = optional(bool, false)
+    enable_glacier_ir                 = optional(bool, false)
+    standard_transition_days          = optional(number, 30)
+    glacier_transition_days           = optional(number, 60)
+    deeparchive_transition_days       = optional(number, 150)
+    one_zone_ia_days                  = optional(number, 40)
+    intelligent_tiering_days          = optional(number, 50)
+    glacier_ir_days                   = optional(number, 160)
+    expiration_days                   = optional(number, 365)
+  }))
+  default = {
+    default_rule = {
+      status                            = false
+      lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
+    }
+  }
 }
 
 variable "mimir_s3_bucket_lifecycle_rules" {
+  description = "A map of lifecycle rules for mimir AWS S3 bucket."
   type = map(object({
-    id              = string
-    expiration_days = number
-    filter_prefix   = string
-    status          = string
-    transitions = list(object({
-      days          = number
-      storage_class = string
-    }))
+    status                            = bool
+    lifecycle_configuration_rule_name = string
+    enable_glacier_transition         = optional(bool, false)
+    enable_deeparchive_transition     = optional(bool, false)
+    enable_standard_ia_transition     = optional(bool, false)
+    enable_one_zone_ia                = optional(bool, false)
+    enable_current_object_expiration  = optional(bool, false)
+    enable_intelligent_tiering        = optional(bool, false)
+    enable_glacier_ir                 = optional(bool, false)
+    standard_transition_days          = optional(number, 30)
+    glacier_transition_days           = optional(number, 60)
+    deeparchive_transition_days       = optional(number, 150)
+    one_zone_ia_days                  = optional(number, 40)
+    intelligent_tiering_days          = optional(number, 50)
+    glacier_ir_days                   = optional(number, 160)
+    expiration_days                   = optional(number, 365)
   }))
   default = {
-    rule1 = {
-      id              = "rule1"
-      expiration_days = 30
-      filter_prefix   = "prefix1"
-      status          = "Enabled"
-      transitions = [
-        {
-          days          = 60
-          storage_class = "STANDARD_IA"
-        },
-        {
-          days          = 90
-          storage_class = "GLACIER"
-        }
-      ]
-    }
-    rule2 = {
-      id              = "rule2"
-      expiration_days = 60
-      filter_prefix   = "prefix2"
-      status          = "Enabled"
-      transitions = [
-        {
-          days          = 90
-          storage_class = "STANDARD_IA"
-        },
-        {
-          days          = 120
-          storage_class = "GLACIER"
-        }
-      ]
+    default_rule = {
+      status                            = false
+      lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
     }
   }
 }
 
 variable "loki_scalable_s3_bucket_lifecycle_rules" {
+  description = "A map of lifecycle rules for loki-scalable AWS S3 bucket."
   type = map(object({
-    id              = string
-    expiration_days = number
-    filter_prefix   = string
-    status          = string
-    transitions = list(object({
-      days          = number
-      storage_class = string
-    }))
+    status                            = bool
+    lifecycle_configuration_rule_name = string
+    enable_glacier_transition         = optional(bool, false)
+    enable_deeparchive_transition     = optional(bool, false)
+    enable_standard_ia_transition     = optional(bool, false)
+    enable_one_zone_ia                = optional(bool, false)
+    enable_current_object_expiration  = optional(bool, false)
+    enable_intelligent_tiering        = optional(bool, false)
+    enable_glacier_ir                 = optional(bool, false)
+    standard_transition_days          = optional(number, 30)
+    glacier_transition_days           = optional(number, 60)
+    deeparchive_transition_days       = optional(number, 150)
+    one_zone_ia_days                  = optional(number, 40)
+    intelligent_tiering_days          = optional(number, 50)
+    glacier_ir_days                   = optional(number, 160)
+    expiration_days                   = optional(number, 365)
   }))
   default = {
-    rule1 = {
-      id              = "rule1"
-      expiration_days = 30
-      filter_prefix   = "prefix1"
-      status          = "Enabled"
-      transitions = [
-        {
-          days          = 60
-          storage_class = "STANDARD_IA"
-        },
-        {
-          days          = 90
-          storage_class = "GLACIER"
-        }
-      ]
-    }
-    rule2 = {
-      id              = "rule2"
-      expiration_days = 60
-      filter_prefix   = "prefix2"
-      status          = "Enabled"
-      transitions = [
-        {
-          days          = 90
-          storage_class = "STANDARD_IA"
-        },
-        {
-          days          = 120
-          storage_class = "GLACIER"
-        }
-      ]
+    default_rule = {
+      status                            = false
+      lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
     }
   }
-}
-
-variable "tempo_s3_bucket_lifecycle_rules" {
-  type = map(object({
-    id              = string
-    expiration_days = number
-    filter_prefix   = string
-    status          = string
-    transitions = list(object({
-      days          = number
-      storage_class = string
-    }))
-  }))
-  default = {
-    rule1 = {
-      id              = "rule1"
-      expiration_days = 30
-      filter_prefix   = "prefix1"
-      status          = "Enabled"
-      transitions = [
-        {
-          days          = 60
-          storage_class = "STANDARD_IA"
-        },
-        {
-          days          = 90
-          storage_class = "GLACIER"
-        }
-      ]
-    }
-    rule2 = {
-      id              = "rule2"
-      expiration_days = 60
-      filter_prefix   = "prefix2"
-      status          = "Enabled"
-      transitions = [
-        {
-          days          = 90
-          storage_class = "STANDARD_IA"
-        },
-        {
-          days          = 120
-          storage_class = "GLACIER"
-        }
-      ]
-    }
-  }
-}
-
-variable "mimir_s3_bucket_lifecycle_rule_enabled" {
-  description = "Whether to enable object lock for mimir S3 bucket."
-  type        = bool
-  default     = true
-}
-
-variable "loki_scalable_s3_bucket_lifecycle_rule_enabled" {
-  description = "Whether to enable object lock for loki scalable S3 bucket."
-  type        = bool
-  default     = true
-}
-
-variable "tempo_s3_bucket_lifecycle_rule_enabled" {
-  description = "Whether to enable object lock for tempo S3 bucket. "
-  type        = bool
-  default     = true
 }

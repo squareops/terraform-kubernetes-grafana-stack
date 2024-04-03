@@ -35,7 +35,7 @@ This module also includes alerting features that allow you to set up custom aler
 ```hcl
 module "pgl" {
   source                                         = https://github.com/sq-ia/terraform-kubernetes-grafana.git"
-  cluster_name                                   = "cluster-name"
+  eks_cluster_name                               = "cluster-name"
   aws_account_id                                 = "aws_account_id"
   kube_prometheus_stack_enabled                  = true
   loki_enabled                                   = true
@@ -43,75 +43,36 @@ module "pgl" {
   grafana_mimir_enabled                          = true
   cloudwatch_enabled                             = true
   tempo_enabled                                  = true
-  mimir_s3_bucket_lifecycle_rule_enabled         = true
-  mimir_s3_bucket_lifecycle_rules                = {
-    rule1 = {
-      id              = "rule1"
-      expiration_days = 120
-      filter_prefix   = "log/"
-      status          = "Enabled"
-      transitions = [
-        {
-          days          = 30
-          storage_class = "ONEZONE_IA"
-        },
-        {
-          days          = 90
-          storage_class = "DEEP_ARCHIVE"
-        }
-      ]
-    }
-  }
-  mimir_s3_bucket_object_lock_mode               = "GOVERNANCE"
-  mimir_s3_bucket_object_lock_days               = "10"
-  mimir_s3_bucket_object_lock_years              = "0"
-  mimir_s3_bucket_enable_object_lock             = true
-  loki_scalable_s3_bucket_lifecycle_rule_enabled = true
-  loki_scalable_s3_bucket_lifecycle_rules        = {
-    rule1 = {
-      id              = "rule1"
-      expiration_days = 120
-      filter_prefix   = "log/"
-      status          = "Enabled"
-      transitions = [
-        {
-          days          = 30
-          storage_class = "ONEZONE_IA"
-        },
-        {
-          days          = 90
-          storage_class = "DEEP_ARCHIVE"
-        }
-      ]
-    }
-  }
-  loki_scalable_s3_bucket_object_lock_mode       = "GOVERNANCE"
-  loki_scalable_s3_bucket_object_lock_days       = "10"
-  loki_scalable_s3_bucket_object_lock_years      = "0"
-  loki_scalable_s3_bucket_enable_object_lock     = true
-  tempo_s3_bucket_lifecycle_rule_enabled         = true
-  tempo_s3_bucket_lifecycle_rules                = {
-    rule1 = {
-      id              = "rule1"
-      expiration_days = 120
-      filter_prefix   = "log/"
-      status          = "Enabled"
-      transitions = [
-        {
-          days          = 30
-          storage_class = "ONEZONE_IA"
-        },
-        {
-          days          = 90
-          storage_class = "DEEP_ARCHIVE"
-        }
-      ]
-    }
-  }
-  tempo_s3_bucket_object_lock_mode               = "GOVERNANCE"
-  tempo_s3_bucket_object_lock_days               = "10"
-  tempo_s3_bucket_object_lock_years              = "0"
   tempo_s3_bucket_enable_object_lock             = true
+  mimir_s3_bucket_enable_object_lock             = true
+  loki_scalable_s3_bucket_enable_object_lock     = true
+  mimir_s3_bucket_lifecycle_rules                = {
+     default_rule = {
+        status                            = false
+        lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
+        expiration_days                   = 365
+        enable_standard_ia_transition     = true
+        standard_transition_days          = 40
+      }
+    }
+  loki_scalable_s3_bucket_lifecycle_rules        = {
+     default_rule = {
+        status                            = false
+        lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
+        expiration_days                   = 365
+        enable_standard_ia_transition     = true
+        standard_transition_days          = 40
+      }
+    }
+  tempo_s3_bucket_lifecycle_rules                = {
+     default_rule = {
+        status                            = false
+        lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
+        expiration_days                   = 365
+        enable_standard_ia_transition     = true
+        standard_transition_days          = 40
+      }
+    }
 
   deployment_config = {
     hostname                            = "grafanaa.squareops.in"
@@ -130,14 +91,20 @@ module "pgl" {
     mimir_s3_bucket_config = {
       s3_bucket_name     = "${local.environment}-${local.name}-mimir-s3-bucket"
       versioning_enabled = "true"
-      s3_bucket_region   = local.region
+      s3_bucket_region   = local.aws_region
+      mimir_s3_bucket_object_lock_mode  = "GOVERNANCE"
+      mimir_s3_bucket_object_lock_days  = "10"
+      mimir_s3_bucket_object_lock_years = "0"
     }
     loki_scalable_config = {
       loki_scalable_version = "5.8.8"
       loki_scalable_values  = file("./helm/loki-scalable.yaml")
       s3_bucket_name        = "${local.environment}-${local.name}-loki-scalable-s3-bucket"
       versioning_enabled    = "true"
-      s3_bucket_region      = local.region
+      s3_bucket_region      = local.aws_region
+      loki_scalable_s3_bucket_object_lock_mode  = "GOVERNANCE"
+      loki_scalable_s3_bucket_object_lock_days  = "0"
+      loki_scalable_s3_bucket_object_lock_years = "2"
     }
     promtail_config = {
       promtail_version = "6.8.2"
@@ -146,7 +113,10 @@ module "pgl" {
     tempo_config = {
       s3_bucket_name     = "${local.environment}-${local.name}-tempo-bucket"
       versioning_enabled = true
-      s3_bucket_region   = local.region
+      s3_bucket_region   = local.aws_region
+      tempo_s3_bucket_object_lock_mode  = "GOVERNANCE"
+      tempo_s3_bucket_object_lock_days  = "50"
+      tempo_s3_bucket_object_lock_years = "0"
     }
     otel_config = {
       otel_operator_enabled  = true
@@ -317,8 +287,8 @@ No requirements.
 | <a name="input_aws_account_id"></a> [aws\_account\_id](#input\_aws\_account\_id) | Account ID of the AWS Account. | `string` | `""` | no |
 | <a name="input_blackbox_exporter_version"></a> [blackbox\_exporter\_version](#input\_blackbox\_exporter\_version) | Version of the Blackbox exporter to deploy. | `string` | `"4.10.1"` | no |
 | <a name="input_cloudwatch_enabled"></a> [cloudwatch\_enabled](#input\_cloudwatch\_enabled) | Whether or not to add CloudWatch as datasource and add some default dashboards for AWS in Grafana. | `bool` | `false` | no |
-| <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Specifies the name of the EKS cluster. | `string` | n/a | yes |
-| <a name="input_deployment_config"></a> [deployment\_config](#input\_deployment\_config) | Configuration options for the Prometheus, Alertmanager, Loki, and Grafana deployments, including the hostname, storage class name, dashboard refresh interval, and S3 bucket configuration for Mimir. | `any` | <pre>{<br>  "blackbox_values_yaml": "",<br>  "dashboard_refresh_interval": "",<br>  "grafana_enabled": true,<br>  "grafana_mimir_values_yaml": "",<br>  "hostname": "",<br>  "loki_hostname": "",<br>  "loki_internal_ingress_enabled": false,<br>  "loki_scalable_config": {<br>    "loki_scalable_values": "",<br>    "loki_scalable_version": "5.8.8",<br>    "s3_bucket_name": "",<br>    "s3_bucket_region": "",<br>    "versioning_enabled": ""<br>  },<br>  "loki_values_yaml": "",<br>  "mimir_s3_bucket_config": {<br>    "s3_bucket_name": "",<br>    "s3_bucket_region": "",<br>    "versioning_enabled": ""<br>  },<br>  "otel_config": {<br>    "otel_collector_enabled": false,<br>    "otel_operator_enabled": false<br>  },<br>  "prometheus_hostname": "",<br>  "prometheus_internal_ingress_enabled": false,<br>  "prometheus_values_yaml": "",<br>  "promtail_config": {<br>    "promtail_values": "",<br>    "promtail_version": "6.8.2"<br>  },<br>  "storage_class_name": "gp2",<br>  "tempo_config": {<br>    "s3_bucket_name": "",<br>    "s3_bucket_region": "",<br>    "versioning_enabled": false<br>  },<br>  "tempo_values_yaml": ""<br>}</pre> | no |
+| <a name="input_deployment_config"></a> [deployment\_config](#input\_deployment\_config) | Configuration options for the Prometheus, Alertmanager, Loki, and Grafana deployments, including the hostname, storage class name, dashboard refresh interval, and S3 bucket configuration for Mimir. | `any` | <pre>{<br>  "blackbox_values_yaml": "",<br>  "dashboard_refresh_interval": "",<br>  "grafana_enabled": true,<br>  "grafana_mimir_values_yaml": "",<br>  "hostname": "",<br>  "loki_hostname": "",<br>  "loki_internal_ingress_enabled": false,<br>  "loki_scalable_config": {<br>    "loki_scalable_s3_bucket_object_lock_days": "",<br>    "loki_scalable_s3_bucket_object_lock_mode": "",<br>    "loki_scalable_s3_bucket_object_lock_years": "",<br>    "loki_scalable_values": "",<br>    "loki_scalable_version": "5.8.8",<br>    "s3_bucket_name": "",<br>    "s3_bucket_region": "",<br>    "versioning_enabled": ""<br>  },<br>  "loki_values_yaml": "",<br>  "mimir_s3_bucket_config": {<br>    "mimir_s3_bucket_object_lock_days": "",<br>    "mimir_s3_bucket_object_lock_mode": "",<br>    "mimir_s3_bucket_object_lock_years": "",<br>    "s3_bucket_name": "",<br>    "s3_bucket_region": "",<br>    "versioning_enabled": ""<br>  },<br>  "otel_config": {<br>    "otel_collector_enabled": false,<br>    "otel_operator_enabled": false<br>  },<br>  "prometheus_hostname": "",<br>  "prometheus_internal_ingress_enabled": false,<br>  "prometheus_values_yaml": "",<br>  "promtail_config": {<br>    "promtail_values": "",<br>    "promtail_version": "6.8.2"<br>  },<br>  "storage_class_name": "gp2",<br>  "tempo_config": {<br>    "s3_bucket_name": "",<br>    "s3_bucket_region": "",<br>    "tempo_s3_bucket_object_lock_days": "",<br>    "tempo_s3_bucket_object_lock_mode": "",<br>    "tempo_s3_bucket_object_lock_years": "",<br>    "versioning_enabled": false<br>  },<br>  "tempo_values_yaml": ""<br>}</pre> | no |
+| <a name="input_eks_cluster_name"></a> [eks\_cluster\_name](#input\_eks\_cluster\_name) | Specifies the name of the EKS cluster. | `string` | n/a | yes |
 | <a name="input_exporter_config"></a> [exporter\_config](#input\_exporter\_config) | allows enabling/disabling various exporters for scraping metrics, including Consul, MongoDB, Redis, and StatsD. | `map(any)` | <pre>{<br>  "argocd": false,<br>  "blackbox": true,<br>  "conntrack": false,<br>  "consul": false,<br>  "couchdb": false,<br>  "druid": false,<br>  "elasticsearch": true,<br>  "ethtool_exporter": true,<br>  "istio": false,<br>  "jenkins": false,<br>  "json": false,<br>  "kafka": false,<br>  "mongodb": true,<br>  "mysql": true,<br>  "nats": false,<br>  "nifi": false,<br>  "pingdom": false,<br>  "postgres": false,<br>  "prometheustosd": false,<br>  "push_gateway": false,<br>  "rabbitmq": false,<br>  "redis": true,<br>  "snmp": false,<br>  "stackdriver": false,<br>  "statsd": true<br>}</pre> | no |
 | <a name="input_grafana_mimir_enabled"></a> [grafana\_mimir\_enabled](#input\_grafana\_mimir\_enabled) | Specify whether or not to deploy the Grafana Mimir plugin. | `bool` | `false` | no |
 | <a name="input_grafana_mimir_version"></a> [grafana\_mimir\_version](#input\_grafana\_mimir\_version) | Version of the Grafana Mimir plugin to deploy. | `string` | `"3.2.0"` | no |
@@ -332,11 +302,7 @@ No requirements.
 | <a name="input_loki_scalable_s3_bucket_enable_object_lock"></a> [loki\_scalable\_s3\_bucket\_enable\_object\_lock](#input\_loki\_scalable\_s3\_bucket\_enable\_object\_lock) | Whether to enable object lock for loki-scalable S3 bucket. | `bool` | `true` | no |
 | <a name="input_loki_scalable_s3_bucket_force_destroy"></a> [loki\_scalable\_s3\_bucket\_force\_destroy](#input\_loki\_scalable\_s3\_bucket\_force\_destroy) | Whether or not to delete all objects from the bucket to allow for destruction of the bucket without error. | `bool` | `true` | no |
 | <a name="input_loki_scalable_s3_bucket_ignore_public_acls"></a> [loki\_scalable\_s3\_bucket\_ignore\_public\_acls](#input\_loki\_scalable\_s3\_bucket\_ignore\_public\_acls) | Whether Amazon S3 should ignore public ACLs for this bucket. | `bool` | `true` | no |
-| <a name="input_loki_scalable_s3_bucket_lifecycle_rule_enabled"></a> [loki\_scalable\_s3\_bucket\_lifecycle\_rule\_enabled](#input\_loki\_scalable\_s3\_bucket\_lifecycle\_rule\_enabled) | Whether to enable object lock for loki scalable S3 bucket. | `bool` | `true` | no |
-| <a name="input_loki_scalable_s3_bucket_lifecycle_rules"></a> [loki\_scalable\_s3\_bucket\_lifecycle\_rules](#input\_loki\_scalable\_s3\_bucket\_lifecycle\_rules) | n/a | <pre>map(object({<br>    id              = string<br>    expiration_days = number<br>    filter_prefix   = string<br>    status          = string<br>    transitions = list(object({<br>      days          = number<br>      storage_class = string<br>    }))<br>  }))</pre> | <pre>{<br>  "rule1": {<br>    "expiration_days": 30,<br>    "filter_prefix": "prefix1",<br>    "id": "rule1",<br>    "status": "Enabled",<br>    "transitions": [<br>      {<br>        "days": 60,<br>        "storage_class": "STANDARD_IA"<br>      },<br>      {<br>        "days": 90,<br>        "storage_class": "GLACIER"<br>      }<br>    ]<br>  },<br>  "rule2": {<br>    "expiration_days": 60,<br>    "filter_prefix": "prefix2",<br>    "id": "rule2",<br>    "status": "Enabled",<br>    "transitions": [<br>      {<br>        "days": 90,<br>        "storage_class": "STANDARD_IA"<br>      },<br>      {<br>        "days": 120,<br>        "storage_class": "GLACIER"<br>      }<br>    ]<br>  }<br>}</pre> | no |
-| <a name="input_loki_scalable_s3_bucket_object_lock_days"></a> [loki\_scalable\_s3\_bucket\_object\_lock\_days](#input\_loki\_scalable\_s3\_bucket\_object\_lock\_days) | Optional, Required if years is not specified. Number of days that you want to specify for the default retention period in loki-scalable S3 bucket. | `number` | `0` | no |
-| <a name="input_loki_scalable_s3_bucket_object_lock_mode"></a> [loki\_scalable\_s3\_bucket\_object\_lock\_mode](#input\_loki\_scalable\_s3\_bucket\_object\_lock\_mode) | Default Object Lock retention mode you want to apply to new objects placed in the loki-scalable S3 bucket. Valid values: COMPLIANCE, GOVERNANCE. | `string` | `"GOVERNANCE"` | no |
-| <a name="input_loki_scalable_s3_bucket_object_lock_years"></a> [loki\_scalable\_s3\_bucket\_object\_lock\_years](#input\_loki\_scalable\_s3\_bucket\_object\_lock\_years) | Optional, Required if days is not specified. Number of years that you want to specify for the default retention period in loki-scalable S3 bucket. | `number` | `0` | no |
+| <a name="input_loki_scalable_s3_bucket_lifecycle_rules"></a> [loki\_scalable\_s3\_bucket\_lifecycle\_rules](#input\_loki\_scalable\_s3\_bucket\_lifecycle\_rules) | A map of lifecycle rules for loki-scalable AWS S3 bucket. | <pre>map(object({<br>    status                            = bool<br>    lifecycle_configuration_rule_name = string<br>    enable_glacier_transition         = optional(bool, false)<br>    enable_deeparchive_transition     = optional(bool, false)<br>    enable_standard_ia_transition     = optional(bool, false)<br>    enable_one_zone_ia                = optional(bool, false)<br>    enable_current_object_expiration  = optional(bool, false)<br>    enable_intelligent_tiering        = optional(bool, false)<br>    enable_glacier_ir                 = optional(bool, false)<br>    standard_transition_days          = optional(number, 30)<br>    glacier_transition_days           = optional(number, 60)<br>    deeparchive_transition_days       = optional(number, 150)<br>    one_zone_ia_days                  = optional(number, 40)<br>    intelligent_tiering_days          = optional(number, 50)<br>    glacier_ir_days                   = optional(number, 160)<br>    expiration_days                   = optional(number, 365)<br>  }))</pre> | <pre>{<br>  "default_rule": {<br>    "lifecycle_configuration_rule_name": "lifecycle_configuration_rule_name",<br>    "status": false<br>  }<br>}</pre> | no |
 | <a name="input_loki_scalable_s3_bucket_object_ownership"></a> [loki\_scalable\_s3\_bucket\_object\_ownership](#input\_loki\_scalable\_s3\_bucket\_object\_ownership) | Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter. | `string` | `"BucketOwnerPreferred"` | no |
 | <a name="input_loki_scalable_s3_bucket_restrict_public_buckets"></a> [loki\_scalable\_s3\_bucket\_restrict\_public\_buckets](#input\_loki\_scalable\_s3\_bucket\_restrict\_public\_buckets) | Whether Amazon S3 should restrict public bucket policies for this bucket. | `bool` | `true` | no |
 | <a name="input_loki_stack_version"></a> [loki\_stack\_version](#input\_loki\_stack\_version) | Version of the Loki stack to deploy. | `string` | `"2.8.2"` | no |
@@ -347,11 +313,7 @@ No requirements.
 | <a name="input_mimir_s3_bucket_enable_object_lock"></a> [mimir\_s3\_bucket\_enable\_object\_lock](#input\_mimir\_s3\_bucket\_enable\_object\_lock) | Whether to enable object lock in mimir S3 bucket. | `bool` | `true` | no |
 | <a name="input_mimir_s3_bucket_force_destroy"></a> [mimir\_s3\_bucket\_force\_destroy](#input\_mimir\_s3\_bucket\_force\_destroy) | Whether or not to delete all objects from the bucket to allow for destruction of the bucket without error. | `bool` | `true` | no |
 | <a name="input_mimir_s3_bucket_ignore_public_acls"></a> [mimir\_s3\_bucket\_ignore\_public\_acls](#input\_mimir\_s3\_bucket\_ignore\_public\_acls) | Whether Amazon S3 should ignore public ACLs for this bucket. | `bool` | `true` | no |
-| <a name="input_mimir_s3_bucket_lifecycle_rule_enabled"></a> [mimir\_s3\_bucket\_lifecycle\_rule\_enabled](#input\_mimir\_s3\_bucket\_lifecycle\_rule\_enabled) | Whether to enable object lock for mimir S3 bucket. | `bool` | `true` | no |
-| <a name="input_mimir_s3_bucket_lifecycle_rules"></a> [mimir\_s3\_bucket\_lifecycle\_rules](#input\_mimir\_s3\_bucket\_lifecycle\_rules) | n/a | <pre>map(object({<br>    id              = string<br>    expiration_days = number<br>    filter_prefix   = string<br>    status          = string<br>    transitions = list(object({<br>      days          = number<br>      storage_class = string<br>    }))<br>  }))</pre> | <pre>{<br>  "rule1": {<br>    "expiration_days": 30,<br>    "filter_prefix": "prefix1",<br>    "id": "rule1",<br>    "status": "Enabled",<br>    "transitions": [<br>      {<br>        "days": 60,<br>        "storage_class": "STANDARD_IA"<br>      },<br>      {<br>        "days": 90,<br>        "storage_class": "GLACIER"<br>      }<br>    ]<br>  },<br>  "rule2": {<br>    "expiration_days": 60,<br>    "filter_prefix": "prefix2",<br>    "id": "rule2",<br>    "status": "Enabled",<br>    "transitions": [<br>      {<br>        "days": 90,<br>        "storage_class": "STANDARD_IA"<br>      },<br>      {<br>        "days": 120,<br>        "storage_class": "GLACIER"<br>      }<br>    ]<br>  }<br>}</pre> | no |
-| <a name="input_mimir_s3_bucket_object_lock_days"></a> [mimir\_s3\_bucket\_object\_lock\_days](#input\_mimir\_s3\_bucket\_object\_lock\_days) | Optional, Required if years is not specified Number of days that you want to specify for the default retention period for mimir S3 bucket. | `number` | `0` | no |
-| <a name="input_mimir_s3_bucket_object_lock_mode"></a> [mimir\_s3\_bucket\_object\_lock\_mode](#input\_mimir\_s3\_bucket\_object\_lock\_mode) | Default Object Lock retention mode you want to apply to new objects placed in the mimir S3 bucket. Valid values: COMPLIANCE, GOVERNANCE. | `string` | `"GOVERNANCE"` | no |
-| <a name="input_mimir_s3_bucket_object_lock_years"></a> [mimir\_s3\_bucket\_object\_lock\_years](#input\_mimir\_s3\_bucket\_object\_lock\_years) | Optional, Required if days is not specified Number of years that you want to specify for the default retention period for mimir S3 buckets.. | `number` | `0` | no |
+| <a name="input_mimir_s3_bucket_lifecycle_rules"></a> [mimir\_s3\_bucket\_lifecycle\_rules](#input\_mimir\_s3\_bucket\_lifecycle\_rules) | A map of lifecycle rules for mimir AWS S3 bucket. | <pre>map(object({<br>    status                            = bool<br>    lifecycle_configuration_rule_name = string<br>    enable_glacier_transition         = optional(bool, false)<br>    enable_deeparchive_transition     = optional(bool, false)<br>    enable_standard_ia_transition     = optional(bool, false)<br>    enable_one_zone_ia                = optional(bool, false)<br>    enable_current_object_expiration  = optional(bool, false)<br>    enable_intelligent_tiering        = optional(bool, false)<br>    enable_glacier_ir                 = optional(bool, false)<br>    standard_transition_days          = optional(number, 30)<br>    glacier_transition_days           = optional(number, 60)<br>    deeparchive_transition_days       = optional(number, 150)<br>    one_zone_ia_days                  = optional(number, 40)<br>    intelligent_tiering_days          = optional(number, 50)<br>    glacier_ir_days                   = optional(number, 160)<br>    expiration_days                   = optional(number, 365)<br>  }))</pre> | <pre>{<br>  "default_rule": {<br>    "lifecycle_configuration_rule_name": "lifecycle_configuration_rule_name",<br>    "status": false<br>  }<br>}</pre> | no |
 | <a name="input_mimir_s3_bucket_object_ownership"></a> [mimir\_s3\_bucket\_object\_ownership](#input\_mimir\_s3\_bucket\_object\_ownership) | Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter. | `string` | `"BucketOwnerPreferred"` | no |
 | <a name="input_mimir_s3_bucket_restrict_public_buckets"></a> [mimir\_s3\_bucket\_restrict\_public\_buckets](#input\_mimir\_s3\_bucket\_restrict\_public\_buckets) | Whether Amazon S3 should restrict public bucket policies for this bucket. | `bool` | `true` | no |
 | <a name="input_pgl_namespace"></a> [pgl\_namespace](#input\_pgl\_namespace) | Name of the Kubernetes namespace where the Grafana deployment will be deployed. | `string` | `"monitoring"` | no |
@@ -364,11 +326,7 @@ No requirements.
 | <a name="input_tempo_s3_bucket_enable_object_lock"></a> [tempo\_s3\_bucket\_enable\_object\_lock](#input\_tempo\_s3\_bucket\_enable\_object\_lock) | Whether to enable object lock for tempo S3 bucket. | `bool` | `true` | no |
 | <a name="input_tempo_s3_bucket_force_destroy"></a> [tempo\_s3\_bucket\_force\_destroy](#input\_tempo\_s3\_bucket\_force\_destroy) | Whether or not to delete all objects from the bucket to allow for destruction of the bucket without error. | `bool` | `true` | no |
 | <a name="input_tempo_s3_bucket_ignore_public_acls"></a> [tempo\_s3\_bucket\_ignore\_public\_acls](#input\_tempo\_s3\_bucket\_ignore\_public\_acls) | Whether Amazon S3 should ignore public ACLs for this bucket. | `bool` | `true` | no |
-| <a name="input_tempo_s3_bucket_lifecycle_rule_enabled"></a> [tempo\_s3\_bucket\_lifecycle\_rule\_enabled](#input\_tempo\_s3\_bucket\_lifecycle\_rule\_enabled) | Whether to enable object lock for tempo S3 bucket. | `bool` | `true` | no |
-| <a name="input_tempo_s3_bucket_lifecycle_rules"></a> [tempo\_s3\_bucket\_lifecycle\_rules](#input\_tempo\_s3\_bucket\_lifecycle\_rules) | n/a | <pre>map(object({<br>    id              = string<br>    expiration_days = number<br>    filter_prefix   = string<br>    status          = string<br>    transitions = list(object({<br>      days          = number<br>      storage_class = string<br>    }))<br>  }))</pre> | <pre>{<br>  "rule1": {<br>    "expiration_days": 30,<br>    "filter_prefix": "prefix1",<br>    "id": "rule1",<br>    "status": "Enabled",<br>    "transitions": [<br>      {<br>        "days": 60,<br>        "storage_class": "STANDARD_IA"<br>      },<br>      {<br>        "days": 90,<br>        "storage_class": "GLACIER"<br>      }<br>    ]<br>  },<br>  "rule2": {<br>    "expiration_days": 60,<br>    "filter_prefix": "prefix2",<br>    "id": "rule2",<br>    "status": "Enabled",<br>    "transitions": [<br>      {<br>        "days": 90,<br>        "storage_class": "STANDARD_IA"<br>      },<br>      {<br>        "days": 120,<br>        "storage_class": "GLACIER"<br>      }<br>    ]<br>  }<br>}</pre> | no |
-| <a name="input_tempo_s3_bucket_object_lock_days"></a> [tempo\_s3\_bucket\_object\_lock\_days](#input\_tempo\_s3\_bucket\_object\_lock\_days) | Optional, Required if years is not specified. Number of days that you want to specify for the default retention period in tempo S3 bucket. | `number` | `0` | no |
-| <a name="input_tempo_s3_bucket_object_lock_mode"></a> [tempo\_s3\_bucket\_object\_lock\_mode](#input\_tempo\_s3\_bucket\_object\_lock\_mode) | Default Object Lock retention mode you want to apply to new objects placed in the tempo S3 bucket. Valid values: COMPLIANCE, GOVERNANCE. | `string` | `"GOVERNANCE"` | no |
-| <a name="input_tempo_s3_bucket_object_lock_years"></a> [tempo\_s3\_bucket\_object\_lock\_years](#input\_tempo\_s3\_bucket\_object\_lock\_years) | Optional, Required if days is not specified. Number of years that you want to specify for the default retention period in tempo S3 bucket. | `number` | `0` | no |
+| <a name="input_tempo_s3_bucket_lifecycle_rules"></a> [tempo\_s3\_bucket\_lifecycle\_rules](#input\_tempo\_s3\_bucket\_lifecycle\_rules) | A map of lifecycle rules for tempo AWS S3 bucket. | <pre>map(object({<br>    status                            = bool<br>    lifecycle_configuration_rule_name = string<br>    enable_glacier_transition         = optional(bool, false)<br>    enable_deeparchive_transition     = optional(bool, false)<br>    enable_standard_ia_transition     = optional(bool, false)<br>    enable_one_zone_ia                = optional(bool, false)<br>    enable_current_object_expiration  = optional(bool, false)<br>    enable_intelligent_tiering        = optional(bool, false)<br>    enable_glacier_ir                 = optional(bool, false)<br>    standard_transition_days          = optional(number, 30)<br>    glacier_transition_days           = optional(number, 60)<br>    deeparchive_transition_days       = optional(number, 150)<br>    one_zone_ia_days                  = optional(number, 40)<br>    intelligent_tiering_days          = optional(number, 50)<br>    glacier_ir_days                   = optional(number, 160)<br>    expiration_days                   = optional(number, 365)<br>  }))</pre> | <pre>{<br>  "default_rule": {<br>    "lifecycle_configuration_rule_name": "lifecycle_configuration_rule_name",<br>    "status": false<br>  }<br>}</pre> | no |
 | <a name="input_tempo_s3_bucket_object_ownership"></a> [tempo\_s3\_bucket\_object\_ownership](#input\_tempo\_s3\_bucket\_object\_ownership) | Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter. | `string` | `"BucketOwnerPreferred"` | no |
 | <a name="input_tempo_s3_bucket_restrict_public_buckets"></a> [tempo\_s3\_bucket\_restrict\_public\_buckets](#input\_tempo\_s3\_bucket\_restrict\_public\_buckets) | Whether Amazon S3 should restrict public bucket policies for this bucket. | `bool` | `true` | no |
 

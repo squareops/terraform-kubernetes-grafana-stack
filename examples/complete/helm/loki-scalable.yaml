@@ -6,7 +6,7 @@ write:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "Addons-Services"
+          - key: "Monitor-Services"
             operator: In
             values:
             - "true"
@@ -19,7 +19,7 @@ read:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "Addons-Services"
+          - key: "Monitor-Services"
             operator: In
             values:
             - "true"
@@ -32,7 +32,7 @@ backend:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "Addons-Services"
+          - key: "Monitor-Services"
             operator: In
             values:
             - "true"
@@ -44,7 +44,7 @@ gateway:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "Addons-Services"
+          - key: "Monitor-Services"
             operator: In
             values:
             - "true"

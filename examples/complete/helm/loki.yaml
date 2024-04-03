@@ -11,7 +11,7 @@ loki:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "Addons-Services"
+          - key: "Infra-Services"
             operator: In
             values:
             - "true"

@@ -1,7 +1,7 @@
 resource "aws_iam_role" "loki_scalable_role" {
   count      = var.loki_scalable_enabled ? 1 : 0
   depends_on = [helm_release.prometheus_grafana, helm_release.grafana_mimir]
-  name       = join("-", [var.cluster_name, "loki-scalable"])
+  name       = join("-", [var.eks_cluster_name, "loki-scalable"])
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -48,42 +48,67 @@ resource "aws_s3_bucket_object_lock_configuration" "loki-scalable-s3-bucket-obje
   bucket = var.loki_scalable_enabled ? module.loki_scalable_s3_bucket[0].s3_bucket_id : null
   rule {
     default_retention {
-      mode  = var.loki_scalable_s3_bucket_object_lock_mode
-      days  = var.loki_scalable_s3_bucket_object_lock_days > 0 ? var.loki_scalable_s3_bucket_object_lock_days : null
-      years = var.loki_scalable_s3_bucket_object_lock_years > 0 ? var.loki_scalable_s3_bucket_object_lock_years : null
+      mode  = var.deployment_config.loki_scalable_config.loki_scalable_s3_bucket_object_lock_mode
+      days  = var.deployment_config.loki_scalable_config.loki_scalable_s3_bucket_object_lock_days > 0 ? var.deployment_config.loki_scalable_config.loki_scalable_s3_bucket_object_lock_days : null
+      years = var.deployment_config.loki_scalable_config.loki_scalable_s3_bucket_object_lock_years > 0 ? var.deployment_config.loki_scalable_config.loki_scalable_s3_bucket_object_lock_years : null
     }
   }
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "loki_scalable_s3_bucket_lifecycle_rules" {
-  count  = var.loki_scalable_s3_bucket_lifecycle_rule_enabled ? 1 : 0
-  bucket = var.loki_scalable_enabled ? module.loki_scalable_s3_bucket[0].s3_bucket_id : null
-
-  dynamic "rule" {
-    for_each = var.loki_scalable_s3_bucket_lifecycle_rules
-
-    content {
-      id = rule.value.id
-
-      expiration {
-        days = rule.value.expiration_days
-      }
-
-      filter {
-        prefix = rule.value.filter_prefix
-      }
-
-      status = rule.value.status
-
-      dynamic "transition" {
-        for_each = rule.value.transitions
-
-        content {
-          days          = transition.value.days
-          storage_class = transition.value.storage_class
-        }
+  bucket   = var.loki_scalable_enabled ? module.loki_scalable_s3_bucket[0].s3_bucket_id : null
+  for_each = var.loki_scalable_s3_bucket_lifecycle_rules
+  rule {
+    id = each.value.lifecycle_configuration_rule_name
+    dynamic "transition" {
+      for_each = each.value.enable_glacier_transition ? [1] : []
+      content {
+        days          = each.value.glacier_transition_days
+        storage_class = "GLACIER"
       }
     }
+    dynamic "transition" {
+      for_each = each.value.enable_deeparchive_transition ? [1] : []
+      content {
+        days          = each.value.deeparchive_transition_days
+        storage_class = "DEEP_ARCHIVE"
+      }
+    }
+    dynamic "transition" {
+      for_each = each.value.enable_standard_ia_transition ? [1] : []
+      content {
+        days          = each.value.standard_transition_days
+        storage_class = "STANDARD_IA"
+      }
+    }
+    dynamic "transition" {
+      for_each = each.value.enable_one_zone_ia ? [1] : []
+      content {
+        days          = each.value.one_zone_ia_days
+        storage_class = "ONEZONE_IA"
+      }
+    }
+    dynamic "transition" {
+      for_each = each.value.enable_intelligent_tiering ? [1] : []
+      content {
+        days          = each.value.intelligent_tiering_days
+        storage_class = "INTELLIGENT_TIERING"
+      }
+    }
+    dynamic "transition" {
+      for_each = each.value.enable_glacier_ir ? [1] : []
+      content {
+        days          = each.value.glacier_ir_days
+        storage_class = "GLACIER_IR"
+      }
+    }
+    dynamic "expiration" {
+      for_each = each.value.enable_current_object_expiration ? [1] : []
+      content {
+        days = each.value.expiration_days
+      }
+    }
+    status = each.value.status ? "Enabled" : "Disabled"
   }
 }
 
