@@ -146,7 +146,7 @@ module "loki_scalable_s3_bucket" {
 resource "helm_release" "loki_scalable" {
   count = var.loki_scalable_enabled ? 1 : 0
   depends_on = [
-    var.pgl_namespace,
+    kubernetes_namespace.monitoring,
     module.loki_scalable_s3_bucket,
     helm_release.prometheus_grafana
   ]
