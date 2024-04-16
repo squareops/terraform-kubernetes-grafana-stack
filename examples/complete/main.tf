@@ -10,7 +10,7 @@ locals {
   }
 }
 module "pgl" {
-  source                                     = "https://github.com/sq-ia/terraform-kubernetes-grafana.git"
+  source                                     = "git@github.com:sq-ia/terraform-kubernetes-grafana.git"
   eks_cluster_name                           = ""
   aws_account_id                             = local.aws_account_id
   kube_prometheus_stack_enabled              = true
