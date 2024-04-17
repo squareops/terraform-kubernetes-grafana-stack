@@ -26,6 +26,7 @@ module "pgl" {
     default_rule = {
       status                            = false
       lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
+      enable_current_object_expiration  = true
       expiration_days                   = 365
       enable_standard_ia_transition     = true
       standard_transition_days          = 40
@@ -35,6 +36,7 @@ module "pgl" {
     default_rule = {
       status                            = false
       lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
+      enable_current_object_expiration  = true
       expiration_days                   = 365
       enable_standard_ia_transition     = true
       standard_transition_days          = 40
@@ -44,6 +46,7 @@ module "pgl" {
     default_rule = {
       status                            = false
       lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
+      enable_current_object_expiration  = true
       expiration_days                   = 365
       enable_standard_ia_transition     = true
       standard_transition_days          = 40
