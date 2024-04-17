@@ -1,5 +1,5 @@
 output "grafana" {
-  description = "Grafana_Info"
+  description = "Information about the grafana including username , password & URL."
   value = {
     username = "admin",
     password = nonsensitive(data.kubernetes_secret.prometheus-operator-grafana[0].data["admin-password"]),

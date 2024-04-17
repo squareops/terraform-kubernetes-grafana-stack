@@ -190,10 +190,3 @@ prometheus:
               operator: In
               values:
               - "true"
-
-#   rbac:
-#     pspEnabled: true
-
-# prometheus-node-exporter:
-#   rbac:
-#     pspEnabled: true
