@@ -50,27 +50,18 @@ module "pgl" {
      default_rule = {
         status                            = false
         lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
-        expiration_days                   = 365
-        enable_standard_ia_transition     = true
-        standard_transition_days          = 40
       }
     }
   loki_scalable_s3_bucket_lifecycle_rules        = {
      default_rule = {
         status                            = false
         lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
-        expiration_days                   = 365
-        enable_standard_ia_transition     = true
-        standard_transition_days          = 40
       }
     }
   tempo_s3_bucket_lifecycle_rules                = {
      default_rule = {
         status                            = false
         lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
-        expiration_days                   = 365
-        enable_standard_ia_transition     = true
-        standard_transition_days          = 40
       }
     }
 
