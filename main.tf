@@ -45,7 +45,7 @@ locals {
 }
 
 data "aws_eks_cluster" "kubernetes_cluster" {
-  name = var.cluster_name
+  name = var.eks_cluster_name
 }
 
 
@@ -147,7 +147,7 @@ resource "kubernetes_priority_class" "priority_class" {
 
 resource "aws_iam_role" "cloudwatch_role" {
   count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
-  name  = join("-", [var.cluster_name, "cloudwatch"])
+  name  = join("-", [var.eks_cluster_name, "cloudwatch"])
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
