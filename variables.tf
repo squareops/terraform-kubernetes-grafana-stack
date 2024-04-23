@@ -1,9 +1,3 @@
-variable "aws_account_id" {
-  description = "Account ID of the AWS Account."
-  default     = ""
-  type        = string
-}
-
 variable "kube_prometheus_stack_enabled" {
   default     = false
   type        = bool
@@ -64,34 +58,27 @@ variable "deployment_config" {
     loki_internal_ingress_enabled       = false
     loki_hostname                       = ""
     mimir_s3_bucket_config = {
-      s3_bucket_name                    = ""
-      versioning_enabled                = ""
-      s3_bucket_region                  = ""
-      mimir_s3_bucket_object_lock_mode  = ""
-      mimir_s3_bucket_object_lock_days  = ""
-      mimir_s3_bucket_object_lock_years = ""
+      s3_bucket_name       = ""
+      versioning_enabled   = ""
+      s3_bucket_region     = ""
+      s3_object_expiration = ""
     }
     loki_scalable_config = {
-      loki_scalable_version                     = "5.8.8"
-      loki_scalable_values                      = ""
-      s3_bucket_name                            = ""
-      versioning_enabled                        = ""
-      s3_bucket_region                          = ""
-      loki_scalable_s3_bucket_object_lock_mode  = ""
-      loki_scalable_s3_bucket_object_lock_days  = ""
-      loki_scalable_s3_bucket_object_lock_years = ""
+      loki_scalable_version = "5.8.8"
+      loki_scalable_values  = ""
+      s3_bucket_name        = ""
+      versioning_enabled    = ""
+      s3_bucket_region      = ""
     }
     promtail_config = {
       promtail_version = "6.8.2"
       promtail_values  = ""
     }
     tempo_config = {
-      s3_bucket_name                    = ""
-      versioning_enabled                = false
-      s3_bucket_region                  = ""
-      tempo_s3_bucket_object_lock_mode  = ""
-      tempo_s3_bucket_object_lock_days  = ""
-      tempo_s3_bucket_object_lock_years = ""
+      s3_bucket_name       = ""
+      versioning_enabled   = false
+      s3_bucket_region     = ""
+      s3_object_expiration = ""
     }
     otel_config = {
       otel_operator_enabled  = false
@@ -146,7 +133,7 @@ variable "cloudwatch_enabled" {
 }
 
 
-variable "eks_cluster_name" {
+variable "cluster_name" {
   type        = string
   description = "Specifies the name of the EKS cluster."
 }
@@ -162,251 +149,4 @@ variable "tempo_enabled" {
   type        = bool
   default     = false
   description = "Enable Grafana Tempo"
-}
-
-variable "mimir_s3_bucket_block_public_acls" {
-  description = "Whether Amazon S3 should block public ACLs for this bucket."
-  default     = true
-  type        = bool
-}
-
-variable "mimir_s3_bucket_block_public_policy" {
-  description = "Whether Amazon S3 should block public bucket policies for this bucket.	"
-  default     = true
-  type        = bool
-}
-
-variable "mimir_s3_bucket_ignore_public_acls" {
-  description = "Whether Amazon S3 should ignore public ACLs for this bucket."
-  default     = true
-  type        = bool
-}
-
-variable "mimir_s3_bucket_restrict_public_buckets" {
-  description = "Whether Amazon S3 should restrict public bucket policies for this bucket."
-  default     = true
-  type        = bool
-}
-
-variable "mimir_s3_bucket_attach_deny_insecure_transport_policy" {
-  description = "Whether to attach a policy that denies requests made over insecure transport protocols to the S3 bucket."
-  default     = true
-  type        = bool
-}
-
-variable "mimir_s3_bucket_force_destroy" {
-  description = "Whether or not to delete all objects from the bucket to allow for destruction of the bucket without error."
-  default     = true
-  type        = bool
-}
-
-variable "mimir_s3_bucket_object_ownership" {
-  description = "Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter."
-  default     = "BucketOwnerPreferred"
-  type        = string
-}
-
-variable "mimir_s3_bucket_control_object_ownership" {
-  description = "Whether to manage S3 Bucket Ownership Controls on this bucket."
-  default     = true
-  type        = bool
-}
-
-
-variable "loki_scalable_s3_bucket_block_public_acls" {
-  description = "Whether Amazon S3 should block public ACLs for this bucket."
-  default     = true
-  type        = bool
-}
-
-variable "loki_scalable_s3_bucket_block_public_policy" {
-  description = "Whether Amazon S3 should block public bucket policies for this bucket.	"
-  default     = true
-  type        = bool
-}
-
-variable "loki_scalable_s3_bucket_ignore_public_acls" {
-  description = "Whether Amazon S3 should ignore public ACLs for this bucket."
-  default     = true
-  type        = bool
-}
-
-variable "loki_scalable_s3_bucket_restrict_public_buckets" {
-  description = "Whether Amazon S3 should restrict public bucket policies for this bucket."
-  default     = true
-  type        = bool
-}
-
-variable "loki_scalable_s3_bucket_attach_deny_insecure_transport_policy" {
-  description = "Whether to attach a policy that denies requests made over insecure transport protocols to the S3 bucket."
-  default     = true
-  type        = bool
-}
-
-variable "loki_scalable_s3_bucket_force_destroy" {
-  description = "Whether or not to delete all objects from the bucket to allow for destruction of the bucket without error."
-  default     = true
-  type        = bool
-}
-
-variable "loki_scalable_s3_bucket_object_ownership" {
-  description = "Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter."
-  default     = "BucketOwnerPreferred"
-  type        = string
-}
-
-variable "loki_scalable_s3_bucket_control_object_ownership" {
-  description = "Whether to manage S3 Bucket Ownership Controls on this bucket."
-  default     = true
-  type        = bool
-}
-
-variable "tempo_s3_bucket_block_public_acls" {
-  description = "Whether Amazon S3 should block public ACLs for this bucket."
-  default     = true
-  type        = bool
-}
-
-variable "tempo_s3_bucket_block_public_policy" {
-  description = "Whether Amazon S3 should block public bucket policies for this bucket.	"
-  default     = true
-  type        = bool
-}
-
-variable "tempo_s3_bucket_ignore_public_acls" {
-  description = "Whether Amazon S3 should ignore public ACLs for this bucket."
-  default     = true
-  type        = bool
-}
-
-variable "tempo_s3_bucket_restrict_public_buckets" {
-  description = "Whether Amazon S3 should restrict public bucket policies for this bucket."
-  default     = true
-  type        = bool
-}
-
-variable "tempo_s3_bucket_attach_deny_insecure_transport_policy" {
-  description = "Whether to attach a policy that denies requests made over insecure transport protocols to the S3 bucket."
-  default     = true
-  type        = bool
-}
-
-variable "tempo_s3_bucket_force_destroy" {
-  description = "Whether or not to delete all objects from the bucket to allow for destruction of the bucket without error."
-  default     = true
-  type        = bool
-}
-
-variable "tempo_s3_bucket_object_ownership" {
-  description = "Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter."
-  default     = "BucketOwnerPreferred"
-  type        = string
-}
-
-variable "tempo_s3_bucket_control_object_ownership" {
-  description = "Whether to manage S3 Bucket Ownership Controls on this bucket."
-  default     = true
-  type        = bool
-}
-
-variable "mimir_s3_bucket_enable_object_lock" {
-  description = "Whether to enable object lock in mimir S3 bucket."
-  type        = bool
-  default     = true
-}
-
-variable "tempo_s3_bucket_enable_object_lock" {
-  description = "Whether to enable object lock for tempo S3 bucket."
-  type        = bool
-  default     = true
-}
-
-variable "loki_scalable_s3_bucket_enable_object_lock" {
-  description = "Whether to enable object lock for loki-scalable S3 bucket."
-  type        = bool
-  default     = true
-}
-
-variable "tempo_s3_bucket_lifecycle_rules" {
-  description = "A map of lifecycle rules for tempo AWS S3 bucket."
-  type = map(object({
-    status                            = bool
-    lifecycle_configuration_rule_name = string
-    enable_glacier_transition         = optional(bool, false)
-    enable_deeparchive_transition     = optional(bool, false)
-    enable_standard_ia_transition     = optional(bool, false)
-    enable_one_zone_ia                = optional(bool, false)
-    enable_current_object_expiration  = optional(bool, false)
-    enable_intelligent_tiering        = optional(bool, false)
-    enable_glacier_ir                 = optional(bool, false)
-    standard_transition_days          = optional(number, 30)
-    glacier_transition_days           = optional(number, 60)
-    deeparchive_transition_days       = optional(number, 150)
-    one_zone_ia_days                  = optional(number, 40)
-    intelligent_tiering_days          = optional(number, 50)
-    glacier_ir_days                   = optional(number, 160)
-    expiration_days                   = optional(number, 365)
-  }))
-  default = {
-    default_rule = {
-      status                            = false
-      lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
-    }
-  }
-}
-
-variable "mimir_s3_bucket_lifecycle_rules" {
-  description = "A map of lifecycle rules for mimir AWS S3 bucket."
-  type = map(object({
-    status                            = bool
-    lifecycle_configuration_rule_name = string
-    enable_glacier_transition         = optional(bool, false)
-    enable_deeparchive_transition     = optional(bool, false)
-    enable_standard_ia_transition     = optional(bool, false)
-    enable_one_zone_ia                = optional(bool, false)
-    enable_current_object_expiration  = optional(bool, false)
-    enable_intelligent_tiering        = optional(bool, false)
-    enable_glacier_ir                 = optional(bool, false)
-    standard_transition_days          = optional(number, 30)
-    glacier_transition_days           = optional(number, 60)
-    deeparchive_transition_days       = optional(number, 150)
-    one_zone_ia_days                  = optional(number, 40)
-    intelligent_tiering_days          = optional(number, 50)
-    glacier_ir_days                   = optional(number, 160)
-    expiration_days                   = optional(number, 365)
-  }))
-  default = {
-    default_rule = {
-      status                            = false
-      lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
-    }
-  }
-}
-
-variable "loki_scalable_s3_bucket_lifecycle_rules" {
-  description = "A map of lifecycle rules for loki-scalable AWS S3 bucket."
-  type = map(object({
-    status                            = bool
-    lifecycle_configuration_rule_name = string
-    enable_glacier_transition         = optional(bool, false)
-    enable_deeparchive_transition     = optional(bool, false)
-    enable_standard_ia_transition     = optional(bool, false)
-    enable_one_zone_ia                = optional(bool, false)
-    enable_current_object_expiration  = optional(bool, false)
-    enable_intelligent_tiering        = optional(bool, false)
-    enable_glacier_ir                 = optional(bool, false)
-    standard_transition_days          = optional(number, 30)
-    glacier_transition_days           = optional(number, 60)
-    deeparchive_transition_days       = optional(number, 150)
-    one_zone_ia_days                  = optional(number, 40)
-    intelligent_tiering_days          = optional(number, 50)
-    glacier_ir_days                   = optional(number, 160)
-    expiration_days                   = optional(number, 365)
-  }))
-  default = {
-    default_rule = {
-      status                            = false
-      lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
-    }
-  }
 }
