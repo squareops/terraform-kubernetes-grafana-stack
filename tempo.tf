@@ -85,72 +85,74 @@ resource "helm_release" "tempo" {
   ]
 }
 
-resource "aws_s3_bucket_object_lock_configuration" "tempo-s3-bucket-object_lock" {
-  count  = var.tempo_enabled && var.tempo_s3_bucket_enable_object_lock ? 1 : 0
-  bucket = var.tempo_enabled ? module.s3_bucket_temp[0].s3_bucket_id : null
-  rule {
-    default_retention {
-      mode  = var.deployment_config.tempo_config.tempo_s3_bucket_object_lock_mode
-      days  = var.deployment_config.tempo_config.tempo_s3_bucket_object_lock_days > 0 ? var.deployment_config.tempo_config.tempo_s3_bucket_object_lock_days : null
-      years = var.deployment_config.tempo_config.tempo_s3_bucket_object_lock_years > 0 ? var.deployment_config.tempo_config.tempo_s3_bucket_object_lock_years : null
-    }
-  }
-}
-
 resource "aws_s3_bucket_lifecycle_configuration" "tempo_s3_bucket_lifecycle_rules" {
-  bucket   = var.tempo_enabled ? module.s3_bucket_temp[0].s3_bucket_id : null
-  for_each = var.tempo_s3_bucket_lifecycle_rules
-  rule {
-    id = each.value.lifecycle_configuration_rule_name
-    dynamic "transition" {
-      for_each = each.value.enable_glacier_transition ? [1] : []
-      content {
-        days          = each.value.glacier_transition_days
-        storage_class = "GLACIER"
+  count = var.tempo_enabled ? 1 : 0
+
+  bucket = var.tempo_enabled ? module.s3_bucket_temp[0].s3_bucket_id : null
+
+  dynamic "rule" {
+    for_each = var.tempo_enabled ? var.tempo_s3_bucket_lifecycle_rules : { default_rule = {} }
+
+    content {
+      id = rule.key
+
+      dynamic "transition" {
+        for_each = try(rule.value.enable_glacier_transition ? [1] : [], [])
+        content {
+          days          = rule.value.glacier_transition_days
+          storage_class = "GLACIER"
+        }
       }
-    }
-    dynamic "transition" {
-      for_each = each.value.enable_deeparchive_transition ? [1] : []
-      content {
-        days          = each.value.deeparchive_transition_days
-        storage_class = "DEEP_ARCHIVE"
+
+      dynamic "transition" {
+        for_each = try(rule.value.enable_deeparchive_transition ? [1] : [], [])
+        content {
+          days          = rule.value.deeparchive_transition_days
+          storage_class = "DEEP_ARCHIVE"
+        }
       }
-    }
-    dynamic "transition" {
-      for_each = each.value.enable_standard_ia_transition ? [1] : []
-      content {
-        days          = each.value.standard_transition_days
-        storage_class = "STANDARD_IA"
+
+      dynamic "transition" {
+        for_each = try(rule.value.enable_standard_ia_transition ? [1] : [], [])
+        content {
+          days          = rule.value.standard_transition_days
+          storage_class = "STANDARD_IA"
+        }
       }
-    }
-    dynamic "transition" {
-      for_each = each.value.enable_one_zone_ia ? [1] : []
-      content {
-        days          = each.value.one_zone_ia_days
-        storage_class = "ONEZONE_IA"
+
+      dynamic "transition" {
+        for_each = try(rule.value.enable_one_zone_ia ? [1] : [], [])
+        content {
+          days          = rule.value.one_zone_ia_days
+          storage_class = "ONEZONE_IA"
+        }
       }
-    }
-    dynamic "transition" {
-      for_each = each.value.enable_intelligent_tiering ? [1] : []
-      content {
-        days          = each.value.intelligent_tiering_days
-        storage_class = "INTELLIGENT_TIERING"
+
+      dynamic "transition" {
+        for_each = try(rule.value.enable_intelligent_tiering ? [1] : [], [])
+        content {
+          days          = rule.value.intelligent_tiering_days
+          storage_class = "INTELLIGENT_TIERING"
+        }
       }
-    }
-    dynamic "transition" {
-      for_each = each.value.enable_glacier_ir ? [1] : []
-      content {
-        days          = each.value.glacier_ir_days
-        storage_class = "GLACIER_IR"
+
+      dynamic "transition" {
+        for_each = try(rule.value.enable_glacier_ir ? [1] : [], [])
+        content {
+          days          = rule.value.glacier_ir_days
+          storage_class = "GLACIER_IR"
+        }
       }
-    }
-    dynamic "expiration" {
-      for_each = each.value.enable_current_object_expiration ? [1] : []
-      content {
-        days = each.value.expiration_days
+
+      dynamic "expiration" {
+        for_each = try(rule.value.enable_current_object_expiration ? [1] : [], [])
+        content {
+          days = rule.value.expiration_days
+        }
       }
+
+      status = length(rule.value) > 0 ? (rule.value.status ? "Enabled" : "Disabled") : "Disabled"
     }
-    status = each.value.status ? "Enabled" : "Disabled"
   }
 }
 

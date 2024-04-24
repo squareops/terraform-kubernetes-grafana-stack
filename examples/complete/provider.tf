@@ -7,11 +7,11 @@ provider "aws" {
 
 
 data "aws_eks_cluster" "cluster" {
-  name = "stg-rachit"
+  name = "test-rachit"
 }
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = "stg-rachit"
+  name = "test-rachit"
 }
 
 

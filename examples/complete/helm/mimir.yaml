@@ -3,7 +3,7 @@ nginx:
     enabled: true
     ingressClassName: nginx
     hosts:
-      - host: mimir.ref.stg.skaf.squareops.in
+      - host: mimir.ldc.squareops.in
         paths:
           - path: /
             pathType: Prefix

@@ -54,62 +54,64 @@ resource "aws_s3_bucket_object_lock_configuration" "mimir-s3-bucket-object_lock"
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "mimir_s3_bucket_lifecycle_rules" {
-  bucket   = var.grafana_mimir_enabled ? module.s3_bucket_mimir[0].s3_bucket_id : null
-  for_each = var.mimir_s3_bucket_lifecycle_rules
-  rule {
-    id = each.value.lifecycle_configuration_rule_name
-    dynamic "transition" {
-      for_each = each.value.enable_glacier_transition ? [1] : []
-      content {
-        days          = each.value.glacier_transition_days
-        storage_class = "GLACIER"
+  bucket = var.grafana_mimir_enabled ? module.s3_bucket_mimir[0].s3_bucket_id : null
+  count  = var.grafana_mimir_enabled ? 1 : 0
+  dynamic "rule" {
+    for_each = var.grafana_mimir_enabled ? var.mimir_s3_bucket_lifecycle_rules : { default_rule = {} }
+    content {
+      id = rule.key
+      dynamic "transition" {
+        for_each = try(rule.value.enable_glacier_transition ? [1] : [], [])
+        content {
+          days          = rule.value.glacier_transition_days
+          storage_class = "GLACIER"
+        }
       }
-    }
-    dynamic "transition" {
-      for_each = each.value.enable_deeparchive_transition ? [1] : []
-      content {
-        days          = each.value.deeparchive_transition_days
-        storage_class = "DEEP_ARCHIVE"
+      dynamic "transition" {
+        for_each = try(rule.value.enable_deeparchive_transition ? [1] : [], [])
+        content {
+          days          = rule.value.deeparchive_transition_days
+          storage_class = "DEEP_ARCHIVE"
+        }
       }
-    }
-    dynamic "transition" {
-      for_each = each.value.enable_standard_ia_transition ? [1] : []
-      content {
-        days          = each.value.standard_transition_days
-        storage_class = "STANDARD_IA"
+      dynamic "transition" {
+        for_each = try(rule.value.enable_standard_ia_transition ? [1] : [], [])
+        content {
+          days          = rule.value.standard_transition_days
+          storage_class = "STANDARD_IA"
+        }
       }
-    }
-    dynamic "transition" {
-      for_each = each.value.enable_one_zone_ia ? [1] : []
-      content {
-        days          = each.value.one_zone_ia_days
-        storage_class = "ONEZONE_IA"
+      dynamic "transition" {
+        for_each = try(rule.value.enable_one_zone_ia ? [1] : [], [])
+        content {
+          days          = rule.value.one_zone_ia_days
+          storage_class = "ONEZONE_IA"
+        }
       }
-    }
-    dynamic "transition" {
-      for_each = each.value.enable_intelligent_tiering ? [1] : []
-      content {
-        days          = each.value.intelligent_tiering_days
-        storage_class = "INTELLIGENT_TIERING"
+      dynamic "transition" {
+        for_each = try(rule.value.enable_intelligent_tiering ? [1] : [], [])
+        content {
+          days          = rule.value.intelligent_tiering_days
+          storage_class = "INTELLIGENT_TIERING"
+        }
       }
-    }
-    dynamic "transition" {
-      for_each = each.value.enable_glacier_ir ? [1] : []
-      content {
-        days          = each.value.glacier_ir_days
-        storage_class = "GLACIER_IR"
+      dynamic "transition" {
+        for_each = try(rule.value.enable_glacier_ir ? [1] : [], [])
+        content {
+          days          = rule.value.glacier_ir_days
+          storage_class = "GLACIER_IR"
+        }
       }
-    }
-    dynamic "expiration" {
-      for_each = each.value.enable_current_object_expiration ? [1] : []
-      content {
-        days = each.value.expiration_days
+      dynamic "expiration" {
+        for_each = try(rule.value.enable_current_object_expiration ? [1] : [], [])
+        content {
+          days = rule.value.expiration_days
+        }
       }
+      status = length(rule.value) > 0 ? (rule.value.status ? "Enabled" : "Disabled") : "Disabled"
     }
-    status = each.value.status ? "Enabled" : "Disabled"
   }
 }
-
 module "s3_bucket_mimir" {
   count                                 = var.grafana_mimir_enabled ? 1 : 0
   source                                = "terraform-aws-modules/s3-bucket/aws"
