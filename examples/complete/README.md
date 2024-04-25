@@ -21,7 +21,7 @@ No requirements.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_pgl"></a> [pgl](#module\_pgl) | git@github.com:sq-ia/terraform-kubernetes-grafana.git | n/a |
+| <a name="module_pgl"></a> [pgl](#module\_pgl) | ../../ | n/a |
 
 ## Resources
 
@@ -38,5 +38,5 @@ No inputs.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_grafana_credentials"></a> [grafana\_credentials](#output\_grafana\_credentials) | Grafana\_Info |
+| <a name="output_grafana_credentials"></a> [grafana\_credentials](#output\_grafana\_credentials) | Information about the grafana including username , password & URL. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
