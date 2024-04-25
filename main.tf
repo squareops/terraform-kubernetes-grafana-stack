@@ -48,6 +48,7 @@ data "aws_eks_cluster" "kubernetes_cluster" {
   name = var.eks_cluster_name
 }
 
+
 resource "random_password" "grafana_password" {
   length  = 20
   special = false
@@ -61,7 +62,7 @@ resource "kubernetes_namespace" "monitoring" {
 
 resource "helm_release" "loki" {
   count           = var.loki_enabled ? 1 : 0
-  depends_on = [kubernetes_namespace.monitoring]
+  depends_on      = [var.pgl_namespace]
   name            = "loki"
   atomic          = true
   chart           = "loki-stack"
@@ -95,7 +96,7 @@ resource "helm_release" "blackbox_exporter" {
 }
 
 resource "helm_release" "prometheus_grafana" {
-  depends_on = [kubernetes_namespace.monitoring]
+  depends_on        = [var.pgl_namespace]
   name              = "prometheus-operator"
   chart             = "kube-prometheus-stack"
   version           = var.prometheus_chart_version

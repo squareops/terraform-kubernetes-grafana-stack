@@ -1,32 +1,32 @@
 locals {
   name           = "grafana"
-  region         = "us-east-2"
-  aws_account_id = ""
-  environment    = "prod"
-  additional_tags = {
+  region         = "ap-south-1"
+  aws_account_id = "654654551614"
+  environment    = "test"
+  additional_aws_tags = {
     Owner      = "organization_name"
     Expires    = "Never"
     Department = "Engineering"
   }
 }
 module "pgl" {
-  source                                     = "git@github.com:sq-ia/terraform-kubernetes-grafana.git"
-  eks_cluster_name                           = ""
+  # source                                     = "https://github.com/sq-ia/terraform-kubernetes-grafana.git"
+  source                                     = "../../"
+  eks_cluster_name                           = "test-rachit"
   aws_account_id                             = local.aws_account_id
   kube_prometheus_stack_enabled              = true
   loki_enabled                               = false
   loki_scalable_enabled                      = true
   grafana_mimir_enabled                      = true
-  cloudwatch_enabled                         = true
   tempo_enabled                              = true
+  cloudwatch_enabled                         = true
   mimir_s3_bucket_enable_object_lock         = true
   loki_scalable_s3_bucket_enable_object_lock = true
   tempo_s3_bucket_enable_object_lock         = true
   mimir_s3_bucket_lifecycle_rules = {
     default_rule = {
-      status                            = false
+      status                            = true
       lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
-      enable_current_object_expiration  = true
       expiration_days                   = 365
       enable_standard_ia_transition     = true
       standard_transition_days          = 40
@@ -34,9 +34,8 @@ module "pgl" {
   }
   tempo_s3_bucket_lifecycle_rules = {
     default_rule = {
-      status                            = false
+      status                            = true
       lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
-      enable_current_object_expiration  = true
       expiration_days                   = 365
       enable_standard_ia_transition     = true
       standard_transition_days          = 40
@@ -44,16 +43,15 @@ module "pgl" {
   }
   loki_scalable_s3_bucket_lifecycle_rules = {
     default_rule = {
-      status                            = false
+      status                            = true
       lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
-      enable_current_object_expiration  = true
       expiration_days                   = 365
       enable_standard_ia_transition     = true
       standard_transition_days          = 40
     }
   }
   deployment_config = {
-    hostname                            = "grafana.dev.skaf.squareops.in"
+    hostname                            = "grafana-test.ldc.squareops.in"
     storage_class_name                  = "gp2"
     prometheus_values_yaml              = file("./helm/prometheus.yaml")
     loki_values_yaml                    = file("./helm/loki.yaml")
@@ -62,13 +60,13 @@ module "pgl" {
     tempo_values_yaml                   = file("./helm/tempo.yaml")
     dashboard_refresh_interval          = "10"
     grafana_enabled                     = true
-    prometheus_hostname                 = "prometh.dev.skaf.squareops.in"
+    prometheus_hostname                 = "prometh.ldc.squareops.in"
     prometheus_internal_ingress_enabled = true
     loki_internal_ingress_enabled       = true
-    loki_hostname                       = "loki.dev.skaf.squareops.in"
+    loki_hostname                       = "loki.ldc.squareops.in"
     mimir_s3_bucket_config = {
       s3_bucket_name                    = "${local.environment}-${local.name}-mimir-s3-bucket"
-      versioning_enabled                = "true"
+      versioning_enabled                = true
       s3_bucket_region                  = local.region
       mimir_s3_bucket_object_lock_mode  = "GOVERNANCE"
       mimir_s3_bucket_object_lock_days  = "10"
@@ -78,7 +76,7 @@ module "pgl" {
       loki_scalable_version                     = "5.8.8"
       loki_scalable_values                      = file("./helm/loki-scalable.yaml")
       s3_bucket_name                            = "${local.environment}-${local.name}-loki-scalable-s3-bucket"
-      versioning_enabled                        = "true"
+      versioning_enabled                        = true
       s3_bucket_region                          = local.region
       loki_scalable_s3_bucket_object_lock_mode  = "GOVERNANCE"
       loki_scalable_s3_bucket_object_lock_days  = "0"

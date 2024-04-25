@@ -1,3 +1,9 @@
+variable "additional_aws_tags" {
+  description = "Additional tags to be applied to AWS resources"
+  type        = map(string)
+  default     = {}
+}
+
 variable "aws_account_id" {
   description = "Account ID of the AWS Account."
   default     = ""

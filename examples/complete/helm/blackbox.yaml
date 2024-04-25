@@ -14,7 +14,7 @@ affinity:
     requiredDuringSchedulingIgnoredDuringExecution:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: "Monitor-Services"
+        - key: "Addons-Services"
           operator: In
           values:
           - "true"

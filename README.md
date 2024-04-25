@@ -1,8 +1,10 @@
 ## Prometheus Grafana Loki
 
-![squareops_avatar]
-
-[squareops_avatar]: https://squareops.com/wp-content/uploads/2022/12/squareops-logo.png
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://squareops.com/wp-content/uploads/2020/05/Squareops-png-white.png1-3.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://squareops.com/wp-content/uploads/2021/09/Squareops-png-1-1.png">
+  <img src="https://squareops.com/wp-content/uploads/2021/09/Squareops-png-1-1.png">
+</picture>
 
 ### [SquareOps Technologies](https://squareops.com/) Your DevOps Partner for Accelerating cloud journey.
 <br>
@@ -34,89 +36,89 @@ This module also includes alerting features that allow you to set up custom aler
 
 ```hcl
 module "pgl" {
-  source                                         = https://github.com/sq-ia/terraform-kubernetes-grafana.git"
-  eks_cluster_name                               = "cluster-name"
-  aws_account_id                                 = "aws_account_id"
-  kube_prometheus_stack_enabled                  = true
-  loki_enabled                                   = true
-  loki_scalable_enabled                          = false
-  grafana_mimir_enabled                          = true
-  cloudwatch_enabled                             = true
-  tempo_enabled                                  = true
-  tempo_s3_bucket_enable_object_lock             = true
-  mimir_s3_bucket_enable_object_lock             = true
-  loki_scalable_s3_bucket_enable_object_lock     = true
-  mimir_s3_bucket_lifecycle_rules                = {
-     default_rule = {
-        status                            = false
-        lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
-        expiration_days                   = 365
-        enable_standard_ia_transition     = true
-        standard_transition_days          = 40
-      }
+  source                                     = "https://github.com/sq-ia/terraform-kubernetes-grafana.git"
+  eks_cluster_name                           = "cluster-name"
+  aws_account_id                             = "AWS Account ID"
+  kube_prometheus_stack_enabled              = true
+  loki_enabled                               = true
+  loki_scalable_enabled                      = false
+  grafana_mimir_enabled                      = true
+  cloudwatch_enabled                         = true
+  tempo_enabled                              = true
+  mimir_s3_bucket_enable_object_lock         = true
+  loki_scalable_s3_bucket_enable_object_lock = true
+  tempo_s3_bucket_enable_object_lock         = true
+  mimir_s3_bucket_lifecycle_rules = {
+    default_rule = {
+      status                            = true
+      lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
+      expiration_days                   = 365
+      enable_standard_ia_transition     = true
+      standard_transition_days          = 40
     }
-  loki_scalable_s3_bucket_lifecycle_rules        = {
-     default_rule = {
-        status                            = false
-        lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
-        expiration_days                   = 365
-        enable_standard_ia_transition     = true
-        standard_transition_days          = 40
-      }
+  }
+  tempo_s3_bucket_lifecycle_rules = {
+    default_rule = {
+      status                            = true
+      lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
+      expiration_days                   = 365
+      enable_standard_ia_transition     = true
+      standard_transition_days          = 40
     }
-  tempo_s3_bucket_lifecycle_rules                = {
-     default_rule = {
-        status                            = false
-        lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
-        expiration_days                   = 365
-        enable_standard_ia_transition     = true
-        standard_transition_days          = 40
-      }
+  }
+  loki_scalable_s3_bucket_lifecycle_rules = {
+    default_rule = {
+      status                            = true
+      lifecycle_configuration_rule_name = "lifecycle_configuration_rule_name"
+      expiration_days                   = 365
+      enable_standard_ia_transition     = true
+      standard_transition_days          = 40
     }
-
+  }
   deployment_config = {
     hostname                            = "grafanaa.squareops.in"
     storage_class_name                  = "gp2"
-    prometheus_values_yaml              = file("./helm/prometheus.yaml")
-    loki_values_yaml                    = file("./helm/loki.yaml")
-    blackbox_values_yaml                = file("./helm/blackbox.yaml")
-    grafana_mimir_values_yaml           = file("./helm/mimir.yaml")
-    tempo_values_yaml                   = file("./helm/tempo.yaml")
-    dashboard_refresh_interval          = "10"
+    prometheus_values_yaml              = ""
+    loki_values_yaml                    = ""
+    blackbox_values_yaml                = ""
+    grafana_mimir_values_yaml           = ""
+    tempo_values_yaml                   = ""
+    dashboard_refresh_interval          = "300"
     grafana_enabled                     = true
     prometheus_hostname                 = "prometh.squareops.in"
-    prometheus_internal_ingress_enabled = true
-    loki_internal_ingress_enabled       = true
+    prometheus_internal_ingress_enabled = false
+    loki_internal_ingress_enabled       = false
     loki_hostname                       = "loki.squareops.in"
     mimir_s3_bucket_config = {
-      s3_bucket_name     = "${local.environment}-${local.name}-mimir-s3-bucket"
+      s3_bucket_name     = ""
       versioning_enabled = "true"
-      s3_bucket_region   = local.aws_region
-      mimir_s3_bucket_object_lock_mode  = "GOVERNANCE"
-      mimir_s3_bucket_object_lock_days  = "10"
-      mimir_s3_bucket_object_lock_years = "0"
+      s3_bucket_region   = ""
+      s3_object_expiration = 90
+      mimir_s3_bucket_object_lock_mode  = ""
+      mimir_s3_bucket_object_lock_days  = ""
+      mimir_s3_bucket_object_lock_years = ""
     }
     loki_scalable_config = {
       loki_scalable_version = "5.8.8"
       loki_scalable_values  = file("./helm/loki-scalable.yaml")
-      s3_bucket_name        = "${local.environment}-${local.name}-loki-scalable-s3-bucket"
-      versioning_enabled    = "true"
-      s3_bucket_region      = local.aws_region
-      loki_scalable_s3_bucket_object_lock_mode  = "GOVERNANCE"
-      loki_scalable_s3_bucket_object_lock_days  = "0"
-      loki_scalable_s3_bucket_object_lock_years = "2"
+      s3_bucket_name        = ""
+      versioning_enabled    = true
+      s3_bucket_region      = "local.region"
+      loki_scalable_s3_bucket_object_lock_mode  = ""
+      loki_scalable_s3_bucket_object_lock_days  = ""
+      loki_scalable_s3_bucket_object_lock_years = ""
     }
     promtail_config = {
       promtail_version = "6.8.2"
       promtail_values  = file("./helm/promtail.yaml")
     }
     tempo_config = {
-      s3_bucket_name     = "${local.environment}-${local.name}-tempo-bucket"
+      s3_bucket_name     = ""
       versioning_enabled = true
-      s3_bucket_region   = local.aws_region
-      tempo_s3_bucket_object_lock_mode  = "GOVERNANCE"
-      tempo_s3_bucket_object_lock_days  = "50"
-      tempo_s3_bucket_object_lock_years = "0"
+      s3_bucket_region   = ""
+      tempo_s3_bucket_object_lock_mode  = ""
+      tempo_s3_bucket_object_lock_days  = ""
+      tempo_s3_bucket_object_lock_years = ""
     }
     otel_config = {
       otel_operator_enabled  = true
@@ -148,9 +150,11 @@ module "pgl" {
     push_gateway     = false
     elasticsearch    = false
     prometheustosd   = false
-    ethtool_exporter = false
+    ethtool_exporter = true
   }
 }
+
+
 ```
 Refer [examples](https://github.com/sq-ia/terraform-kubernetes-grafana/tree/main/examples/complete) for more details.
 
@@ -205,7 +209,6 @@ No requirements.
 | [aws_s3_bucket_lifecycle_configuration.tempo_s3_bucket_lifecycle_rules](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
 | [aws_s3_bucket_object_lock_configuration.loki-scalable-s3-bucket-object_lock](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_object_lock_configuration) | resource |
 | [aws_s3_bucket_object_lock_configuration.mimir-s3-bucket-object_lock](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_object_lock_configuration) | resource |
-| [aws_s3_bucket_object_lock_configuration.tempo-s3-bucket-object_lock](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_object_lock_configuration) | resource |
 | [helm_release.blackbox_exporter](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.conntrak_stats_exporter](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.consul_exporter](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
@@ -284,6 +287,7 @@ No requirements.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_additional_aws_tags"></a> [additional\_aws\_tags](#input\_additional\_aws\_tags) | Additional tags to be applied to AWS resources | `map(string)` | `{}` | no |
 | <a name="input_aws_account_id"></a> [aws\_account\_id](#input\_aws\_account\_id) | Account ID of the AWS Account. | `string` | `""` | no |
 | <a name="input_blackbox_exporter_version"></a> [blackbox\_exporter\_version](#input\_blackbox\_exporter\_version) | Version of the Blackbox exporter to deploy. | `string` | `"4.10.1"` | no |
 | <a name="input_cloudwatch_enabled"></a> [cloudwatch\_enabled](#input\_cloudwatch\_enabled) | Whether or not to add CloudWatch as datasource and add some default dashboards for AWS in Grafana. | `bool` | `false` | no |
@@ -334,7 +338,7 @@ No requirements.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_grafana"></a> [grafana](#output\_grafana) | Information about the grafana including username , password & URL. |
+| <a name="output_grafana"></a> [grafana](#output\_grafana) | Grafana\_Info |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Contribution & Issue Reporting
