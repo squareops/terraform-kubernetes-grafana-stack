@@ -1,4 +1,4 @@
 output "grafana_credentials" {
-  description = "Grafana_Info"
+  description = "Information about the grafana including username , password & URL."
   value       = module.pgl.grafana
 }

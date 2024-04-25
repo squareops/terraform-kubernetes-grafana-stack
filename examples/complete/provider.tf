@@ -1,19 +1,17 @@
 provider "aws" {
   region = local.region
   default_tags {
-    tags = local.additional_tags
+    tags = local.additional_aws_tags
   }
 }
 
-
 data "aws_eks_cluster" "cluster" {
-  name = ""
+  name = "test-rachit"
 }
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = ""
+  name = "test-rachit"
 }
-
 
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint

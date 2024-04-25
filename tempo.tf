@@ -30,14 +30,14 @@ resource "helm_release" "otel-collector" {
 
 resource "aws_iam_role" "s3_tempo_role" {
   count = var.tempo_enabled ? 1 : 0
-  name  = join("-", [var.cluster_name, "tempo"])
+  name  = join("-", [var.eks_cluster_name, "tempo"])
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
         Effect = "Allow",
         Principal = {
-          Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.oidc_provider}"
+          Federated = "arn:aws:iam::${var.aws_account_id}:oidc-provider/${local.oidc_provider}"
         },
         Action = "sts:AssumeRoleWithWebIdentity"
       }
@@ -85,26 +85,87 @@ resource "helm_release" "tempo" {
   ]
 }
 
+resource "aws_s3_bucket_lifecycle_configuration" "tempo_s3_bucket_lifecycle_rules" {
+  count = var.tempo_enabled ? 1 : 0
+
+  bucket = var.tempo_enabled ? module.s3_bucket_temp[0].s3_bucket_id : null
+
+  dynamic "rule" {
+    for_each = var.tempo_enabled ? var.tempo_s3_bucket_lifecycle_rules : { default_rule = {} }
+
+    content {
+      id = rule.key
+
+      dynamic "transition" {
+        for_each = try(rule.value.enable_glacier_transition ? [1] : [], [])
+        content {
+          days          = rule.value.glacier_transition_days
+          storage_class = "GLACIER"
+        }
+      }
+
+      dynamic "transition" {
+        for_each = try(rule.value.enable_deeparchive_transition ? [1] : [], [])
+        content {
+          days          = rule.value.deeparchive_transition_days
+          storage_class = "DEEP_ARCHIVE"
+        }
+      }
+
+      dynamic "transition" {
+        for_each = try(rule.value.enable_standard_ia_transition ? [1] : [], [])
+        content {
+          days          = rule.value.standard_transition_days
+          storage_class = "STANDARD_IA"
+        }
+      }
+
+      dynamic "transition" {
+        for_each = try(rule.value.enable_one_zone_ia ? [1] : [], [])
+        content {
+          days          = rule.value.one_zone_ia_days
+          storage_class = "ONEZONE_IA"
+        }
+      }
+
+      dynamic "transition" {
+        for_each = try(rule.value.enable_intelligent_tiering ? [1] : [], [])
+        content {
+          days          = rule.value.intelligent_tiering_days
+          storage_class = "INTELLIGENT_TIERING"
+        }
+      }
+
+      dynamic "transition" {
+        for_each = try(rule.value.enable_glacier_ir ? [1] : [], [])
+        content {
+          days          = rule.value.glacier_ir_days
+          storage_class = "GLACIER_IR"
+        }
+      }
+
+      dynamic "expiration" {
+        for_each = try(rule.value.enable_current_object_expiration ? [1] : [], [])
+        content {
+          days = rule.value.expiration_days
+        }
+      }
+
+      status = length(rule.value) > 0 ? (rule.value.status ? "Enabled" : "Disabled") : "Disabled"
+    }
+  }
+}
+
 module "s3_bucket_temp" {
   count                                 = var.tempo_enabled ? 1 : 0
   source                                = "terraform-aws-modules/s3-bucket/aws"
-  version                               = "3.7.0"
+  version                               = "4.1.0"
   bucket                                = var.deployment_config.tempo_config.s3_bucket_name
-  force_destroy                         = true
-  attach_deny_insecure_transport_policy = true
+  force_destroy                         = var.tempo_s3_bucket_force_destroy
+  attach_deny_insecure_transport_policy = var.tempo_s3_bucket_attach_deny_insecure_transport_policy
   versioning = {
     enabled = var.deployment_config.tempo_config.versioning_enabled
   }
-
-  lifecycle_rule = [
-    {
-      id      = "tempo_s3"
-      enabled = true
-      expiration = {
-        days = var.deployment_config.tempo_config.s3_object_expiration
-      }
-    }
-  ]
 
   server_side_encryption_configuration = {
     rule = {
@@ -114,12 +175,12 @@ module "s3_bucket_temp" {
     }
   }
   # S3 bucket-level Public Access Block configuration
-  block_public_acls       = true
-  ignore_public_acls      = true
-  block_public_policy     = true
-  restrict_public_buckets = true
+  block_public_acls       = var.tempo_s3_bucket_block_public_acls
+  block_public_policy     = var.tempo_s3_bucket_block_public_policy
+  ignore_public_acls      = var.tempo_s3_bucket_ignore_public_acls
+  restrict_public_buckets = var.tempo_s3_bucket_restrict_public_buckets
 
   # S3 Bucket Ownership Controls
-  object_ownership         = "BucketOwnerPreferred"
-  control_object_ownership = true
+  object_ownership         = var.tempo_s3_bucket_object_ownership
+  control_object_ownership = var.tempo_s3_bucket_control_object_ownership
 }
