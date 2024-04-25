@@ -44,10 +44,8 @@ locals {
 
 }
 
-data "aws_caller_identity" "current" {}
-
 data "aws_eks_cluster" "kubernetes_cluster" {
-  name = var.cluster_name
+  name = var.eks_cluster_name
 }
 
 
@@ -64,7 +62,7 @@ resource "kubernetes_namespace" "monitoring" {
 
 resource "helm_release" "loki" {
   count           = var.loki_enabled ? 1 : 0
-  depends_on      = [kubernetes_namespace.monitoring]
+  depends_on      = [var.pgl_namespace]
   name            = "loki"
   atomic          = true
   chart           = "loki-stack"
@@ -98,7 +96,7 @@ resource "helm_release" "blackbox_exporter" {
 }
 
 resource "helm_release" "prometheus_grafana" {
-  depends_on        = [kubernetes_namespace.monitoring, kubernetes_priority_class.priority_class]
+  depends_on        = [var.pgl_namespace]
   name              = "prometheus-operator"
   chart             = "kube-prometheus-stack"
   version           = var.prometheus_chart_version
@@ -149,20 +147,20 @@ resource "kubernetes_priority_class" "priority_class" {
 
 resource "aws_iam_role" "cloudwatch_role" {
   count = var.deployment_config.grafana_enabled && var.cloudwatch_enabled ? 1 : 0
-  name  = join("-", [var.cluster_name, "cloudwatch"])
+  name  = join("-", [var.eks_cluster_name, "cloudwatch"])
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
         Effect = "Allow",
         Principal = {
-          Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.oidc_provider}"
+          Federated = "arn:aws:iam::${var.aws_account_id}:oidc-provider/${local.oidc_provider}"
         },
         Action = "sts:AssumeRoleWithWebIdentity",
         Condition = {
           StringEquals = {
             "${local.oidc_provider}:aud" = "sts.amazonaws.com",
-            "${local.oidc_provider}:sub" = "system:serviceaccount:monitoring:prometheus-operator-grafana"
+            "${local.oidc_provider}:sub" = "system:serviceaccount:${var.pgl_namespace}:prometheus-operator-grafana"
           }
         }
       }
@@ -862,28 +860,6 @@ resource "kubernetes_config_map" "elasticsearch_dashboard" {
   }
 }
 
-# resource "kubernetes_config_map" "elasticsearch_cluster_stats_dashboard" {
-#   count = var.exporter_config.elasticsearch && var.deployment_config.grafana_enabled ? 1 : 0
-#   metadata {
-#     name      = "elasticsearch-cluster-stats"
-#     namespace = var.pgl_namespace
-#     labels = {
-#       "grafana_dashboard" : "1"
-#       "app" : "kube-prometheus-stack-grafana"
-#       "chart" : "kube-prometheus-stack-35.2.0"
-#       "release" : "prometheus-operator"
-#     }
-#     annotations = {
-#       "grafana_folder": "Management"
-#     }
-#   }
-
-#   data = {
-#     "es-cluster-stats.json" = "${file("${path.module}/grafana/dashboards/es-cluster-stats.json")}"
-#   }
-# }
-
-
 resource "kubernetes_config_map" "elasticsearch_exporter_quickstart_and_dashboard" {
   count = var.exporter_config.elasticsearch && var.deployment_config.grafana_enabled ? 1 : 0
   metadata {
@@ -1113,7 +1089,7 @@ data "kubernetes_secret" "prometheus-operator-grafana" {
   depends_on = [helm_release.prometheus_grafana]
   metadata {
     name      = "prometheus-operator-grafana"
-    namespace = "monitoring"
+    namespace = var.pgl_namespace
   }
 }
 
@@ -1156,26 +1132,6 @@ resource "kubernetes_config_map" "istio_control_plane_dashboard" {
   }
 }
 
-# resource "kubernetes_config_map" "istio_mesh_dashboard" {
-#   depends_on = [helm_release.prometheus_grafana]
-#   count      = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
-#   metadata {
-#     name      = "istio-mesh-dashboard"
-#     namespace = var.pgl_namespace
-#     labels = {
-#       "grafana_dashboard" : "1"
-#       "app" : "kube-prometheus-stack-grafana"
-#       "chart" : "kube-prometheus-stack-35.2.0"
-#       "release" : "prometheus-operator"
-#     }
-#   }
-
-#   data = {
-#     "istio-mesh-dashboard.json" = "${file("${path.module}/grafana/dashboards/Istio_Mesh_Dashboard.json")}"
-#   }
-# }
-
-
 resource "kubernetes_config_map" "istio_performance_dashboard" {
   depends_on = [helm_release.prometheus_grafana]
   count      = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
@@ -1197,47 +1153,6 @@ resource "kubernetes_config_map" "istio_performance_dashboard" {
     "istio-performance-dashboard.json" = "${file("${path.module}/grafana/dashboards/Istio_Performance_Dashboard.json")}"
   }
 }
-
-
-# resource "kubernetes_config_map" "istio_service_dashboard" {
-#   depends_on = [helm_release.prometheus_grafana]
-#   count      = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
-#   metadata {
-#     name      = "istio-service-dashboard"
-#     namespace = var.pgl_namespace
-#     labels = {
-#       "grafana_dashboard" : "1"
-#       "app" : "kube-prometheus-stack-grafana"
-#       "chart" : "kube-prometheus-stack-35.2.0"
-#       "release" : "prometheus-operator"
-#     }
-#   }
-
-#   data = {
-#     "istio-service-dashboard.json" = "${file("${path.module}/grafana/dashboards/Istio_Service_Dashboard.json")}"
-#   }
-# }
-
-
-# resource "kubernetes_config_map" "istio_workload_dashboard" {
-#   depends_on = [helm_release.prometheus_grafana]
-#   count      = var.exporter_config.istio && var.deployment_config.grafana_enabled ? 1 : 0
-#   metadata {
-#     name      = "istio-workload-dashboard"
-#     namespace = var.pgl_namespace
-#     labels = {
-#       "grafana_dashboard" : "1"
-#       "app" : "kube-prometheus-stack-grafana"
-#       "chart" : "kube-prometheus-stack-35.2.0"
-#       "release" : "prometheus-operator"
-#     }
-#   }
-
-#   data = {
-#     "istio-workload-dashboard.json" = "${file("${path.module}/grafana/dashboards/Istio_Workload_Dashboard.json")}"
-#   }
-# }
-
 
 resource "kubernetes_config_map" "kafka_dashboard" {
   depends_on = [helm_release.prometheus_grafana]
