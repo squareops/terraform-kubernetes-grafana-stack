@@ -31,7 +31,7 @@ module "pgl" {
     prometheus_hostname                 = "prometh.dev.skaf.squareops.in"
     prometheus_internal_ingress_enabled = false
     prometheus_alb_ingress_enabled     = false #if you disable it , them ingress with nlb is created. otherwise alb is enable then you have to give alb_certificate_arn also
-    alb_certificate_arn                    = "arn:aws:acm:us-west-1:767398031518:certificate/23cec787-a3cd-43bf-8f4d-0cbde391ed86"
+    alb_certificate_arn                    = ""
     loki_internal_ingress_enabled       = false
     loki_hostname                       = "loki.dev.skaf.squareops.in"
     mimir_s3_bucket_config = {
