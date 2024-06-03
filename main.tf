@@ -97,6 +97,32 @@ resource "helm_release" "blackbox_exporter" {
   ]
 }
 
+locals {
+  ingress_annotations = var.deployment_config.prometheus_alb_ingress_enabled ? {
+    "kubernetes.io/ingress.class"              = "alb",
+    "alb.ingress.kubernetes.io/scheme"         = "internet-facing",
+    "alb.ingress.kubernetes.io/group.name"     = "pgl",
+    "alb.ingress.kubernetes.io/healthcheck-path" = "/api/health",
+    "alb.ingress.kubernetes.io/healthcheck-port" = "traffic-port",
+    "alb.ingress.kubernetes.io/healthcheck-protocol" = "HTTP",
+    "alb.ingress.kubernetes.io/listen-ports"   = "[{\"HTTP\": 80},{\"HTTPS\": 443}]",
+    "alb.ingress.kubernetes.io/target-type"    = "ip",
+    "alb.ingress.kubernetes.io/ssl-redirect"   = "443",
+    "alb.ingress.kubernetes.io/certificate-arn" = var.deployment_config.alb_certificate_arn
+  } : {
+    "kubernetes.io/ingress.class"              = "nginx",
+    "kubernetes.io/tls-acme"                   = "false",
+    "cert-manager.io/cluster-issuer"           = "letsencrypt-prod"
+  }
+
+  ingress_hosts = [var.deployment_config.hostname]
+
+  ingress_tls = var.deployment_config.prometheus_alb_ingress_enabled ? [] : [{
+    secretName = "monitor-tls",
+    hosts      = [var.deployment_config.hostname]
+  }]
+}
+
 resource "helm_release" "prometheus_grafana" {
   depends_on        = [kubernetes_namespace.monitoring, kubernetes_priority_class.priority_class]
   name              = "prometheus-operator"
@@ -106,36 +132,42 @@ resource "helm_release" "prometheus_grafana" {
   namespace         = var.pgl_namespace
   repository        = "https://prometheus-community.github.io/helm-charts"
   dependency_update = true
+
   values = var.grafana_mimir_enabled ? [
     templatefile("${path.module}/helm/values/prometheus/mimir/values.yaml", {
-      hostname                = "${var.deployment_config.hostname}",
-      grafana_enabled         = "${var.deployment_config.grafana_enabled}",
-      storage_class_name      = "${var.deployment_config.storage_class_name}",
-      min_refresh_interval    = "${var.deployment_config.dashboard_refresh_interval}",
-      grafana_admin_password  = "${random_password.grafana_password.result}",
+      hostname                = var.deployment_config.hostname,
+      grafana_enabled         = var.deployment_config.grafana_enabled,
+      storage_class_name      = var.deployment_config.storage_class_name,
+      min_refresh_interval    = var.deployment_config.dashboard_refresh_interval,
+      grafana_admin_password  = random_password.grafana_password.result,
       loki_datasource_config  = var.loki_scalable_enabled ? local.loki_datasource_config : "",
       tempo_datasource_config = var.tempo_enabled ? local.tempo_datasource_config : "",
-      cw_datasource_config    = var.cloudwatch_enabled ? local.cw_datasource_config : ""
+      cw_datasource_config    = var.cloudwatch_enabled ? local.cw_datasource_config : "",
       annotations             = var.cloudwatch_enabled ? "eks.amazonaws.com/role-arn: ${aws_iam_role.cloudwatch_role[0].arn}" : ""
     }),
     var.deployment_config.prometheus_values_yaml
-    ] : [
+  ] : [
     templatefile("${path.module}/helm/values/prometheus/values.yaml", {
-      hostname                           = "${var.deployment_config.hostname}",
-      grafana_enabled                    = "${var.deployment_config.grafana_enabled}",
-      storage_class_name                 = "${var.deployment_config.storage_class_name}",
-      prometheus_hostname                = "${var.deployment_config.prometheus_hostname}",
-      min_refresh_interval               = "${var.deployment_config.dashboard_refresh_interval}",
-      grafana_admin_password             = "${random_password.grafana_password.result}",
-      enable_prometheus_internal_ingress = "${var.deployment_config.prometheus_internal_ingress_enabled}",
+      hostname                           = var.deployment_config.hostname,
+      grafana_enabled                    = var.deployment_config.grafana_enabled,
+      storage_class_name                 = var.deployment_config.storage_class_name,
+      prometheus_hostname                = var.deployment_config.prometheus_hostname,
+      min_refresh_interval               = var.deployment_config.dashboard_refresh_interval,
+      grafana_admin_password             = random_password.grafana_password.result,
+      enable_prometheus_internal_ingress = var.deployment_config.prometheus_internal_ingress_enabled,
+      ingress_enabled                    = true,
+      ingress_annotations                = jsonencode(local.ingress_annotations),
+      ingress_hosts                      = jsonencode(local.ingress_hosts),
+      ingress_tls                        = jsonencode(local.ingress_tls),
       loki_datasource_config             = var.loki_scalable_enabled ? local.loki_datasource_config : "",
       tempo_datasource_config            = var.tempo_enabled ? local.tempo_datasource_config : "",
-      cw_datasource_config               = var.cloudwatch_enabled ? local.cw_datasource_config : ""
+      cw_datasource_config               = var.cloudwatch_enabled ? local.cw_datasource_config : "",
       annotations                        = var.cloudwatch_enabled ? "eks.amazonaws.com/role-arn: ${aws_iam_role.cloudwatch_role[0].arn}" : ""
     }),
     var.deployment_config.prometheus_values_yaml
   ]
 }
+
 
 resource "kubernetes_priority_class" "priority_class" {
   description = "Used for grafana critical pods that must not be moved from their current"

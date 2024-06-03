@@ -16,8 +16,8 @@ module "pgl" {
   loki_enabled                  = true
   loki_scalable_enabled         = false
   grafana_mimir_enabled         = false
-  cloudwatch_enabled            = true
-  tempo_enabled                 = true
+  cloudwatch_enabled            = false
+  tempo_enabled                 = false
   deployment_config = {
     hostname                            = "grafana.dev.skaf.squareops.in"
     storage_class_name                  = "gp2"
@@ -30,6 +30,8 @@ module "pgl" {
     grafana_enabled                     = true
     prometheus_hostname                 = "prometh.dev.skaf.squareops.in"
     prometheus_internal_ingress_enabled = false
+    prometheus_alb_ingress_enabled     = false #if you disable it , them ingress with nlb is created. otherwise alb is enable then you have to give alb_certificate_arn also
+    alb_certificate_arn                    = "arn:aws:acm:us-west-1:767398031518:certificate/23cec787-a3cd-43bf-8f4d-0cbde391ed86"
     loki_internal_ingress_enabled       = false
     loki_hostname                       = "loki.dev.skaf.squareops.in"
     mimir_s3_bucket_config = {
@@ -56,8 +58,8 @@ module "pgl" {
       s3_object_expiration = "90"
     }
     otel_config = {
-      otel_operator_enabled  = true
-      otel_collector_enabled = true
+      otel_operator_enabled  = false
+      otel_collector_enabled = false
     }
   }
   exporter_config = {
@@ -66,25 +68,25 @@ module "pgl" {
     nifi             = false
     snmp             = false
     druid            = false
-    istio            = true
+    istio            = false
     kafka            = false
-    mysql            = true
-    redis            = true
-    argocd           = true
+    mysql            = false
+    redis            = false
+    argocd           = false
     consul           = false
     statsd           = false
     couchdb          = false
-    jenkins          = true
-    mongodb          = true
+    jenkins          = false
+    mongodb          = false
     pingdom          = false
-    rabbitmq         = true
-    blackbox         = true
+    rabbitmq         = false
+    blackbox         = false
     postgres         = false
     conntrack        = false
     stackdriver      = false
     push_gateway     = false
     elasticsearch    = false
     prometheustosd   = false
-    ethtool_exporter = true
+    ethtool_exporter = false
   }
 }
