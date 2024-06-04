@@ -98,7 +98,7 @@ resource "helm_release" "blackbox_exporter" {
 }
 
 locals {
-  ingress_annotations = var.deployment_config.prometheus_alb_ingress_enabled ? {
+  ingress_annotations = var.deployment_config.grafana_ingress_load_balancer == "alb" ? {
     "kubernetes.io/ingress.class"              = "alb",
     "alb.ingress.kubernetes.io/scheme"         = "internet-facing",
     "alb.ingress.kubernetes.io/group.name"     = "pgl",
@@ -108,7 +108,7 @@ locals {
     "alb.ingress.kubernetes.io/listen-ports"   = "[{\"HTTP\": 80},{\"HTTPS\": 443}]",
     "alb.ingress.kubernetes.io/target-type"    = "ip",
     "alb.ingress.kubernetes.io/ssl-redirect"   = "443",
-    "alb.ingress.kubernetes.io/certificate-arn" = var.deployment_config.alb_certificate_arn
+    "alb.ingress.kubernetes.io/certificate-arn" = var.deployment_config.alb_acm_certificate_arn 
   } : {
     "kubernetes.io/ingress.class"              = "nginx",
     "kubernetes.io/tls-acme"                   = "false",
@@ -117,7 +117,7 @@ locals {
 
   ingress_hosts = [var.deployment_config.hostname]
 
-  ingress_tls = var.deployment_config.prometheus_alb_ingress_enabled ? [] : [{
+  ingress_tls = var.deployment_config.grafana_ingress_load_balancer == "alb" ? [] : [{
     secretName = "monitor-tls",
     hosts      = [var.deployment_config.hostname]
   }]
