@@ -235,18 +235,6 @@ grafana:
 
 
   adminPassword: ${grafana_admin_password}
-  # ingress:
-  #   enabled: true
-  #   annotations:
-  #     kubernetes.io/ingress.class: "nginx"
-  #     kubernetes.io/tls-acme: "false"
-  #     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-  #   hosts:
-  #     - ${hostname}
-  #   tls:
-  #     - secretName: monitor-tls
-  #       hosts:
-  #         - ${hostname}
   ingress:
     enabled: ${ingress_enabled}
     annotations: ${ingress_annotations}
