@@ -55,8 +55,8 @@ variable "deployment_config" {
     grafana_enabled                     = true
     prometheus_hostname                 = ""
     prometheus_internal_ingress_enabled = false
-    grafana_ingress_load_balancer    = "nlb" #default is nlb ,other value is "alb".if alb is enable then you have to give alb_acm_certificate_arn also
-    alb_acm_certificate_arn               = ""
+    grafana_ingress_load_balancer       = "nlb" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
+    alb_acm_certificate_arn             = ""
     loki_internal_ingress_enabled       = false
     loki_hostname                       = ""
     mimir_s3_bucket_config = {

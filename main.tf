@@ -99,20 +99,20 @@ resource "helm_release" "blackbox_exporter" {
 
 locals {
   ingress_annotations = var.deployment_config.grafana_ingress_load_balancer == "alb" ? {
-    "kubernetes.io/ingress.class"              = "alb",
-    "alb.ingress.kubernetes.io/scheme"         = "internet-facing",
-    "alb.ingress.kubernetes.io/group.name"     = "pgl",
-    "alb.ingress.kubernetes.io/healthcheck-path" = "/api/health",
-    "alb.ingress.kubernetes.io/healthcheck-port" = "traffic-port",
+    "kubernetes.io/ingress.class"                    = "alb",
+    "alb.ingress.kubernetes.io/scheme"               = "internet-facing",
+    "alb.ingress.kubernetes.io/group.name"           = "pgl",
+    "alb.ingress.kubernetes.io/healthcheck-path"     = "/api/health",
+    "alb.ingress.kubernetes.io/healthcheck-port"     = "traffic-port",
     "alb.ingress.kubernetes.io/healthcheck-protocol" = "HTTP",
-    "alb.ingress.kubernetes.io/listen-ports"   = "[{\"HTTP\": 80},{\"HTTPS\": 443}]",
-    "alb.ingress.kubernetes.io/target-type"    = "ip",
-    "alb.ingress.kubernetes.io/ssl-redirect"   = "443",
-    "alb.ingress.kubernetes.io/certificate-arn" = var.deployment_config.alb_acm_certificate_arn 
-  } : {
-    "kubernetes.io/ingress.class"              = "nginx",
-    "kubernetes.io/tls-acme"                   = "false",
-    "cert-manager.io/cluster-issuer"           = "letsencrypt-prod"
+    "alb.ingress.kubernetes.io/listen-ports"         = "[{\"HTTP\": 80},{\"HTTPS\": 443}]",
+    "alb.ingress.kubernetes.io/target-type"          = "ip",
+    "alb.ingress.kubernetes.io/ssl-redirect"         = "443",
+    "alb.ingress.kubernetes.io/certificate-arn"      = var.deployment_config.alb_acm_certificate_arn
+    } : {
+    "kubernetes.io/ingress.class"    = "nginx",
+    "kubernetes.io/tls-acme"         = "false",
+    "cert-manager.io/cluster-issuer" = "letsencrypt-prod"
   }
 
   ingress_hosts = [var.deployment_config.hostname]
@@ -146,7 +146,7 @@ resource "helm_release" "prometheus_grafana" {
       annotations             = var.cloudwatch_enabled ? "eks.amazonaws.com/role-arn: ${aws_iam_role.cloudwatch_role[0].arn}" : ""
     }),
     var.deployment_config.prometheus_values_yaml
-  ] : [
+    ] : [
     templatefile("${path.module}/helm/values/prometheus/values.yaml", {
       hostname                           = var.deployment_config.hostname,
       grafana_enabled                    = var.deployment_config.grafana_enabled,
