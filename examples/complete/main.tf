@@ -30,12 +30,14 @@ module "pgl" {
     grafana_enabled                     = true
     prometheus_hostname                 = "prometh.dev.skaf.squareops.in"
     prometheus_internal_ingress_enabled = false
+    grafana_ingress_load_balancer       = "nlb" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
+    alb_acm_certificate_arn             = "arn:aws:acm:us-west-2:123456543:certificate/5165ad5d-1240"
     loki_internal_ingress_enabled       = false
     loki_hostname                       = "loki.dev.skaf.squareops.in"
     mimir_s3_bucket_config = {
       s3_bucket_name       = "${local.environment}-${local.name}-mimir-bucket"
       versioning_enabled   = "false"
-      s3_bucket_region     = local.region
+      s3_bucket_region     = "${local.region}"
       s3_object_expiration = 90
     }
     loki_scalable_config = {
@@ -43,7 +45,7 @@ module "pgl" {
       loki_scalable_values  = file("./helm/loki-scalable.yaml")
       s3_bucket_name        = "${local.environment}-${local.name}-loki-scalable-bucket"
       versioning_enabled    = "false"
-      s3_bucket_region      = local.region
+      s3_bucket_region      = "${local.region}"
     }
     promtail_config = {
       promtail_version = "6.8.2"
@@ -52,7 +54,7 @@ module "pgl" {
     tempo_config = {
       s3_bucket_name       = "${local.environment}-${local.name}-tempo-skaf"
       versioning_enabled   = false
-      s3_bucket_region     = local.region
+      s3_bucket_region     = "${local.region}"
       s3_object_expiration = "90"
     }
     otel_config = {

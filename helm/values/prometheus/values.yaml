@@ -235,19 +235,11 @@ grafana:
 
 
   adminPassword: ${grafana_admin_password}
-
   ingress:
-    enabled: true
-    annotations:
-      kubernetes.io/ingress.class: "nginx"
-      kubernetes.io/tls-acme: "false"
-      cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    hosts:
-      - ${hostname}
-    tls:
-      - secretName: monitor-tls
-        hosts:
-          - ${hostname}
+    enabled: ${ingress_enabled}
+    annotations: ${ingress_annotations}
+    hosts: ${ingress_hosts}
+    tls: ${ingress_tls}
 
   serviceMonitor:
     enabled: true
@@ -415,7 +407,7 @@ prometheus-node-exporter:
     requests:
       cpu: 10m
       memory: 50Mi
-      
+
 additionalPrometheusRulesMap:
   nodes:
     groups:
