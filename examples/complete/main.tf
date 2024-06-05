@@ -16,8 +16,8 @@ module "pgl" {
   loki_enabled                  = true
   loki_scalable_enabled         = false
   grafana_mimir_enabled         = false
-  cloudwatch_enabled            = false
-  tempo_enabled                 = false
+  cloudwatch_enabled            = true
+  tempo_enabled                 = true
   deployment_config = {
     hostname                            = "grafana.dev.skaf.squareops.in"
     storage_class_name                  = "gp2"
@@ -30,14 +30,14 @@ module "pgl" {
     grafana_enabled                     = true
     prometheus_hostname                 = "prometh.dev.skaf.squareops.in"
     prometheus_internal_ingress_enabled = false
-    grafana_ingress_load_balancer       = "" #default is nlb ,other value is "alb".if alb is enable then you have to give alb_acm_certificate_arn also.
-    alb_acm_certificate_arn               = ""
+    grafana_ingress_load_balancer       = "nlb" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
+    alb_acm_certificate_arn             = "arn:aws:acm:us-west-2:123456543:certificate/5165ad5d-1240"
     loki_internal_ingress_enabled       = false
     loki_hostname                       = "loki.dev.skaf.squareops.in"
     mimir_s3_bucket_config = {
       s3_bucket_name       = "${local.environment}-${local.name}-mimir-bucket"
       versioning_enabled   = "false"
-      s3_bucket_region     = local.region
+      s3_bucket_region     = "${local.region}"
       s3_object_expiration = 90
     }
     loki_scalable_config = {
@@ -45,7 +45,7 @@ module "pgl" {
       loki_scalable_values  = file("./helm/loki-scalable.yaml")
       s3_bucket_name        = "${local.environment}-${local.name}-loki-scalable-bucket"
       versioning_enabled    = "false"
-      s3_bucket_region      = local.region
+      s3_bucket_region      = "${local.region}"
     }
     promtail_config = {
       promtail_version = "6.8.2"
@@ -54,12 +54,12 @@ module "pgl" {
     tempo_config = {
       s3_bucket_name       = "${local.environment}-${local.name}-tempo-skaf"
       versioning_enabled   = false
-      s3_bucket_region     = local.region
+      s3_bucket_region     = "${local.region}"
       s3_object_expiration = "90"
     }
     otel_config = {
-      otel_operator_enabled  = false
-      otel_collector_enabled = false
+      otel_operator_enabled  = true
+      otel_collector_enabled = true
     }
   }
   exporter_config = {
@@ -68,25 +68,25 @@ module "pgl" {
     nifi             = false
     snmp             = false
     druid            = false
-    istio            = false
+    istio            = true
     kafka            = false
-    mysql            = false
-    redis            = false
-    argocd           = false
+    mysql            = true
+    redis            = true
+    argocd           = true
     consul           = false
     statsd           = false
     couchdb          = false
-    jenkins          = false
-    mongodb          = false
+    jenkins          = true
+    mongodb          = true
     pingdom          = false
-    rabbitmq         = false
-    blackbox         = false
+    rabbitmq         = true
+    blackbox         = true
     postgres         = false
     conntrack        = false
     stackdriver      = false
     push_gateway     = false
     elasticsearch    = false
     prometheustosd   = false
-    ethtool_exporter = false
+    ethtool_exporter = true
   }
 }
