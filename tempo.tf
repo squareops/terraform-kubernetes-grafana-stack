@@ -88,7 +88,7 @@ resource "helm_release" "tempo" {
 module "s3_bucket_temp" {
   count                                 = var.tempo_enabled ? 1 : 0
   source                                = "terraform-aws-modules/s3-bucket/aws"
-  version                               = "3.7.0"
+  version                               = "4.1.2"
   bucket                                = var.deployment_config.tempo_config.s3_bucket_name
   force_destroy                         = true
   attach_deny_insecure_transport_policy = true

@@ -44,7 +44,7 @@ resource "aws_iam_role" "mimir_role" {
 module "s3_bucket_mimir" {
   count                                 = var.grafana_mimir_enabled ? 1 : 0
   source                                = "terraform-aws-modules/s3-bucket/aws"
-  version                               = "3.7.0"
+  version                               = "4.1.2"
   bucket                                = var.deployment_config.mimir_s3_bucket_config.s3_bucket_name
   force_destroy                         = true
   attach_deny_insecure_transport_policy = true
@@ -110,7 +110,7 @@ resource "kubernetes_config_map" "mimir-overview_dashboard" {
     labels = {
       "grafana_dashboard" : "1"
       "app" : "kube-prometheus-stack-grafana"
-      "chart" : "kube-prometheus-stack-35.2.0"
+      "chart" : "kube-prometheus-stack-61.1.0"
       "release" : "prometheus-operator"
     }
     annotations = {
@@ -134,7 +134,7 @@ resource "kubernetes_config_map" "mimir-compactor_dashboard" {
     labels = {
       "grafana_dashboard" : "1"
       "app" : "kube-prometheus-stack-grafana"
-      "chart" : "kube-prometheus-stack-35.2.0"
+      "chart" : "kube-prometheus-stack-61.1.0"
       "release" : "prometheus-operator"
     }
     annotations = {
@@ -158,7 +158,7 @@ resource "kubernetes_config_map" "mimir-object-store_dashboard" {
     labels = {
       "grafana_dashboard" : "1"
       "app" : "kube-prometheus-stack-grafana"
-      "chart" : "kube-prometheus-stack-35.2.0"
+      "chart" : "kube-prometheus-stack-61.1.0"
       "release" : "prometheus-operator"
     }
     annotations = {
@@ -182,7 +182,7 @@ resource "kubernetes_config_map" "mimir-queries_dashboard" {
     labels = {
       "grafana_dashboard" : "1"
       "app" : "kube-prometheus-stack-grafana"
-      "chart" : "kube-prometheus-stack-35.2.0"
+      "chart" : "kube-prometheus-stack-61.1.0"
       "release" : "prometheus-operator"
     }
     annotations = {
@@ -206,7 +206,7 @@ resource "kubernetes_config_map" "mimir-writes-resources_dashboard" {
     labels = {
       "grafana_dashboard" : "1"
       "app" : "kube-prometheus-stack-grafana"
-      "chart" : "kube-prometheus-stack-35.2.0"
+      "chart" : "kube-prometheus-stack-61.1.0"
       "release" : "prometheus-operator"
     }
     annotations = {
@@ -230,7 +230,7 @@ resource "kubernetes_config_map" "mimir-writes_dashboard" {
     labels = {
       "grafana_dashboard" : "1"
       "app" : "kube-prometheus-stack-grafana"
-      "chart" : "kube-prometheus-stack-35.2.0"
+      "chart" : "kube-prometheus-stack-61.1.0"
       "release" : "prometheus-operator"
     }
     annotations = {
@@ -254,7 +254,7 @@ resource "kubernetes_config_map" "mimir-reads_dashboard" {
     labels = {
       "grafana_dashboard" : "1"
       "app" : "kube-prometheus-stack-grafana"
-      "chart" : "kube-prometheus-stack-35.2.0"
+      "chart" : "kube-prometheus-stack-61.1.0"
       "release" : "prometheus-operator"
     }
     annotations = {
@@ -278,7 +278,7 @@ resource "kubernetes_config_map" "mimir-reads-resources_dashboard" {
     labels = {
       "grafana_dashboard" : "1"
       "app" : "kube-prometheus-stack-grafana"
-      "chart" : "kube-prometheus-stack-35.2.0"
+      "chart" : "kube-prometheus-stack-61.1.0"
       "release" : "prometheus-operator"
     }
     annotations = {

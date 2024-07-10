@@ -11,25 +11,25 @@ variable "loki_enabled" {
 }
 
 variable "loki_stack_version" {
-  default     = "2.8.2"
+  default     = "2.10.2"
   type        = string
   description = "Version of the Loki stack to deploy."
 }
 
 variable "blackbox_exporter_version" {
-  default     = "4.10.1"
+  default     = "8.17.0"
   type        = string
   description = "Version of the Blackbox exporter to deploy."
 }
 
 variable "prometheus_chart_version" {
-  default     = "42.0.0"
+  default     = "61.1.0"
   type        = string
   description = "Version of the Prometheus chart to deploy."
 }
 
 variable "grafana_mimir_version" {
-  default     = "3.2.0"
+  default     = "5.3.0"
   type        = string
   description = "Version of the Grafana Mimir plugin to deploy."
 }
@@ -66,14 +66,14 @@ variable "deployment_config" {
       s3_object_expiration = ""
     }
     loki_scalable_config = {
-      loki_scalable_version = "5.8.8"
+      loki_scalable_version = "6.6.5"
       loki_scalable_values  = ""
       s3_bucket_name        = ""
       versioning_enabled    = ""
       s3_bucket_region      = ""
     }
     promtail_config = {
-      promtail_version = "6.8.2"
+      promtail_version = "6.16.3"
       promtail_values  = ""
     }
     tempo_config = {

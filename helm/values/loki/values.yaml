@@ -20,17 +20,17 @@ loki:
       reject_old_samples_max_age: 168h
   resources:
     limits:
-      cpu: 250m
-      memory: 700Mi
+      cpu: 1000m
+      memory: 1536Mi
     requests:
       cpu: 100m
       memory: 300Mi
   persistence:
     enabled: true
-    storageClassName: gp2
-    size: "15Gi"
+    storageClassName: infra-service-sc
+    size: "20Gi"
   ingress:
-    enabled: "${enable_loki_internal_ingress}"
+    enabled: ${enable_loki_internal_ingress}
     annotations:
     kubernetes.io/ingress.class: "internal-nginx"
     kubernetes.io/tls-acme: "false"
@@ -43,7 +43,7 @@ loki:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "Monitor-Services"
+          - key: "Addons-Services"
             operator: In
             values:
             - "true"
@@ -58,12 +58,6 @@ fluent-bit:
 
 grafana:
   enabled: false
-  sidecar:
-    datasources:
-      enabled: true
-      maxLines: 1000
-  image:
-    tag: 9.0.4
 
 prometheus:
   enabled: false

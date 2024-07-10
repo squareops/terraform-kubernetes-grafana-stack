@@ -6,13 +6,13 @@ replicaCount: 1
 
 image:
   repository: natsio/prometheus-nats-exporter
-  tag: "0.9.3"
+  tag: "0.15.0"
   pullPolicy: IfNotPresent
 
 service:
   annotations: {}
   type: ClusterIP
-  port: 8081
+  port: 80
   targetPort: 7777
 
 serviceMonitor:
@@ -42,8 +42,10 @@ config:
     namespace: default
     port: 8222
   metrics:
+    accstatz: true
     channelz: true
     connz: true
+    connz_detailed: true
     jsz: true
     gatewayz: true
     leafz: true

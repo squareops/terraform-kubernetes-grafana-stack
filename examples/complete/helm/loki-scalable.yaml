@@ -1,50 +1,31 @@
 write:
   # -- Number of replicas for the write
   replicas: 2
-  affinity: |
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: "Monitor-Services"
-            operator: In
-            values:
-            - "true"
+  nodeSelector:
+    Addons-Services: "true"
 
 read:
   # -- Number of replicas for the read
   replicas: 2
-  affinity: |
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: "Monitor-Services"
-            operator: In
-            values:
-            - "true"
+  nodeSelector:
+    Addons-Services: "true"
 
 backend:
   # -- Number of replicas for the backend
   replicas: 2
-  affinity: |
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: "Monitor-Services"
-            operator: In
-            values:
-            - "true"
+  nodeSelector:
+    Addons-Services: "true"
 
 gateway:
   replicas: 2
-  affinity: |
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: "Monitor-Services"
-            operator: In
-            values:
-            - "true"
+
+chunksCache:
+  resources:
+    limits:
+      cpu: 1500m
+      memory: 3500Mi
+    requests:
+      cpu: 500m
+      memory: 1024Mi
+  nodeSelector:
+    Addons-Services: "true"
