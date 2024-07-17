@@ -4,14 +4,21 @@ defaultRules:
   create: true
   rules:
     alertmanager: true
-    etcd: false
-    configReloaders: false
+    etcd: true
+    configReloaders: true
     general: true
-    k8s: true
+    k8sContainerCpuUsageSecondsTotal: true
+    k8sContainerMemoryCache: true
+    k8sContainerMemoryRss: true
+    k8sContainerMemorySwap: true
+    k8sContainerResource: true
+    k8sContainerMemoryWorkingSetBytes: true
+    k8sPodOwner: true
     kubeApiserverAvailability: true
     kubeApiserverBurnrate: true
     kubeApiserverHistogram: true
     kubeApiserverSlos: true
+    kubeControllerManager: true
     kubelet: true
     kubeProxy: true
     kubePrometheusGeneral: true
@@ -29,23 +36,52 @@ defaultRules:
     nodeExporterRecording: true
     prometheus: true
     prometheusOperator: true
+    windows: false
 
   ## Disabled PrometheusRule alerts
   disabled: {}
   # KubeAPIDown: true
   # NodeRAIDDegraded: true
 
+windowsMonitoring:
+  ## Deploys the windows-exporter and Windows-specific dashboards and rules (job name must be 'windows-exporter')
+  enabled: false
+
+## Configuration for prometheus-windows-exporter
+## ref: https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-windows-exporter
+##
+prometheus-windows-exporter:
+  ## Enable ServiceMonitor and set Kubernetes label to use as a job label
+  ##
+  prometheus:
+    monitor:
+      enabled: true
+      jobLabel: jobLabel
+
+  releaseLabel: true
+
+  ## Set job label to 'windows-exporter' as required by the default Prometheus rules and Grafana dashboards
+  ##
+  podLabels:
+    jobLabel: windows-exporter
+
+  ## Enable memory and container metrics as required by the default Prometheus rules and Grafana dashboards
+  ##
+  config: |-
+    collectors:
+      enabled: '[defaults],memory,container'
+
+## Component scraping etcd
+##
 kubeEtcd:
   enabled: true
 
 ## ref: https://prometheus.io/docs/alerting/alertmanager/
 ##
 alertmanager:
-
   ## Deploy alertmanager
   ##
   enabled: true
-
   ## Alertmanager configuration directives
   ## ref: https://prometheus.io/docs/alerting/configuration/#configuration-file
   ##      https://prometheus.io/webtools/alerting/routing-tree-editor/
@@ -159,19 +195,17 @@ alertmanager:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
-            - key: "Monitor-Services"
+            - key: "Addons-Services"
               operator: In
               values:
               - "true"
-
-## Node affinity for particular node in which labels key is "Infra-Services" and value is "true" and creating PVC
 
 grafana:
   enabled: ${grafana_enabled}
   image:
     repository: grafana/grafana
     # Overrides the Grafana image tag whose default is the chart appVersion
-    tag: "10.1.0"
+    tag: "11.1.0"
   serviceAccount:
     annotations:
       ${annotations}
@@ -196,6 +230,12 @@ grafana:
     dashboards:
       enabled: true
       label: grafana_dashboard
+      labelValue: "1"
+      # Allow discovery in all namespaces for dashboards
+      searchNamespace: ALL
+
+      # Support for new table panels, when enabled grafana auto migrates the old table panels to newer table panels
+      enableNewTablePanelSyntax: true
       folder: /tmp/dashboards
       folderAnnotation: grafana_folder
       provider:
@@ -204,8 +244,8 @@ grafana:
 
     resources:
       limits:
-        cpu: 200m
-        memory: 200Mi
+        cpu: 400m
+        memory: 400Mi
       requests:
         cpu: 50m
         memory: 50Mi
@@ -231,10 +271,10 @@ grafana:
   persistence:
     enabled: true
     storageClassName: ${storage_class_name}
-    size: 10Gi
-
+    size: 20Gi
 
   adminPassword: ${grafana_admin_password}
+
   ingress:
     enabled: ${ingress_enabled}
     annotations: ${ingress_annotations}
@@ -275,7 +315,7 @@ grafana:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "Monitor-Services"
+          - key: "Addons-Services"
             operator: In
             values:
             - "true"
@@ -289,7 +329,7 @@ kube-state-metrics:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "Monitor-Services"
+          - key: "Addons-Services"
             operator: In
             values:
             - "true"
@@ -308,13 +348,14 @@ kubeScheduler:
 
 prometheusOperator:
   createCustomResource: false
+  enabled: true
 
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "Monitor-Services"
+          - key: "Addons-Services"
             operator: In
             values:
             - "true"
@@ -323,16 +364,16 @@ nodeExporter:
   enabled: true
   resources:
     limits:
-      cpu: 100m
-      memory: 300Mi
+      cpu: 200m
+      memory: 600Mi
     requests:
       cpu: 50m
       memory: 100Mi
 
-## Prometheus dynamic volume provisioning
-
 prometheus:
+  enabled: true
   prometheusSpec:
+    priorityClassName: system-node-critical
     enableRemoteWriteReceiver: true
     storageSpec:
       volumeClaimTemplate:
@@ -340,43 +381,33 @@ prometheus:
           storageClassName: ${storage_class_name}
           resources:
             requests:
-              storage: 20Gi
-
-    retention: 30d
-
+              storage: 30Gi
+    retention: 14d
+    walCompression: true
+    ## If true, the Operator won't process any Prometheus configuration changes
+    ##
+    paused: false
     resources:
       limits:
-        cpu: 600m
-        memory: 3Gi
+        cpu: 1200m
+        memory: 4Gi
       requests:
         cpu: 200m
-        memory: 500Mi
+        memory: 800Mi
 
-  ingress:
-    enabled: ${enable_prometheus_internal_ingress}
-    annotations:
-      kubernetes.io/ingress.class: "internal-nginx"
-      kubernetes.io/tls-acme: "false"
-    hosts:
-      - ${prometheus_hostname}
-    paths:
-      - /
-
-
-
-## Node affinity for particular node in which labels key is "Infra-Services" and value is "true"
+    remoteWrite:
+      - url: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
 
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
-            - key: "Monitor-Services"
+            - key: "Addons-Services"
               operator: In
               values:
               - "true"
-
-    additionalScrapeConfigs: {}
+    additionalScrapeConfigs: []
       # - job_name: blackbox
       #   metrics_path: /probe
       #   params:
@@ -398,12 +429,22 @@ prometheus:
       #     # Ensure blackbox-exporter is reachable from Prometheus
       #   - target_label: __address__
       #     replacement: blackbox-exporter-prometheus-blackbox-exporter:9115
+    maximumStartupDurationSeconds: 900
+  ingress:
+    enabled: ${enable_prometheus_internal_ingress}
+    annotations:
+      kubernetes.io/ingress.class: "internal-nginx"
+      kubernetes.io/tls-acme: "false"
+    hosts:
+      - ${prometheus_hostname}
+    paths:
+      - /
 
 prometheus-node-exporter:
   resources:
     limits:
-      cpu: 100m
-      memory: 300Mi
+      cpu: 200m
+      memory: 600Mi
     requests:
       cpu: 10m
       memory: 50Mi

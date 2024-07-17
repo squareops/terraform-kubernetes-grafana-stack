@@ -1,0 +1,38 @@
+priorityClassName: system-node-critical
+
+daemonset:
+  # -- Deploys Promtail as a DaemonSet
+  enabled: true
+  autoscaling:
+    # -- Creates a VerticalPodAutoscaler for the daemonset
+    enabled: true
+
+resources:
+ limits:
+   cpu: 500m
+   memory: 512Mi
+ requests:
+   cpu: 100m
+   memory: 128Mi
+
+affinity:
+  podAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+    - labelSelector:
+        matchExpressions:
+        - key: app.kubernetes.io/name
+          operator: In
+          values:
+          - grafana
+      topologyKey: topology.kubernetes.io/zone
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "Addons-Services"
+          operator: In
+          values:
+          - "true"
+config:
+  clients:
+    - url: http://loki-gateway/loki/api/v1/push

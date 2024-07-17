@@ -1,6 +1,6 @@
 locals {
-  name        = "grafana"
-  region      = "us-east-2"
+  name        = "monitoring"
+  region      = "us-east-1"
   environment = "dev"
   additional_tags = {
     Owner      = "organization_name"
@@ -11,16 +11,16 @@ locals {
 
 module "pgl" {
   source                        = "git@github.com:sq-ia/terraform-kubernetes-grafana.git"
-  cluster_name                  = "cluster-name"
+  cluster_name                  = "dev-cluster"
   kube_prometheus_stack_enabled = true
-  loki_enabled                  = true
-  loki_scalable_enabled         = false
-  grafana_mimir_enabled         = false
+  loki_enabled                  = false
+  loki_scalable_enabled         = true
+  grafana_mimir_enabled         = true
   cloudwatch_enabled            = true
-  tempo_enabled                 = true
+  tempo_enabled                 = false
   deployment_config = {
-    hostname                            = "grafana.dev.skaf.squareops.in"
-    storage_class_name                  = "gp2"
+    hostname                            = "grafana.com"
+    storage_class_name                  = "infra-service-sc"
     prometheus_values_yaml              = file("./helm/prometheus.yaml")
     loki_values_yaml                    = file("./helm/loki.yaml")
     blackbox_values_yaml                = file("./helm/blackbox.yaml")
@@ -28,12 +28,12 @@ module "pgl" {
     tempo_values_yaml                   = file("./helm/tempo.yaml")
     dashboard_refresh_interval          = ""
     grafana_enabled                     = true
-    prometheus_hostname                 = "prometh.dev.skaf.squareops.in"
+    prometheus_hostname                 = "prometheus.com"
     prometheus_internal_ingress_enabled = false
     grafana_ingress_load_balancer       = "nlb" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
-    alb_acm_certificate_arn             = "arn:aws:acm:us-west-2:123456543:certificate/5165ad5d-1240"
+    alb_acm_certificate_arn             = "arn:aws:acm:${local.region}:444455556666:certificate/certificate_ID"
     loki_internal_ingress_enabled       = false
-    loki_hostname                       = "loki.dev.skaf.squareops.in"
+    loki_hostname                       = "loki.com"
     mimir_s3_bucket_config = {
       s3_bucket_name       = "${local.environment}-${local.name}-mimir-bucket"
       versioning_enabled   = "false"
@@ -41,14 +41,14 @@ module "pgl" {
       s3_object_expiration = 90
     }
     loki_scalable_config = {
-      loki_scalable_version = "5.8.8"
+      loki_scalable_version = "6.6.5"
       loki_scalable_values  = file("./helm/loki-scalable.yaml")
       s3_bucket_name        = "${local.environment}-${local.name}-loki-scalable-bucket"
       versioning_enabled    = "false"
       s3_bucket_region      = "${local.region}"
     }
     promtail_config = {
-      promtail_version = "6.8.2"
+      promtail_version = "6.16.3"
       promtail_values  = file("./helm/promtail.yaml")
     }
     tempo_config = {
@@ -58,29 +58,29 @@ module "pgl" {
       s3_object_expiration = "90"
     }
     otel_config = {
-      otel_operator_enabled  = true
-      otel_collector_enabled = true
+      otel_operator_enabled  = false
+      otel_collector_enabled = false
     }
   }
   exporter_config = {
-    json             = false
-    nats             = false
-    nifi             = false
-    snmp             = false
+    json             = true
+    nats             = true
+    nifi             = true
+    snmp             = true
     druid            = false
-    istio            = true
+    istio            = false
     kafka            = false
-    mysql            = true
-    redis            = true
-    argocd           = true
+    mysql            = false
+    redis            = false
+    argocd           = false
     consul           = false
-    statsd           = false
+    statsd           = true
     couchdb          = false
-    jenkins          = true
-    mongodb          = true
-    pingdom          = false
-    rabbitmq         = true
-    blackbox         = true
+    jenkins          = false
+    mongodb          = false
+    pingdom          = true
+    rabbitmq         = false
+    blackbox         = false
     postgres         = false
     conntrack        = false
     stackdriver      = false
