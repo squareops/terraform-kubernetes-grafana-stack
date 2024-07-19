@@ -421,6 +421,7 @@ prometheusOperator:
 prometheus:
   enabled: true
   prometheusSpec:
+    priorityClassName: system-node-critical
     enableRemoteWriteReceiver: true
     storageSpec:
       volumeClaimTemplate:

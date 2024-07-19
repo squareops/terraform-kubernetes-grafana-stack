@@ -7,11 +7,11 @@ provider "aws" {
 
 
 data "aws_eks_cluster" "cluster" {
-  name = "dev-cluster"
+  name = ""
 }
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = "dev-cluster"
+  name = ""
 }
 
 

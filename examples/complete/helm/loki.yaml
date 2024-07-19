@@ -15,3 +15,5 @@ loki:
             operator: In
             values:
             - "true"
+  persistence:
+    size: "50Gi"
