@@ -284,6 +284,10 @@ mimir:
       alertmanager_url: dnssrvnoa+http://_http-metrics._tcp.{{ template "mimir.fullname" . }}-alertmanager-headless.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}/alertmanager
       enable_api: true
       rule_path: /data
+      {{- if .Values.ruler.remoteEvaluationDedicatedQueryPath }}
+      query_frontend:
+        address: dns:///{{ template "mimir.fullname" . }}-ruler-query-frontend.{{ .Release.Namespace }}.svc:{{ include "mimir.serverGrpcListenPort" .  }}
+      {{- end }}
 
     {{- if or (.Values.minio.enabled) (index .Values "metadata-cache" "enabled") }}
     ruler_storage:
@@ -401,11 +405,23 @@ distributor:
             - "true"
   extraArgs:
     distributor.ingestion-rate-limit: "10000000000000"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
 
 ingester:
   replicas: 3
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
   persistentVolume:
     storageClass: ${storage_class_name}
+    size: 2Gi
+    enableRetentionPolicy: false
+    whenDeleted: Retain
+    whenScaled: Retain
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -428,6 +444,10 @@ ingester:
 
 overrides_exporter:
   enabled: false
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -439,6 +459,9 @@ overrides_exporter:
             - "true"
 
 querier:
+  replicas: 2
+  kedaAutoscaling:
+    enabled: false
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -448,10 +471,21 @@ querier:
             operator: In
             values:
             - "true"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
   extraArgs:
     querier.max-fetched-chunks-per-query: "8000000"
 
 query_frontend:
+  replicas: 1
+  kedaAutoscaling:
+    enabled: false
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
   affinity:
     nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -464,6 +498,11 @@ query_frontend:
 
 query_scheduler:
   enabled: false
+  replicas: 2
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -475,6 +514,11 @@ query_scheduler:
             - "true"
 
 store_gateway:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512M
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -493,8 +537,17 @@ store_gateway:
       app.kubernetes.io/component: store-gateway
   persistentVolume:
     storageClass: ${storage_class_name}
+    size: 2Gi
+    enableRetentionPolicy: false
+    whenDeleted: Retain
+    whenScaled: Retain
 
 compactor:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -513,4 +566,7 @@ compactor:
       app.kubernetes.io/component: compactor
   persistentVolume:
     storageClass: ${storage_class_name}
-    # storageClass: standard
+    size: 2Gi
+    enableRetentionPolicy: false
+    whenDeleted: Retain
+    whenScaled: Retain

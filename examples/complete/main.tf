@@ -1,7 +1,7 @@
 locals {
-  name        = "monitoring"
-  region      = "us-east-1"
-  environment = "dev"
+  name        = ""
+  region      = ""
+  environment = ""
   additional_tags = {
     Owner      = "organization_name"
     Expires    = "Never"
@@ -11,7 +11,7 @@ locals {
 
 module "pgl" {
   source                        = "git@github.com:sq-ia/terraform-kubernetes-grafana.git"
-  cluster_name                  = "dev-cluster"
+  cluster_name                  = ""
   kube_prometheus_stack_enabled = true
   loki_enabled                  = false
   loki_scalable_enabled         = true
@@ -19,7 +19,7 @@ module "pgl" {
   cloudwatch_enabled            = true
   tempo_enabled                 = false
   deployment_config = {
-    hostname                            = "grafana.com"
+    hostname                            = "grafana.squareops.com"
     storage_class_name                  = "infra-service-sc"
     prometheus_values_yaml              = file("./helm/prometheus.yaml")
     loki_values_yaml                    = file("./helm/loki.yaml")
@@ -31,7 +31,7 @@ module "pgl" {
     prometheus_hostname                 = "prometheus.com"
     prometheus_internal_ingress_enabled = false
     grafana_ingress_load_balancer       = "nlb" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
-    alb_acm_certificate_arn             = "arn:aws:acm:${local.region}:444455556666:certificate/certificate_ID"
+    alb_acm_certificate_arn             = ""    #"arn:aws:acm:${local.region}:444455556666:certificate/certificate_ID"
     loki_internal_ingress_enabled       = false
     loki_hostname                       = "loki.com"
     mimir_s3_bucket_config = {
@@ -41,7 +41,7 @@ module "pgl" {
       s3_object_expiration = 90
     }
     loki_scalable_config = {
-      loki_scalable_version = "6.6.5"
+      loki_scalable_version = "6.7.1"
       loki_scalable_values  = file("./helm/loki-scalable.yaml")
       s3_bucket_name        = "${local.environment}-${local.name}-loki-scalable-bucket"
       versioning_enabled    = "false"
@@ -63,10 +63,10 @@ module "pgl" {
     }
   }
   exporter_config = {
-    json             = true
-    nats             = true
-    nifi             = true
-    snmp             = true
+    json             = false
+    nats             = false
+    nifi             = false
+    snmp             = false
     druid            = false
     istio            = false
     kafka            = false
@@ -74,11 +74,11 @@ module "pgl" {
     redis            = false
     argocd           = false
     consul           = false
-    statsd           = true
+    statsd           = false
     couchdb          = false
     jenkins          = false
     mongodb          = false
-    pingdom          = true
+    pingdom          = false
     rabbitmq         = false
     blackbox         = false
     postgres         = false
@@ -87,6 +87,6 @@ module "pgl" {
     push_gateway     = false
     elasticsearch    = false
     prometheustosd   = false
-    ethtool_exporter = true
+    ethtool_exporter = false
   }
 }

@@ -27,7 +27,7 @@ loki:
       memory: 300Mi
   persistence:
     enabled: true
-    storageClassName: infra-service-sc
+    storageClassName: ${storage_class_name}
     size: "20Gi"
   ingress:
     enabled: ${enable_loki_internal_ingress}

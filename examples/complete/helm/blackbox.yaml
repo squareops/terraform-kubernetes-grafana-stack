@@ -3,6 +3,16 @@ serviceMonitor:
    - name: google              # Human readable URL that will appear in Prometheus / AlertManager
      url:  https://google.com
 
+resources:
+  limits:
+    cpu: 200m
+    memory: 400Mi
+  requests:
+    cpu: 50m
+    memory: 50Mi
+
+priorityClassName: "system-node-critical"
+
 affinity:
   nodeAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:

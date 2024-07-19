@@ -29,7 +29,7 @@ variable "prometheus_chart_version" {
 }
 
 variable "grafana_mimir_version" {
-  default     = "5.3.0"
+  default     = "5.4.0"
   type        = string
   description = "Version of the Grafana Mimir plugin to deploy."
 }

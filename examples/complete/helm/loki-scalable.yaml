@@ -3,21 +3,31 @@ write:
   replicas: 2
   nodeSelector:
     Addons-Services: "true"
+  resources: {}
+  persistence:
+    size: 10Gi
 
 read:
   # -- Number of replicas for the read
   replicas: 2
   nodeSelector:
     Addons-Services: "true"
+  resources: {}
+  persistence:
+    size: 10Gi
 
 backend:
   # -- Number of replicas for the backend
   replicas: 2
   nodeSelector:
     Addons-Services: "true"
+  resources: {}
+  persistence:
+    size: 10Gi
 
 gateway:
   replicas: 2
+  resources: {}
 
 chunksCache:
   resources:

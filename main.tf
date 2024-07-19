@@ -77,6 +77,7 @@ resource "helm_release" "loki" {
     templatefile("${path.module}/helm/values/loki/values.yaml", {
       loki_hostname                = var.deployment_config.loki_hostname,
       enable_loki_internal_ingress = var.deployment_config.loki_internal_ingress_enabled
+      storage_class_name           = var.deployment_config.storage_class_name
     }),
     var.deployment_config.loki_values_yaml
   ]

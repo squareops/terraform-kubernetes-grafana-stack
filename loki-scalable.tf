@@ -92,6 +92,7 @@ resource "helm_release" "loki_scalable" {
       s3_bucket_name            = module.loki_scalable_s3_bucket[0].s3_bucket_id,
       loki_scalable_s3_role_arn = aws_iam_role.loki_scalable_role[0].arn,
       s3_bucket_region          = var.deployment_config.loki_scalable_config.s3_bucket_region
+      storage_class_name        = var.deployment_config.storage_class_name
     }),
     var.deployment_config.loki_scalable_config.loki_scalable_values
   ]

@@ -24,6 +24,10 @@ distributor:
             operator: In
             values:
             - "true"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
 
 querier:
   affinity:
@@ -48,6 +52,13 @@ query_frontend:
               - "true"
 
 ingester:
+  replicas: 3
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+  persistentVolume:
+    size: 2Gi
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -59,6 +70,13 @@ ingester:
             - "true"
 
 store_gateway:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512M
+  persistentVolume:
+    size: 2Gi
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -70,6 +88,11 @@ store_gateway:
             - "true"
 
 compactor:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -79,3 +102,5 @@ compactor:
             operator: In
             values:
             - "true"
+  persistentVolume:
+    size: 2Gi
