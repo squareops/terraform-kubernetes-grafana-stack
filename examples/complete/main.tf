@@ -26,7 +26,6 @@ module "pgl" {
     blackbox_values_yaml                = file("./helm/blackbox.yaml")
     grafana_mimir_values_yaml           = file("./helm/mimir.yaml")
     tempo_values_yaml                   = file("./helm/tempo.yaml")
-    promtail_values_yaml                = file("./helm/promtail.yaml")
     dashboard_refresh_interval          = ""
     grafana_enabled                     = true
     prometheus_hostname                 = "prometheus.com"
