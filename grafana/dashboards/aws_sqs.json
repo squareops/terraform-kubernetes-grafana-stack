@@ -804,7 +804,7 @@
           "options": [],
           "query": "regions()",
           "refresh": 1,
-          "regex": "",
+          "regex": "^(?!default$).*",
           "sort": 0,
           "tagValuesQuery": "",
           "tags": [],
@@ -865,6 +865,6 @@
     },
     "timezone": "browser",
     "title": "AWS SQS",
-    "uid": "AWSSQS000",
+    "uid": "AmanzonSQS",
     "version": 1
   }

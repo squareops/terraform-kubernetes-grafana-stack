@@ -599,7 +599,7 @@
           "options": [],
           "query": "regions()",
           "refresh": 1,
-          "regex": "",
+          "regex": "^(?!default$).*",
           "sort": 0,
           "tagValuesQuery": "",
           "tags": [],
@@ -660,6 +660,6 @@
     },
     "timezone": "browser",
     "title": "AWS SNS",
-    "uid": "AWSSNS000",
+    "uid": "AmanzonSNS",
     "version": 1
   }

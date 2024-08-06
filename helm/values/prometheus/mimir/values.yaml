@@ -273,8 +273,8 @@ grafana:
     datasources:
       enabled: true
       defaultDatasourceEnabled: true
-
-      uid: prometheus
+      default:
+        uid: prometheus
 
       ## URL of prometheus datasource
       ##
@@ -299,14 +299,14 @@ grafana:
         cpu: 50m
         memory: 50Mi
 
-  datasources:
-    datasources.yaml:
-      apiVersion: 1
-      datasources:
-      - name: Alertmanager
-        type: prometheus
-        url: http://prometheus-operator-kube-p-prometheus.monitoring.svc.cluster.local:9090
-        access: proxy
+  # datasources:
+  #   datasources.yaml:
+  #     apiVersion: 1
+  #     datasources:
+  #     - name: Alertmanager
+  #       type: prometheus
+  #       url: http://prometheus-operator-kube-p-prometheus.monitoring.svc.cluster.local:9090
+  #       access: proxy
     #   - name: loki
     #     type: loki
     #     url: http://loki:3100

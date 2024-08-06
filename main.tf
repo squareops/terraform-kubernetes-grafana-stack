@@ -1053,7 +1053,12 @@ resource "kubernetes_config_map" "loki_dashboard" {
   }
 
   data = {
-    "loki-dashboard.json" = "${file("${path.module}/grafana/dashboards/loki.json")}"
+    "loki-dashboard.json" = "${file("${path.module}/grafana/dashboards/loki.json")}",
+    "full-loki-dashboard.json" = "${file("${path.module}/grafana/dashboards/Full_loki_logs.json")}",
+    "5xx.json" =  "${file("${path.module}/grafana/dashboards/5xx.json")}",
+    "4xx.json" =  "${file("${path.module}/grafana/dashboards/4xx.json")}",
+    "3xx.json" =  "${file("${path.module}/grafana/dashboards/3xx.json")}",
+    "2xx.json" =  "${file("${path.module}/grafana/dashboards/2xx.json")}",
   }
 }
 

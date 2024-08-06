@@ -1053,7 +1053,7 @@
           "options": [],
           "query": "regions()",
           "refresh": 1,
-          "regex": "",
+          "regex": "^(?!default$).*",
           "skipUrlSync": false,
           "sort": 0,
           "tagValuesQuery": "",
@@ -1113,7 +1113,7 @@
     },
     "timezone": "",
     "title": "AWS NAT Gateway",
-    "uid": "mvmubbQnz",
+    "uid": "AWS-NAT",
     "version": 22,
     "weekStart": "",
     "gnetId": 16185

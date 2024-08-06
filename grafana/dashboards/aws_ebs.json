@@ -1959,7 +1959,7 @@
           "options": [],
           "query": "regions()",
           "refresh": 1,
-          "regex": "",
+          "regex": "^(?!default$).*",
           "skipUrlSync": false,
           "sort": 1,
           "tagValuesQuery": "",
@@ -2035,7 +2035,7 @@
     },
     "timezone": "browser",
     "title": "AWS EBS",
-    "uid": "AWSEBSaaa",
+    "uid": "AWS-EBS",
     "version": 3,
     "weekStart": ""
   }
