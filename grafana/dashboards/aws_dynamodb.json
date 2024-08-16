@@ -2502,7 +2502,7 @@
           "options": [],
           "query": "",
           "refresh": 1,
-          "regex": "",
+          "regex": "^(?!default$).*",
           "skipUrlSync": false,
           "sort": 1,
           "type": "query"
@@ -2651,7 +2651,7 @@
     },
     "timezone": "browser",
     "title": "AWS DynamoDB",
-    "uid": "AWSDynamo",
+    "uid": "AWSDynamob",
     "version": 1,
     "weekStart": "",
     "gnetId": 17741

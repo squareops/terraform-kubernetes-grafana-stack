@@ -5272,7 +5272,7 @@
   },
   "timezone": "browser",
   "title": "Elasticsearch Servers Overview",
-  "uid": "03939393911111",
+  "uid": "ES-server-overview",
   "version": 1,
   "weekStart": ""
 }

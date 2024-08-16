@@ -207,8 +207,7 @@ grafana:
     # Overrides the Grafana image tag whose default is the chart appVersion
     tag: "11.1.0"
   serviceAccount:
-    annotations:
-      ${annotations}
+    annotations: ${annotations}
   priorityClassName: grafana-pod-critical
   defaultDashboardsTimezone: browser
   replicas: 1
@@ -233,7 +232,7 @@ grafana:
       labelValue: "1"
       # Allow discovery in all namespaces for dashboards
       searchNamespace: ALL
-
+      annotations: ${annotations}
       # Support for new table panels, when enabled grafana auto migrates the old table panels to newer table panels
       enableNewTablePanelSyntax: true
       folder: /tmp/dashboards

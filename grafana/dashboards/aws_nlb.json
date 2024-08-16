@@ -1154,7 +1154,7 @@
           "options": [],
           "query": "regions()",
           "refresh": 1,
-          "regex": "",
+          "regex": "^(?!default$).*",
           "skipUrlSync": false,
           "sort": 0,
           "tagValuesQuery": "",
@@ -1218,6 +1218,6 @@
     },
     "timezone": "browser",
     "title": "AWS Network Load Balancer (NLB)",
-    "uid": "bt8qGKJZz",
+    "uid": "AWS-NLB",
     "version": 22
   }
