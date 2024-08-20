@@ -1,20 +1,24 @@
 serviceMonitor:
-  targets:
-   - name: robo-shop                    # Human readable URL that will appear in Prometheus / AlertManager
-     url:  https://roboshop.ref.stg.skaf.squareops.in
-   - name: robo-shop-shipping
-     url:  https://roboshop.ref.stg.skaf.squareops.in/api/shipping/codes/
-   - name: robo-shop-ratings
-     url:  https://roboshop.ref.stg.skaf.squareops.in/api/ratings/api/fetch/*
-   - name: robo-shop-catalogue
-     url: https://roboshop.ref.stg.skaf.squareops.in/api/catalogue/products/*
+  targets:    # example
+   - name: google              # Human readable URL that will appear in Prometheus / AlertManager
+     url:  https://google.com
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 400Mi
+  requests:
+    cpu: 50m
+    memory: 50Mi
+
+priorityClassName: "system-node-critical"
 
 affinity:
   nodeAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: "Monitor-Services"
+        - key: "Addons-Services"
           operator: In
           values:
           - "true"

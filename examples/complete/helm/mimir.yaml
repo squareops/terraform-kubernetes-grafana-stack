@@ -1,9 +1,9 @@
 nginx:
   ingress:
-    enabled: true
+    enabled: false
     ingressClassName: nginx
     hosts:
-      - host: mimir.ref.stg.skaf.squareops.in
+      - host: mimir.rnd.squareops.in
         paths:
           - path: /
             pathType: Prefix
@@ -20,10 +20,14 @@ distributor:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "Monitor-Services"
+          - key: "Addons-Services"
             operator: In
             values:
             - "true"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
 
 querier:
   affinity:
@@ -31,7 +35,7 @@ querier:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "Monitor-Services"
+          - key: "Addons-Services"
             operator: In
             values:
             - "true"
@@ -42,40 +46,61 @@ query_frontend:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
-            - key: "Monitor-Services"
+            - key: "Addons-Services"
               operator: In
               values:
               - "true"
 
 ingester:
+  replicas: 3
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+  persistentVolume:
+    size: 2Gi
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "Monitor-Services"
+          - key: "Addons-Services"
             operator: In
             values:
             - "true"
 
 store_gateway:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512M
+  persistentVolume:
+    size: 2Gi
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "Monitor-Services"
+          - key: "Addons-Services"
             operator: In
             values:
             - "true"
 
 compactor:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "Monitor-Services"
+          - key: "Addons-Services"
             operator: In
             values:
             - "true"
+  persistentVolume:
+    size: 2Gi

@@ -744,7 +744,7 @@
           "options": [],
           "query": "regions()",
           "refresh": 1,
-          "regex": "",
+          "regex": "^(?!default$).*",
           "skipUrlSync": false,
           "sort": 0,
           "tagValuesQuery": "",
@@ -809,6 +809,6 @@
     },
     "timezone": "",
     "title": "Amazon CloudWatch Logs",
-    "uid": "5lKoAHxZz",
+    "uid": "AWS-cw-logs",
     "version": 1
   }

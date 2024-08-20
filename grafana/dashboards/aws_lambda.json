@@ -941,7 +941,7 @@
           "options": [],
           "query": "regions()",
           "refresh": 1,
-          "regex": "",
+          "regex": "^(?!default$).*",
           "skipUrlSync": false,
           "sort": 0,
           "tagValuesQuery": "",
@@ -1005,6 +1005,6 @@
     },
     "timezone": "browser",
     "title": "AWS Lambda",
-    "uid": "AWSLambda",
+    "uid": "AWS-Lambda",
     "version": 1
   }

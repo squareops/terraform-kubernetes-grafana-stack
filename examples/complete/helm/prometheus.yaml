@@ -15,7 +15,7 @@ alertmanager:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
-            - key: "Monitor-Services"
+            - key: "Addons-Services"
               operator: In
               values:
               - "true"
@@ -138,12 +138,11 @@ grafana:
     requests:
       cpu: 300m
       memory: 500Mi
-
   sidecar:
     resources:
       limits:
-        cpu: 200m
-        memory: 200Mi
+        cpu: 400m
+        memory: 400Mi
       requests:
         cpu: 50m
         memory: 50Mi
@@ -152,10 +151,12 @@ grafana:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "Monitor-Services"
+          - key: "Addons-Services"
             operator: In
             values:
             - "true"
+  persistence:
+    size: 20Gi
 
 kube-state-metrics:
   affinity:
@@ -163,7 +164,7 @@ kube-state-metrics:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "Monitor-Services"
+          - key: "Addons-Services"
             operator: In
             values:
             - "true"
@@ -174,7 +175,7 @@ prometheusOperator:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: "Monitor-Services"
+          - key: "Addons-Services"
             operator: In
             values:
             - "true"
@@ -186,7 +187,35 @@ prometheus:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
-            - key: "Monitor-Services"
+            - key: "Addons-Services"
+              operator: In
+              values:
+              - "true"
+  prometheusSpec:
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          resources:
+            requests:
+              storage: 50Gi
+    retention: 30d
+    walCompression: true
+    ## If true, the Operator won't process any Prometheus configuration changes
+    ##
+    paused: false
+    resources:
+      limits:
+        cpu: 1200m
+        memory: 4Gi
+      requests:
+        cpu: 200m
+        memory: 800Mi
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: "Addons-Services"
               operator: In
               values:
               - "true"

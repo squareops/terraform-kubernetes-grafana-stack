@@ -1196,7 +1196,7 @@
           "options": [],
           "query": "regions()",
           "refresh": 1,
-          "regex": "",
+          "regex": "^(?!default$).*",
           "skipUrlSync": false,
           "sort": 0,
           "tagValuesQuery": "",
@@ -1282,6 +1282,6 @@
     },
     "timezone": "browser",
     "title": "AWS S3",
-    "uid": "AWSS31iWk",
+    "uid": "AmazonS3",
     "version": 1
   }

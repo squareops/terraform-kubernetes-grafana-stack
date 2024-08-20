@@ -596,7 +596,7 @@
           "options": [],
           "query": "cloudwatch",
           "refresh": 1,
-          "regex": "",
+          "regex": "^(?!default$).*",
           "skipUrlSync": false,
           "type": "datasource"
         },

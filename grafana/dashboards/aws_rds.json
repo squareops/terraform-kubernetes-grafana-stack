@@ -2072,7 +2072,7 @@
           "options": [],
           "query": "regions()",
           "refresh": 1,
-          "regex": "",
+          "regex": "^(?!default$).*",
           "skipUrlSync": false,
           "sort": 0,
           "tagValuesQuery": "",
@@ -2136,6 +2136,6 @@
     },
     "timezone": "browser",
     "title": "AWS RDS",
-    "uid": "AWSRDSdbi",
+    "uid": "AWS-RDS",
     "version": 1
   }

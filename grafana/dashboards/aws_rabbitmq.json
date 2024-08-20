@@ -2839,7 +2839,7 @@
           "options": [],
           "query": "regions()",
           "refresh": 1,
-          "regex": "",
+          "regex": "^(?!default$).*",
           "skipUrlSync": false,
           "sort": 0,
           "tagValuesQuery": "",
@@ -2968,7 +2968,7 @@
     },
     "timezone": "browser",
     "title": "Amazon MQ [RabbitMQ engine] - Cloudwatch",
-    "uid": "oRnJLTh7z",
+    "uid": "AWS-MQ",
     "version": 3,
     "weekStart": ""
   }

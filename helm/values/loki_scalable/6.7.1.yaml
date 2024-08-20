@@ -1,0 +1,151 @@
+global:
+  priorityClassName: system-node-critical
+
+loki:
+  auth_enabled: false
+  useTestSchema: false
+  schemaConfig:
+    configs:
+      - from: 2024-04-01
+        store: tsdb
+        object_store: s3
+        schema: v13
+        index:
+          prefix: loki_index_
+          period: 24h
+  storage:
+    bucketNames:
+      chunks: ${s3_bucket_name}
+      ruler: ${s3_bucket_name}
+      admin: ${s3_bucket_name}
+    type: s3
+    s3:
+      endpoint: s3.${s3_bucket_region}.amazonaws.com
+      region: ${s3_bucket_region}
+      # Set this to `true` to force the request to use path-style addressing.
+      s3ForcePathStyle: true
+      # Disable https on S3 connection.
+      insecure: true
+
+monitoring:
+  serviceMonitor:
+    enabled: true
+  selfMonitoring:
+    enabled: true
+  dashboards:
+    enabled: false
+  lokiCanary:
+    enabled: true
+    annotations:
+      eks.amazonaws.com/role-arn: ${loki_scalable_s3_role_arn}
+
+write:
+  # -- Number of replicas for the write
+  replicas: 2
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    # -- Maximum autoscaling replicas for the read
+    maxReplicas: 5
+    # -- Target CPU utilisation percentage for the read
+    targetCPUUtilizationPercentage: 60
+    # -- Target memory utilisation percentage for the read
+    targetMemoryUtilizationPercentage:
+  resources: {}
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/component: write
+        topologyKey: kubernetes.io/hostname
+  nodeSelector:
+    Addons-Services: "true"
+  persistence:
+    size: 10Gi
+    storageClass: ${storage_class_name}
+
+read:
+  # -- Number of replicas for the read
+  replicas: 2
+  autoscaling:
+    # -- Enable autoscaling for the read, this is only used if `queryIndex.enabled: true`
+    enabled: true
+    # -- Minimum autoscaling replicas for the read
+    minReplicas: 2
+    # -- Maximum autoscaling replicas for the read
+    maxReplicas: 5
+    # -- Target CPU utilisation percentage for the read
+    targetCPUUtilizationPercentage: 60
+    # -- Target memory utilisation percentage for the read
+    targetMemoryUtilizationPercentage:
+  resources: {}
+  persistence:
+    enableStatefulSetAutoDeletePVC: true
+    size: 10Gi
+    storageClass: ${storage_class_name}
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/component: read
+        topologyKey: kubernetes.io/hostname
+  nodeSelector:
+    Addons-Services: "true"
+
+backend:
+  replicas: 2
+  autoscaling:
+    # -- Enable autoscaling for the backend.
+    enabled: false
+    # -- Minimum autoscaling replicas for the backend.
+    minReplicas: 3
+    # -- Maximum autoscaling replicas for the backend.
+    maxReplicas: 6
+    # -- Target CPU utilization percentage for the backend.
+    targetCPUUtilizationPercentage: 60
+    # -- Target memory utilization percentage for the backend.
+    targetMemoryUtilizationPercentage:
+  resources: {}
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/component: backend
+        topologyKey: kubernetes.io/hostname
+  nodeSelector:
+    Addons-Services: "true"
+  persistence:
+    size: 10Gi
+    storageClass: ${storage_class_name}
+
+gateway:
+  # -- Specifies whether the gateway should be enabled
+  enabled: true
+  # -- Number of replicas for the gateway
+  replicas: 2
+  # -- Enable logging of 2xx and 3xx HTTP requests
+  verboseLogging: true
+  autoscaling:
+    # -- Enable autoscaling for the gateway
+    enabled: true
+    # -- Minimum autoscaling replicas for the gateway
+    minReplicas: 2
+    # -- Maximum autoscaling replicas for the gateway
+    maxReplicas: 5
+    # -- Target CPU utilisation percentage for the gateway
+    targetCPUUtilizationPercentage: 60
+    # -- Target memory utilisation percentage for the gateway
+    targetMemoryUtilizationPercentage:
+  resources: {}
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/component: gateway
+        topologyKey: kubernetes.io/hostname
+  nodeSelector:
+    Addons-Services: "true"

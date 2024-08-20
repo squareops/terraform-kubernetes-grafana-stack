@@ -71,8 +71,9 @@ strategy:
   type: RollingUpdate
 
 image:
-  repository: prom/blackbox-exporter
-  tag: v0.20.0
+  registry: quay.io
+  repository: prometheus/blackbox-exporter
+  tag: v0.25.0
   pullPolicy: IfNotPresent
 
   ## Optionally specify an array of imagePullSecrets.
@@ -83,20 +84,24 @@ image:
   #   - myRegistrKeySecretName
 
 ## User and Group to run blackbox-exporter container as
-runAsUser: 1000
-runAsGroup: 1000
-readOnlyRootFilesystem: true
-runAsNonRoot: true
-allowPrivilegeEscalation: false
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: ["ALL"]
 
 livenessProbe:
   httpGet:
-    path: /health
+    path: /-/healthy
     port: http
+  failureThreshold: 3
 
 readinessProbe:
   httpGet:
-    path: /health
+    path: /-/healthy
     port: http
 
 nodeSelector: {}
@@ -106,7 +111,7 @@ affinity:
     requiredDuringSchedulingIgnoredDuringExecution:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: "Infra-Services"
+        - key: "Addons-Services"
           operator: In
           values:
           - "true"
@@ -147,12 +152,10 @@ extraSecretMounts: []
   #   readOnly: true
   #   defaultMode: 420
 
-allowIcmp: false
-
 resources:
   limits:
-    cpu: 100m
-    memory: 200Mi
+    cpu: 200m
+    memory: 400Mi
   requests:
     cpu: 50m
     memory: 50Mi
@@ -164,10 +167,18 @@ service:
   labels: {}
   type: ClusterIP
   port: 9115
+  ipDualStack:
+    enabled: false
+    ipFamilies: ["IPv6", "IPv4"]
+    ipFamilyPolicy: "PreferDualStack"
 
 # Only changes container port. Application port can be changed with extraArgs (--web.listen-address=:9115)
 # https://github.com/prometheus/blackbox_exporter/blob/998037b5b40c1de5fee348ffdea8820509d85171/main.go#L55
 containerPort: 9115
+
+# Number of port to expose on the host. If specified, this must be a valid port number, 0 < x < 65536. If zero, no port is exposed.
+# This is useful for communicating with Daemon Pods when kind is DaemonSet.
+hostPort: 0
 
 serviceAccount:
   # Specifies whether a ServiceAccount should be created
@@ -234,6 +245,8 @@ serviceMonitor:
     module: http_2xx
   ## scheme: HTTP scheme to use for scraping. Can be used with `tlsConfig` for example if using istio mTLS.
   scheme: http
+  ## path: HTTP path. Needs to be adjusted, if web.route-prefix is set
+  path: "/probe"
   ## tlsConfig: TLS configuration to use when scraping the endpoint. For example if using istio mTLS.
   ## Of type: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#tlsconfig
   tlsConfig: {}
@@ -242,6 +255,7 @@ serviceMonitor:
   targets:
    - name: google                    # Human readable URL that will appear in Prometheus / AlertManager
      url: http://google.com  # The URL that blackbox will scrape
+#      hostname: example.com            # HTTP probes can accept an additional `hostname` parameter that will set `Host` header and TLS SNI
 #      labels: {}                       # Map of labels for ServiceMonitor. Overrides value set in `defaults`
 #      interval: 60s                    # Scraping interval. Overrides value set in `defaults`
 #      scrapeTimeout: 60s               # Scrape timeout. Overrides value set in `defaults`
@@ -257,6 +271,9 @@ prometheusRule:
   namespace: ""
   rules: []
 
+podMonitoring:
+  enabled: false
+
 ## Network policy for chart
 networkPolicy:
   # Enable network policy and allow access from anywhere
@@ -270,3 +287,5 @@ networkPolicy:
 ## These will be passed directly to the PodSpec of same.
 dnsPolicy:
 dnsConfig:
+verticalPodAutoscaler:
+  enabled: false
