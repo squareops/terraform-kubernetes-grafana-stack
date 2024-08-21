@@ -36,6 +36,7 @@ module "pgl" {
     alb_acm_certificate_arn             = ""    #"arn:aws:acm:${local.region}:444455556666:certificate/certificate_ID"
     loki_internal_ingress_enabled       = false
     loki_hostname                       = "loki.com"
+    ingress_enabled                     = true
     mimir_s3_bucket_config = {
       s3_bucket_name       = "${local.environment}-${local.name}-mimir-bucket"
       versioning_enabled   = "false"

@@ -172,7 +172,7 @@ resource "helm_release" "prometheus_grafana" {
       min_refresh_interval               = var.deployment_config.dashboard_refresh_interval,
       grafana_admin_password             = random_password.grafana_password.result,
       enable_prometheus_internal_ingress = var.deployment_config.prometheus_internal_ingress_enabled,
-      ingress_enabled                    = true,
+      ingress_enabled                    = var.deployment_config.ingress_enabled,
       ingress_annotations                = jsonencode(local.ingress_annotations),
       ingress_hosts                      = jsonencode(local.ingress_hosts),
       ingress_tls                        = jsonencode(local.ingress_tls),

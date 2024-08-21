@@ -59,6 +59,7 @@ variable "deployment_config" {
     alb_acm_certificate_arn             = ""
     loki_internal_ingress_enabled       = false
     loki_hostname                       = ""
+    ingress_enabled                     = true
     mimir_s3_bucket_config = {
       s3_bucket_name       = ""
       versioning_enabled   = ""
