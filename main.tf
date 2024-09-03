@@ -793,27 +793,27 @@ resource "kubernetes_config_map" "aws_sns" {
   depends_on = [helm_release.prometheus_grafana]
 }
 
-resource "kubernetes_config_map" "cluster_overview_dashboard" {
-  count = var.deployment_config.grafana_enabled ? 1 : 0
-  metadata {
-    name      = "prometheus-operator-kube-p-cluster-overview"
-    namespace = var.pgl_namespace
-    labels = {
-      "grafana_dashboard" : "1"
-      "app" : "kube-prometheus-stack-grafana"
-      "chart" : "kube-prometheus-stack-61.1.0"
-      "release" : "prometheus-operator"
-    }
-    annotations = {
-      "grafana_folder" : "Defaults"
-    }
-  }
+# resource "kubernetes_config_map" "cluster_overview_dashboard" {
+#   count = var.deployment_config.grafana_enabled ? 1 : 0
+#   metadata {
+#     name      = "prometheus-operator-kube-p-cluster-overview"
+#     namespace = var.pgl_namespace
+#     labels = {
+#       "grafana_dashboard" : "1"
+#       "app" : "kube-prometheus-stack-grafana"
+#       "chart" : "kube-prometheus-stack-61.1.0"
+#       "release" : "prometheus-operator"
+#     }
+#     annotations = {
+#       "grafana_folder" : "Defaults"
+#     }
+#   }
 
-  data = {
-    "cluster-overview.json" = "${file("${path.module}/grafana/dashboards/cluster_overview.json")}"
-  }
-  depends_on = [helm_release.prometheus_grafana]
-}
+#   data = {
+#     "cluster-overview.json" = "${file("${path.module}/grafana/dashboards/cluster_overview.json")}"
+#   }
+#   depends_on = [helm_release.prometheus_grafana]
+# }
 
 resource "kubernetes_config_map" "ingress_nginx_dashboard" {
   count      = var.deployment_config.grafana_enabled ? 1 : 0
@@ -828,7 +828,7 @@ resource "kubernetes_config_map" "ingress_nginx_dashboard" {
       "release" : "prometheus-operator"
     }
     annotations = {
-      "grafana_folder" : "Defaults"
+      "grafana_folder" : "Nginx"
     }
   }
 
@@ -1103,7 +1103,7 @@ resource "kubernetes_config_map" "nodegroup_dashboard" {
       "release" : "prometheus-operator"
     }
     annotations = {
-      "grafana_folder" : "Defaults"
+      "grafana_folder" : "kubernetes"
     }
   }
 
