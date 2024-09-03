@@ -1,14 +1,6 @@
 {
   "__inputs": [
     {
-      "name": "DS_PROMETHEUS-PROD-ATMOSLY",
-      "label": "Prometheus-prod-atmosly",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "prometheus",
-      "pluginName": "Prometheus"
-    },
-    {
       "name": "DS_PROMETHEUS-NONPROD-ATMOSLY",
       "label": "Prometheus-nonprod-atmosly",
       "description": "",
@@ -140,7 +132,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS-PROD-ATMOSLY}"
+        "uid": "${DS_PROMETHEUS-NONPROD-ATMOSLY}"
       },
       "fieldConfig": {
         "defaults": {
@@ -770,7 +762,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS-PROD-ATMOSLY}"
+        "uid": "${DS_PROMETHEUS-NONPROD-ATMOSLY}"
       },
       "fieldConfig": {
         "defaults": {
@@ -836,7 +828,7 @@
           "refId": "A"
         }
       ],
-      "title": "Nodes",
+      "title": "Nodes Types",
       "type": "stat"
     },
     {
@@ -977,7 +969,7 @@
           "refId": "A"
         }
       ],
-      "title": "Nodes",
+      "title": "Node Capacity Type",
       "type": "stat"
     },
     {
@@ -3720,7 +3712,7 @@
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {},
