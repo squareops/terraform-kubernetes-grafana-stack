@@ -296,7 +296,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(kube_pod_info{node=\"$node\", cluster=\"$cluster\"})",
+          "expr": "sum(kube_pod_info{node=\"$node\", cluster=\"$cluster\", job=\"kube-state-metrics\"})",
           "interval": "",
           "legendFormat": "Current Running Pods",
           "range": true,
@@ -308,7 +308,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "kube_node_status_capacity{cluster=\"$cluster\", unit=\"integer\", node=\"$node\"}",
+          "expr": "kube_node_status_capacity{cluster=\"$cluster\", unit=\"integer\", node=\"$node\", job=\"kube-state-metrics\"}",
           "hide": false,
           "instant": false,
           "legendFormat": "Total schedulable pod on node",
