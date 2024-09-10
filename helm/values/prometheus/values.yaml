@@ -394,9 +394,6 @@ prometheus:
         cpu: 200m
         memory: 800Mi
 
-    remoteWrite:
-      - url: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
-
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
