@@ -6,7 +6,7 @@ locals {
     Owner      = "organization_name"
     Expires    = "Never"
     Department = "Engineering"
-    Product    = "Atmosly"
+    Product    = ""
     Environment = local.environment
   }
 }
