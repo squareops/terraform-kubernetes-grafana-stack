@@ -471,7 +471,7 @@
           "options": [],
           "query": "regions()",
           "refresh": 1,
-          "regex": "",
+          "regex": "^(?!default$).*",
           "skipUrlSync": false,
           "sort": 0,
           "tagValuesQuery": "",
@@ -513,6 +513,6 @@
     "timepicker": {},
     "timezone": "browser",
     "title": "AWS Inspector",
-    "uid": "AWSInspec",
+    "uid": "AWSInspector",
     "version": 1
   }

@@ -1783,6 +1783,6 @@
     },
     "timezone": "browser",
     "title": "Jenkins: Performance and Health Overview",
-    "uid": "haryan-jenkins",
+    "uid": "jenkins-overview",
     "version": 1
   }

@@ -17,3 +17,32 @@ loki:
             - "true"
   persistence:
     size: "50Gi"
+
+promtail:
+  config:
+    snippets:
+      pipelineStages:
+        - cri: {}
+        - regex:
+            expression: '(?P<remote_addr>[^ ]*) - - \[(?P<time_local>[^\]]+)\] "(?P<http_method>\w+) (?P<request_uri>[^\s?]+) HTTP/(?P<http_version>[\d.]+)" (?P<status>\d+) (?P<body_bytes_sent>\d+) "(?P<http_referr>[^"]*)" "(?P<http_user_agent>[^"]*)" (?P<request_length>\d+) (?P<request_time>[\d.]+) \[(?P<proxy_upstream_name>[^\]]+)\] \[\] (?P<upstream_addr>[^ ]+) (?P<upstream_status>\d+) (?P<second_upstream_response_time>[\d.]+) (?P<request_id>[\w\s]+)'
+        - regex:
+            expression: '(?P<host>https?://(?P<host_name>[^/]+))(?P<path>[^"]*)'
+        - labels:
+            remote_addr:
+            http_method:
+            request_uri:
+            http_version:
+            status:
+            body_bytes_sent:
+            http_referr:
+            http_user_agent:
+            request_time:
+            first_upstream_response_time:
+            proxy_upstream_name:
+            upstream_addr:
+            upstream_status:
+            second_upstream_response_time:
+            connection:
+            request_id:
+            host:
+            path:

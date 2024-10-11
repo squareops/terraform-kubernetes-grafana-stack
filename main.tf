@@ -4,6 +4,17 @@ locals {
     "/^https:///",
     ""
   )
+    base_annotations = {
+    "grafana_folder" = "Defaults"
+  }
+
+  # Conditionally add CloudWatch annotation
+  additional_annotations = var.cloudwatch_enabled ? {
+    "eks.amazonaws.com/role-arn" = aws_iam_role.cloudwatch_role[0].arn
+  } : {}
+
+  # Merge the base annotations with the additional annotations
+  annotations = merge(local.base_annotations, local.additional_annotations)
 
   loki_datasource_config = <<EOF
 
@@ -149,7 +160,7 @@ resource "helm_release" "prometheus_grafana" {
       loki_datasource_config  = var.loki_scalable_enabled ? local.loki_datasource_config : "",
       tempo_datasource_config = var.tempo_enabled ? local.tempo_datasource_config : "",
       cw_datasource_config    = var.cloudwatch_enabled ? local.cw_datasource_config : "",
-      annotations             = var.cloudwatch_enabled ? "eks.amazonaws.com/role-arn: ${aws_iam_role.cloudwatch_role[0].arn}" : ""
+      annotations             = jsonencode(local.annotations) # Correct usage of jsonencode
     }),
     var.deployment_config.prometheus_values_yaml
     ] : [
@@ -168,7 +179,7 @@ resource "helm_release" "prometheus_grafana" {
       loki_datasource_config             = var.loki_scalable_enabled ? local.loki_datasource_config : "",
       tempo_datasource_config            = var.tempo_enabled ? local.tempo_datasource_config : "",
       cw_datasource_config               = var.cloudwatch_enabled ? local.cw_datasource_config : "",
-      annotations                        = var.cloudwatch_enabled ? "eks.amazonaws.com/role-arn: ${aws_iam_role.cloudwatch_role[0].arn}" : ""
+      annotations                        = jsonencode(local.annotations) # Correct usage of jsonencode
     }),
     var.deployment_config.prometheus_values_yaml
   ]
@@ -782,24 +793,27 @@ resource "kubernetes_config_map" "aws_sns" {
   depends_on = [helm_release.prometheus_grafana]
 }
 
-resource "kubernetes_config_map" "cluster_overview_dashboard" {
-  count = var.deployment_config.grafana_enabled ? 1 : 0
-  metadata {
-    name      = "prometheus-operator-kube-p-cluster-overview"
-    namespace = var.pgl_namespace
-    labels = {
-      "grafana_dashboard" : "1"
-      "app" : "kube-prometheus-stack-grafana"
-      "chart" : "kube-prometheus-stack-61.1.0"
-      "release" : "prometheus-operator"
-    }
-  }
+# resource "kubernetes_config_map" "cluster_overview_dashboard" {
+#   count = var.deployment_config.grafana_enabled ? 1 : 0
+#   metadata {
+#     name      = "prometheus-operator-kube-p-cluster-overview"
+#     namespace = var.pgl_namespace
+#     labels = {
+#       "grafana_dashboard" : "1"
+#       "app" : "kube-prometheus-stack-grafana"
+#       "chart" : "kube-prometheus-stack-61.1.0"
+#       "release" : "prometheus-operator"
+#     }
+#     annotations = {
+#       "grafana_folder" : "Defaults"
+#     }
+#   }
 
-  data = {
-    "cluster-overview.json" = "${file("${path.module}/grafana/dashboards/cluster_overview.json")}"
-  }
-  depends_on = [helm_release.prometheus_grafana]
-}
+#   data = {
+#     "cluster-overview.json" = "${file("${path.module}/grafana/dashboards/cluster_overview.json")}"
+#   }
+#   depends_on = [helm_release.prometheus_grafana]
+# }
 
 resource "kubernetes_config_map" "ingress_nginx_dashboard" {
   count      = var.deployment_config.grafana_enabled ? 1 : 0
@@ -813,10 +827,16 @@ resource "kubernetes_config_map" "ingress_nginx_dashboard" {
       "chart" : "kube-prometheus-stack-61.1.0"
       "release" : "prometheus-operator"
     }
+    annotations = {
+      "grafana_folder" : "Nginx"
+    }
   }
 
   data = {
-    "ingress-nginx.json" = "${file("${path.module}/grafana/dashboards/ingress_nginx.json")}"
+    "ingress-nginx.json" = "${file("${path.module}/grafana/dashboards/ingress_nginx.json")}",
+    "nginx_api_host.json" = "${file("${path.module}/grafana/dashboards/nginx_api_host.json")}",
+    "nginx_ingress.json" = "${file("${path.module}/grafana/dashboards/nginx_ingress.json")}",
+    "nginx_request_handling.json" = "${file("${path.module}/grafana/dashboards/nginx_request_handling.json")}"
   }
 }
 
@@ -831,6 +851,9 @@ resource "kubernetes_config_map" "nifi_dashboard" {
       "app" : "kube-prometheus-stack-grafana"
       "chart" : "kube-prometheus-stack-61.1.0"
       "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder" : "Defaults"
     }
   }
 
@@ -850,6 +873,9 @@ resource "kubernetes_config_map" "blackbox_dashboard" {
       "app" : "kube-prometheus-stack-grafana"
       "chart" : "kube-prometheus-stack-61.1.0"
       "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder" : "Defaults"
     }
   }
 
@@ -1053,7 +1079,8 @@ resource "kubernetes_config_map" "loki_dashboard" {
   }
 
   data = {
-    "loki-dashboard.json" = "${file("${path.module}/grafana/dashboards/loki.json")}"
+    "loki-dashboard.json" = "${file("${path.module}/grafana/dashboards/loki.json")}",
+    "analytics-nginx-logs.json" = "${file("${path.module}/grafana/dashboards/analytics_nginx_logs.json")}"
   }
 }
 
@@ -1071,10 +1098,17 @@ resource "kubernetes_config_map" "nodegroup_dashboard" {
       "chart" : "kube-prometheus-stack-61.1.0"
       "release" : "prometheus-operator"
     }
+    annotations = {
+      "grafana_folder" : "kubernetes"
+    }
   }
 
   data = {
-    "nodegroup-dashboard.json" = "${file("${path.module}/grafana/dashboards/nodegroup.json")}"
+    "nodegroup-dashboard.json" = "${file("${path.module}/grafana/dashboards/nodegroup.json")}",
+    "cluster-dashboard.json"   = "${file("${path.module}/grafana/dashboards/k8s_view_global.json")}",
+    "namespace-dashboard.json" = "${file("${path.module}/grafana/dashboards/k8s_view_namespace.json")}",
+    "node-dashboard.json"      = "${file("${path.module}/grafana/dashboards/k8s_view_nodes.json")}",
+    "pods-dashboard.json"      = "${file("${path.module}/grafana/dashboards/k8s_view_pods.json")}"
   }
 }
 
@@ -1139,6 +1173,9 @@ resource "kubernetes_config_map" "grafana_home_dashboard" {
       "app" : "kube-prometheus-stack-grafana"
       "chart" : "kube-prometheus-stack-61.1.0"
       "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder" : "Defaults"
     }
   }
 
