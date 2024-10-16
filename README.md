@@ -27,10 +27,10 @@ This module also includes alerting features that allow you to set up custom aler
 
 | Resources                       |  Helm Chart Version                |     K8s supported version        |  
 | :-----:                         | :---                               |         :---                     |
-| Kube-Prometheus-Stack           | **61.1.0**                         |    **1.23,1.24,1.25,1.26,1.27,1.28,1.29**  |
-| Prometheus-Blackbox-Exporter    | **8.17.0**                         |    **1.23,1.24,1.25,1.26,1.27,1.28,1.29**  |
-| Mimir                           | **5.4.0**                          |    **1.23,1.24,1.25,1.26,1.27,1.28,1.29**  |
-| Loki-Stack                      | **2.10.2**                          |    **1.23,1.24,1.25,1.26,1.27,1.28,1.29**  |
+| Kube-Prometheus-Stack           | **61.1.0**                         |    **1.23,1.24,1.25,1.26,1.27,1.28,1.29,1.30**  |
+| Prometheus-Blackbox-Exporter    | **8.17.0**                         |    **1.23,1.24,1.25,1.26,1.27,1.28,1.29,1.30**  |
+| Mimir                           | **5.4.0**                          |    **1.23,1.24,1.25,1.26,1.27,1.28,1.29,1.30**  |
+| Loki-Stack                      | **2.10.2**                          |    **1.23,1.24,1.25,1.26,1.27,1.28,1.29,1.30**  |
 | Loki-Scalable                   | **6.7.1**                          |    **1.23,1.24,1.25,1.26,1.27,1.28,1.29**  |
 | Tempo                           | **1.6.2**                          |    **1.23,1.24,1.25,1.26,1.27**  |
 | OTEL                            | **0.37.0**                         |    **1.23,1.24,1.25,1.26,1.27**  |
@@ -40,50 +40,51 @@ This module also includes alerting features that allow you to set up custom aler
 
 ```hcl
 module "pgl" {
-  source                        = "https://github.com/sq-ia/terraform-kubernetes-grafana.git"
-  cluster_name                  = "cluster-name"
+  source                        = "git@github.com:squareops/terraform-kubernetes-grafana-stack.git"
+  cluster_name                  = ""
   kube_prometheus_stack_enabled = true
-  loki_enabled                  = true
-  loki_scalable_enabled         = false
+  loki_enabled                  = false
+  loki_scalable_enabled         = true
   grafana_mimir_enabled         = true
   cloudwatch_enabled            = true
   tempo_enabled                 = false
   deployment_config = {
-    hostname                            = "grafana.squareops.in"
-    storage_class_name                  = "gp2"
-    prometheus_values_yaml              = ""
-    loki_values_yaml                    = ""
-    blackbox_values_yaml                = ""
-    grafana_mimir_values_yaml           = ""
-    dashboard_refresh_interval          = "300"
+    hostname                            = "grafana.squareops.com"
+    storage_class_name                  = "infra-service-sc"
+    prometheus_values_yaml              = file("./helm/prometheus.yaml")
+    loki_values_yaml                    = file("./helm/loki.yaml")
+    blackbox_values_yaml                = file("./helm/blackbox.yaml")
+    grafana_mimir_values_yaml           = file("./helm/mimir.yaml")
+    tempo_values_yaml                   = file("./helm/tempo.yaml")
+    dashboard_refresh_interval          = ""
     grafana_enabled                     = true
-    prometheus_hostname                 = "prometh.squareops.in"
+    prometheus_hostname                 = "prometheus.com"
     prometheus_internal_ingress_enabled = false
     grafana_ingress_load_balancer       = "nlb" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
-    alb_acm_certificate_arn             = "arn:aws:acm:us-west-2:123456543:certificate/5165ad5d-1240"
+    alb_acm_certificate_arn             = ""    #"arn:aws:acm:${local.region}:444455556666:certificate/certificate_ID"
     loki_internal_ingress_enabled       = false
-    loki_hostname                       = "loki.squareops.in"
+    loki_hostname                       = "loki.com"
     mimir_s3_bucket_config = {
-      s3_bucket_name     = ""
-      versioning_enabled = "true"
-      s3_bucket_region   = ""
+      s3_bucket_name       = "${local.environment}-${local.name}-mimir-bucket"
+      versioning_enabled   = "false"
+      s3_bucket_region     = "${local.region}"
       s3_object_expiration = 90
     }
     loki_scalable_config = {
-      loki_scalable_version = "6.6.5"
+      loki_scalable_version = "6.7.1"
       loki_scalable_values  = file("./helm/loki-scalable.yaml")
-      s3_bucket_name        = ""
-      versioning_enabled    = true
-      s3_bucket_region      = "local.region"
+      s3_bucket_name        = "${local.environment}-${local.name}-loki-scalable-bucket"
+      versioning_enabled    = "false"
+      s3_bucket_region      = "${local.region}"
     }
     promtail_config = {
       promtail_version = "6.16.3"
       promtail_values  = file("./helm/promtail.yaml")
     }
     tempo_config = {
-      s3_bucket_name     = ""
-      versioning_enabled = false
-      s3_bucket_region   = ""
+      s3_bucket_name       = "${local.environment}-${local.name}-tempo-skaf"
+      versioning_enabled   = false
+      s3_bucket_region     = "${local.region}"
       s3_object_expiration = "90"
     }
     otel_config = {
