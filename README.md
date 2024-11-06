@@ -40,7 +40,8 @@ This module also includes alerting features that allow you to set up custom aler
 
 ```hcl
 module "pgl" {
-  source                        = "git@github.com:squareops/terraform-kubernetes-grafana-stack.git"
+  source                        = "squareops/grafana-stack/kubernetes"
+  version                       = "3.0.3"
   cluster_name                  = ""
   kube_prometheus_stack_enabled = true
   loki_enabled                  = false

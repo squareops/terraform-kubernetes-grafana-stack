@@ -6,13 +6,14 @@ locals {
     Owner      = "organization_name"
     Expires    = "Never"
     Department = "Engineering"
-    Product    = "Atmosly"
+    Product    = ""
     Environment = local.environment
   }
 }
 
 module "pgl" {
-  source                        = "../../"
+  source                        = "squareops/grafana-stack/kubernetes"
+  version                       = "3.0.3"
   cluster_name                  = ""
   kube_prometheus_stack_enabled = true
   loki_enabled                  = false
