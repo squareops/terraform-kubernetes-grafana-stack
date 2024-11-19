@@ -21,7 +21,7 @@ No requirements.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_pgl"></a> [pgl](#module\_pgl) | git@github.com:sq-ia/terraform-kubernetes-grafana.git | n/a |
+| <a name="module_pgl"></a> [pgl](#module\_pgl) | squareops/grafana-stack/kubernetes | n/a |
 
 ## Resources
 
