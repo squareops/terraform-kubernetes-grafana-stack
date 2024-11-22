@@ -1817,7 +1817,7 @@
         "query": "prometheus",
         "queryValue": "",
         "refresh": 1,
-        "regex": "/^Prometheus-/",
+        "regex": "",
         "skipUrlSync": false,
         "type": "datasource"
       },

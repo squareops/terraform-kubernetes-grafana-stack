@@ -1990,7 +1990,7 @@
             "type": 1
           },
           "refresh": 1,
-          "regex": "/.*atmosly\\.com$/",
+          "regex": "",
           "skipUrlSync": false,
           "sort": 0,
           "type": "query"

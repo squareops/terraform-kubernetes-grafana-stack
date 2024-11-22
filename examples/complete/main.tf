@@ -3,10 +3,10 @@ locals {
   region      = ""
   environment = ""
   additional_tags = {
-    Owner      = "organization_name"
-    Expires    = "Never"
-    Department = "Engineering"
-    Product    = ""
+    Owner       = "organization_name"
+    Expires     = "Never"
+    Department  = "Engineering"
+    Product     = ""
     Environment = local.environment
   }
 }
@@ -33,8 +33,10 @@ module "pgl" {
     grafana_enabled                     = true
     prometheus_hostname                 = "prometheus.com"
     prometheus_internal_ingress_enabled = false
-    grafana_ingress_load_balancer       = "nlb" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
-    alb_acm_certificate_arn             = ""    #"arn:aws:acm:${local.region}:444455556666:certificate/certificate_ID"
+    grafana_ingress_load_balancer       = "nlb"   ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
+    ingress_class_name                  = "nginx" # enter ingress class name according to your requirement (example: "nginx", "internal-ingress", "private-nginx")
+    alb_acm_certificate_arn             = ""      #"arn:aws:acm:${local.region}:444455556666:certificate/certificate_ID"
+    private_alb_enabled                 = false   # Set to true, when wanted to deploy PGL on ALB internal
     loki_internal_ingress_enabled       = false
     loki_hostname                       = "loki.com"
     mimir_s3_bucket_config = {
