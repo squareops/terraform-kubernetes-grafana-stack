@@ -1,10 +1,11 @@
 locals {
+  alb_scheme = var.deployment_config.private_alb_enabled ? "internal" : "internet-facing"
   oidc_provider = replace(
     data.aws_eks_cluster.kubernetes_cluster.identity[0].oidc[0].issuer,
     "/^https:///",
     ""
   )
-    base_annotations = {
+  base_annotations = {
     "grafana_folder" = "Defaults"
   }
 
@@ -115,8 +116,8 @@ resource "helm_release" "blackbox_exporter" {
 locals {
   ingress_annotations = var.deployment_config.grafana_ingress_load_balancer == "alb" ? {
     "kubernetes.io/ingress.class"                    = "alb",
-    "alb.ingress.kubernetes.io/scheme"               = "internet-facing",
-    "alb.ingress.kubernetes.io/group.name"           = "pgl",
+    "alb.ingress.kubernetes.io/scheme"               = local.alb_scheme,
+    "alb.ingress.kubernetes.io/group.name"           = local.alb_scheme == "internet-facing" ? "public-alb-ingress" : "private-alb-ingress",
     "alb.ingress.kubernetes.io/healthcheck-path"     = "/api/health",
     "alb.ingress.kubernetes.io/healthcheck-port"     = "traffic-port",
     "alb.ingress.kubernetes.io/healthcheck-protocol" = "HTTP",
@@ -125,7 +126,7 @@ locals {
     "alb.ingress.kubernetes.io/ssl-redirect"         = "443",
     "alb.ingress.kubernetes.io/certificate-arn"      = var.deployment_config.alb_acm_certificate_arn
     } : {
-    "kubernetes.io/ingress.class"    = "nginx",
+    "kubernetes.io/ingress.class"    = var.deployment_config.ingress_class_name,
     "kubernetes.io/tls-acme"         = "false",
     "cert-manager.io/cluster-issuer" = "letsencrypt-prod"
   }
@@ -176,6 +177,7 @@ resource "helm_release" "prometheus_grafana" {
       ingress_annotations                = jsonencode(local.ingress_annotations),
       ingress_hosts                      = jsonencode(local.ingress_hosts),
       ingress_tls                        = jsonencode(local.ingress_tls),
+      ingress_ingressClassName           = var.deployment_config.grafana_ingress_load_balancer == "alb" ? "alb" : var.deployment_config.ingress_class_name
       loki_datasource_config             = var.loki_scalable_enabled ? local.loki_datasource_config : "",
       tempo_datasource_config            = var.tempo_enabled ? local.tempo_datasource_config : "",
       cw_datasource_config               = var.cloudwatch_enabled ? local.cw_datasource_config : "",
@@ -793,27 +795,27 @@ resource "kubernetes_config_map" "aws_sns" {
   depends_on = [helm_release.prometheus_grafana]
 }
 
-resource "kubernetes_config_map" "cluster_overview_dashboard" {
-  count = var.deployment_config.grafana_enabled ? 1 : 0
-  metadata {
-    name      = "prometheus-operator-kube-p-cluster-overview"
-    namespace = var.pgl_namespace
-    labels = {
-      "grafana_dashboard" : "1"
-      "app" : "kube-prometheus-stack-grafana"
-      "chart" : "kube-prometheus-stack-61.1.0"
-      "release" : "prometheus-operator"
-    }
-    annotations = {
-      "grafana_folder" : "Defaults"
-    }
-  }
+# resource "kubernetes_config_map" "cluster_overview_dashboard" {
+#   count = var.deployment_config.grafana_enabled ? 1 : 0
+#   metadata {
+#     name      = "prometheus-operator-kube-p-cluster-overview"
+#     namespace = var.pgl_namespace
+#     labels = {
+#       "grafana_dashboard" : "1"
+#       "app" : "kube-prometheus-stack-grafana"
+#       "chart" : "kube-prometheus-stack-61.1.0"
+#       "release" : "prometheus-operator"
+#     }
+#     annotations = {
+#       "grafana_folder" : "Defaults"
+#     }
+#   }
 
-  data = {
-    "cluster-overview.json" = "${file("${path.module}/grafana/dashboards/cluster_overview.json")}"
-  }
-  depends_on = [helm_release.prometheus_grafana]
-}
+#   data = {
+#     "cluster-overview.json" = "${file("${path.module}/grafana/dashboards/cluster_overview.json")}"
+#   }
+#   depends_on = [helm_release.prometheus_grafana]
+# }
 
 resource "kubernetes_config_map" "ingress_nginx_dashboard" {
   count      = var.deployment_config.grafana_enabled ? 1 : 0
@@ -828,14 +830,14 @@ resource "kubernetes_config_map" "ingress_nginx_dashboard" {
       "release" : "prometheus-operator"
     }
     annotations = {
-      "grafana_folder" : "Defaults"
+      "grafana_folder" : "Nginx"
     }
   }
 
   data = {
-    "ingress-nginx.json" = "${file("${path.module}/grafana/dashboards/ingress_nginx.json")}",
-    "nginx_api_host.json" = "${file("${path.module}/grafana/dashboards/nginx_api_host.json")}",
-    "nginx_ingress.json" = "${file("${path.module}/grafana/dashboards/nginx_ingress.json")}",
+    "ingress-nginx.json"          = "${file("${path.module}/grafana/dashboards/ingress_nginx.json")}",
+    "nginx_api_host.json"         = "${file("${path.module}/grafana/dashboards/nginx_api_host.json")}",
+    "nginx_ingress.json"          = "${file("${path.module}/grafana/dashboards/nginx_ingress.json")}",
     "nginx_request_handling.json" = "${file("${path.module}/grafana/dashboards/nginx_request_handling.json")}"
   }
 }
@@ -1079,12 +1081,8 @@ resource "kubernetes_config_map" "loki_dashboard" {
   }
 
   data = {
-    "loki-dashboard.json" = "${file("${path.module}/grafana/dashboards/loki.json")}"
-    # "full-loki-dashboard.json" = "${file("${path.module}/grafana/dashboards/Full_loki_logs.json")}",
-    # "5xx.json" =  "${file("${path.module}/grafana/dashboards/5xx.json")}",
-    # "4xx.json" =  "${file("${path.module}/grafana/dashboards/4xx.json")}",
-    # "3xx.json" =  "${file("${path.module}/grafana/dashboards/3xx.json")}",
-    # "2xx.json" =  "${file("${path.module}/grafana/dashboards/2xx.json")}",
+    "loki-dashboard.json"       = "${file("${path.module}/grafana/dashboards/loki.json")}",
+    "analytics-nginx-logs.json" = "${file("${path.module}/grafana/dashboards/analytics_nginx_logs.json")}"
   }
 }
 
@@ -1103,7 +1101,7 @@ resource "kubernetes_config_map" "nodegroup_dashboard" {
       "release" : "prometheus-operator"
     }
     annotations = {
-      "grafana_folder" : "Defaults"
+      "grafana_folder" : "kubernetes"
     }
   }
 
