@@ -276,6 +276,7 @@ grafana:
 
   ingress:
     enabled: ${ingress_enabled}
+    ingressClassName: ${ingress_ingressClassName}
     annotations: ${ingress_annotations}
     hosts: ${ingress_hosts}
     tls: ${ingress_tls}
