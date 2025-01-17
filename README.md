@@ -27,10 +27,10 @@ This module also includes alerting features that allow you to set up custom aler
 
 | Resources                       |  Helm Chart Version                |     K8s supported version        |  
 | :-----:                         | :---                               |         :---                     |
-| Kube-Prometheus-Stack           | **61.1.0**                         |    **1.23,1.24,1.25,1.26,1.27,1.28,1.29**  |
-| Prometheus-Blackbox-Exporter    | **8.17.0**                         |    **1.23,1.24,1.25,1.26,1.27,1.28,1.29**  |
-| Mimir                           | **5.4.0**                          |    **1.23,1.24,1.25,1.26,1.27,1.28,1.29**  |
-| Loki-Stack                      | **2.10.2**                          |    **1.23,1.24,1.25,1.26,1.27,1.28,1.29**  |
+| Kube-Prometheus-Stack           | **61.1.0**                         |    **1.23,1.24,1.25,1.26,1.27,1.28,1.29,1.30**  |
+| Prometheus-Blackbox-Exporter    | **8.17.0**                         |    **1.23,1.24,1.25,1.26,1.27,1.28,1.29,1.30**  |
+| Mimir                           | **5.4.0**                          |    **1.23,1.24,1.25,1.26,1.27,1.28,1.29,1.30**  |
+| Loki-Stack                      | **2.10.2**                          |    **1.23,1.24,1.25,1.26,1.27,1.28,1.29,1.30**  |
 | Loki-Scalable                   | **6.7.1**                          |    **1.23,1.24,1.25,1.26,1.27,1.28,1.29**  |
 | Tempo                           | **1.6.2**                          |    **1.23,1.24,1.25,1.26,1.27**  |
 | OTEL                            | **0.37.0**                         |    **1.23,1.24,1.25,1.26,1.27**  |
@@ -40,50 +40,52 @@ This module also includes alerting features that allow you to set up custom aler
 
 ```hcl
 module "pgl" {
-  source                        = "https://github.com/sq-ia/terraform-kubernetes-grafana.git"
-  cluster_name                  = "cluster-name"
+  source                        = "squareops/grafana-stack/kubernetes"
+  version                       = "3.0.3"
+  cluster_name                  = ""
   kube_prometheus_stack_enabled = true
-  loki_enabled                  = true
-  loki_scalable_enabled         = false
+  loki_enabled                  = false
+  loki_scalable_enabled         = true
   grafana_mimir_enabled         = true
   cloudwatch_enabled            = true
   tempo_enabled                 = false
   deployment_config = {
-    hostname                            = "grafana.squareops.in"
-    storage_class_name                  = "gp2"
-    prometheus_values_yaml              = ""
-    loki_values_yaml                    = ""
-    blackbox_values_yaml                = ""
-    grafana_mimir_values_yaml           = ""
-    dashboard_refresh_interval          = "300"
+    hostname                            = "grafana.squareops.com"
+    storage_class_name                  = "infra-service-sc"
+    prometheus_values_yaml              = file("./helm/prometheus.yaml")
+    loki_values_yaml                    = file("./helm/loki.yaml")
+    blackbox_values_yaml                = file("./helm/blackbox.yaml")
+    grafana_mimir_values_yaml           = file("./helm/mimir.yaml")
+    tempo_values_yaml                   = file("./helm/tempo.yaml")
+    dashboard_refresh_interval          = ""
     grafana_enabled                     = true
-    prometheus_hostname                 = "prometh.squareops.in"
+    prometheus_hostname                 = "prometheus.com"
     prometheus_internal_ingress_enabled = false
     grafana_ingress_load_balancer       = "nlb" ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
-    alb_acm_certificate_arn             = "arn:aws:acm:us-west-2:123456543:certificate/5165ad5d-1240"
+    alb_acm_certificate_arn             = ""    #"arn:aws:acm:${local.region}:444455556666:certificate/certificate_ID"
     loki_internal_ingress_enabled       = false
-    loki_hostname                       = "loki.squareops.in"
+    loki_hostname                       = "loki.com"
     mimir_s3_bucket_config = {
-      s3_bucket_name     = ""
-      versioning_enabled = "true"
-      s3_bucket_region   = ""
+      s3_bucket_name       = "${local.environment}-${local.name}-mimir-bucket"
+      versioning_enabled   = "false"
+      s3_bucket_region     = "${local.region}"
       s3_object_expiration = 90
     }
     loki_scalable_config = {
-      loki_scalable_version = "6.6.5"
+      loki_scalable_version = "6.7.1"
       loki_scalable_values  = file("./helm/loki-scalable.yaml")
-      s3_bucket_name        = ""
-      versioning_enabled    = true
-      s3_bucket_region      = "local.region"
+      s3_bucket_name        = "${local.environment}-${local.name}-loki-scalable-bucket"
+      versioning_enabled    = "false"
+      s3_bucket_region      = "${local.region}"
     }
     promtail_config = {
       promtail_version = "6.16.3"
       promtail_values  = file("./helm/promtail.yaml")
     }
     tempo_config = {
-      s3_bucket_name     = ""
-      versioning_enabled = false
-      s3_bucket_region   = ""
+      s3_bucket_name       = "${local.environment}-${local.name}-tempo-skaf"
+      versioning_enabled   = false
+      s3_bucket_region     = "${local.region}"
       s3_object_expiration = "90"
     }
     otel_config = {
@@ -208,7 +210,6 @@ No requirements.
 | [kubernetes_config_map.aws_sns](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/config_map) | resource |
 | [kubernetes_config_map.aws_sqs](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/config_map) | resource |
 | [kubernetes_config_map.blackbox_dashboard](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/config_map) | resource |
-| [kubernetes_config_map.cluster_overview_dashboard](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/config_map) | resource |
 | [kubernetes_config_map.elasticache_redis](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/config_map) | resource |
 | [kubernetes_config_map.elasticsearch_cluster_stats_dashboard](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/config_map) | resource |
 | [kubernetes_config_map.elasticsearch_dashboard](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/config_map) | resource |
@@ -251,8 +252,8 @@ No requirements.
 | <a name="input_blackbox_exporter_version"></a> [blackbox\_exporter\_version](#input\_blackbox\_exporter\_version) | Version of the Blackbox exporter to deploy. | `string` | `"8.17.0"` | no |
 | <a name="input_cloudwatch_enabled"></a> [cloudwatch\_enabled](#input\_cloudwatch\_enabled) | Whether or not to add CloudWatch as datasource and add some default dashboards for AWS in Grafana. | `bool` | `false` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Specifies the name of the EKS cluster. | `string` | n/a | yes |
-| <a name="input_deployment_config"></a> [deployment\_config](#input\_deployment\_config) | Configuration options for the Prometheus, Alertmanager, Loki, and Grafana deployments, including the hostname, storage class name, dashboard refresh interval, and S3 bucket configuration for Mimir. | `any` | <pre>{<br>  "alb_acm_certificate_arn": "",<br>  "blackbox_values_yaml": "",<br>  "dashboard_refresh_interval": "",<br>  "grafana_enabled": true,<br>  "grafana_ingress_load_balancer": "nlb",<br>  "grafana_mimir_values_yaml": "",<br>  "hostname": "",<br>  "loki_hostname": "",<br>  "loki_internal_ingress_enabled": false,<br>  "loki_scalable_config": {<br>    "loki_scalable_values": "",<br>    "loki_scalable_version": "6.6.5",<br>    "s3_bucket_name": "",<br>    "s3_bucket_region": "",<br>    "versioning_enabled": ""<br>  },<br>  "loki_values_yaml": "",<br>  "mimir_s3_bucket_config": {<br>    "s3_bucket_name": "",<br>    "s3_bucket_region": "",<br>    "s3_object_expiration": "",<br>    "versioning_enabled": ""<br>  },<br>  "otel_config": {<br>    "otel_collector_enabled": false,<br>    "otel_operator_enabled": false<br>  },<br>  "prometheus_hostname": "",<br>  "prometheus_internal_ingress_enabled": false,<br>  "prometheus_values_yaml": "",<br>  "promtail_config": {<br>    "promtail_values": "",<br>    "promtail_version": "6.16.3"<br>  },<br>  "storage_class_name": "gp2",<br>  "tempo_config": {<br>    "s3_bucket_name": "",<br>    "s3_bucket_region": "",<br>    "s3_object_expiration": "",<br>    "versioning_enabled": false<br>  },<br>  "tempo_values_yaml": ""<br>}</pre> | no |
-| <a name="input_exporter_config"></a> [exporter\_config](#input\_exporter\_config) | allows enabling/disabling various exporters for scraping metrics, including Consul, MongoDB, Redis, and StatsD. | `map(any)` | <pre>{<br>  "argocd": false,<br>  "blackbox": true,<br>  "conntrack": false,<br>  "consul": false,<br>  "couchdb": false,<br>  "druid": false,<br>  "elasticsearch": true,<br>  "ethtool_exporter": true,<br>  "istio": false,<br>  "jenkins": false,<br>  "json": false,<br>  "kafka": false,<br>  "mongodb": true,<br>  "mysql": true,<br>  "nats": false,<br>  "nifi": false,<br>  "pingdom": false,<br>  "postgres": false,<br>  "prometheustosd": false,<br>  "push_gateway": false,<br>  "rabbitmq": false,<br>  "redis": true,<br>  "snmp": false,<br>  "stackdriver": false,<br>  "statsd": true<br>}</pre> | no |
+| <a name="input_deployment_config"></a> [deployment\_config](#input\_deployment\_config) | Configuration options for the Prometheus, Alertmanager, Loki, and Grafana deployments, including the hostname, storage class name, dashboard refresh interval, and S3 bucket configuration for Mimir. | `any` | <pre>{<br/>  "alb_acm_certificate_arn": "",<br/>  "blackbox_values_yaml": "",<br/>  "dashboard_refresh_interval": "",<br/>  "grafana_enabled": true,<br/>  "grafana_ingress_load_balancer": "nlb",<br/>  "grafana_mimir_values_yaml": "",<br/>  "hostname": "",<br/>  "ingress_class_name": "",<br/>  "loki_hostname": "",<br/>  "loki_internal_ingress_enabled": false,<br/>  "loki_scalable_config": {<br/>    "loki_scalable_values": "",<br/>    "loki_scalable_version": "6.6.5",<br/>    "s3_bucket_name": "",<br/>    "s3_bucket_region": "",<br/>    "versioning_enabled": ""<br/>  },<br/>  "loki_values_yaml": "",<br/>  "mimir_s3_bucket_config": {<br/>    "s3_bucket_name": "",<br/>    "s3_bucket_region": "",<br/>    "s3_object_expiration": "",<br/>    "versioning_enabled": ""<br/>  },<br/>  "otel_config": {<br/>    "otel_collector_enabled": false,<br/>    "otel_operator_enabled": false<br/>  },<br/>  "private_alb_enabled": "",<br/>  "prometheus_hostname": "",<br/>  "prometheus_internal_ingress_enabled": false,<br/>  "prometheus_values_yaml": "",<br/>  "promtail_config": {<br/>    "promtail_values": "",<br/>    "promtail_version": "6.16.3"<br/>  },<br/>  "storage_class_name": "gp2",<br/>  "tempo_config": {<br/>    "s3_bucket_name": "",<br/>    "s3_bucket_region": "",<br/>    "s3_object_expiration": "",<br/>    "versioning_enabled": false<br/>  },<br/>  "tempo_values_yaml": ""<br/>}</pre> | no |
+| <a name="input_exporter_config"></a> [exporter\_config](#input\_exporter\_config) | allows enabling/disabling various exporters for scraping metrics, including Consul, MongoDB, Redis, and StatsD. | `map(any)` | <pre>{<br/>  "argocd": false,<br/>  "blackbox": true,<br/>  "conntrack": false,<br/>  "consul": false,<br/>  "couchdb": false,<br/>  "druid": false,<br/>  "elasticsearch": true,<br/>  "ethtool_exporter": true,<br/>  "istio": false,<br/>  "jenkins": false,<br/>  "json": false,<br/>  "kafka": false,<br/>  "mongodb": true,<br/>  "mysql": true,<br/>  "nats": false,<br/>  "nifi": false,<br/>  "pingdom": false,<br/>  "postgres": false,<br/>  "prometheustosd": false,<br/>  "push_gateway": false,<br/>  "rabbitmq": false,<br/>  "redis": true,<br/>  "snmp": false,<br/>  "stackdriver": false,<br/>  "statsd": true<br/>}</pre> | no |
 | <a name="input_grafana_mimir_enabled"></a> [grafana\_mimir\_enabled](#input\_grafana\_mimir\_enabled) | Specify whether or not to deploy the Grafana Mimir plugin. | `bool` | `false` | no |
 | <a name="input_grafana_mimir_version"></a> [grafana\_mimir\_version](#input\_grafana\_mimir\_version) | Version of the Grafana Mimir plugin to deploy. | `string` | `"5.4.0"` | no |
 | <a name="input_kube_prometheus_stack_enabled"></a> [kube\_prometheus\_stack\_enabled](#input\_kube\_prometheus\_stack\_enabled) | Specify whether or not to deploy Grafana as part of the Prometheus and Alertmanager stack. | `bool` | `false` | no |
