@@ -16,10 +16,11 @@ module "pgl" {
   version                       = "3.0.3"
   cluster_name                  = ""
   kube_prometheus_stack_enabled = true
-  loki_enabled                  = false
-  loki_scalable_enabled         = true
-  grafana_mimir_enabled         = true
+  loki_enabled                  = true
+  loki_scalable_enabled         = false
+  grafana_mimir_enabled         = false
   cloudwatch_enabled            = true
+  thanos_enabled                = false
   tempo_enabled                 = false
   deployment_config = {
     hostname                            = "grafana.squareops.com"
@@ -28,9 +29,13 @@ module "pgl" {
     loki_values_yaml                    = file("./helm/loki.yaml")
     blackbox_values_yaml                = file("./helm/blackbox.yaml")
     grafana_mimir_values_yaml           = file("./helm/mimir.yaml")
+    thanos_values_yaml                  = file("./helm/thanos.yaml")
     tempo_values_yaml                   = file("./helm/tempo.yaml")
+    prometheus_replicas                 = 1
+    prometheus_shards                   = 1
     dashboard_refresh_interval          = ""
     grafana_enabled                     = true
+    grafana_ha_enabled                  = true
     prometheus_hostname                 = "prometheus.com"
     prometheus_internal_ingress_enabled = false
     grafana_ingress_load_balancer       = "nlb"   ##Choose your load balancer type (e.g., NLB or ALB). If using ALB, ensure you provide the ACM certificate ARN for SSL.
@@ -39,6 +44,12 @@ module "pgl" {
     private_alb_enabled                 = false   # Set to true, when wanted to deploy PGL on ALB internal
     loki_internal_ingress_enabled       = false
     loki_hostname                       = "loki.com"
+    thanos_configs = {
+      s3_bucket_name       = "${local.environment}-${local.name}-thanos-bucket"
+      versioning_enabled   = "false"
+      s3_bucket_region     = "${local.region}"
+      s3_object_expiration = 90
+    }
     mimir_s3_bucket_config = {
       s3_bucket_name       = "${local.environment}-${local.name}-mimir-bucket"
       versioning_enabled   = "false"
