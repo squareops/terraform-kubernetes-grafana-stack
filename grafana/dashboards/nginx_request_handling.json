@@ -26,7 +26,7 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 9614,
   "graphTooltip": 1,
-  "id": 3560,
+  "id": 29,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -110,6 +110,7 @@
           "showLegend": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "desc"
         }
@@ -230,6 +231,7 @@
           "showLegend": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "desc"
         }
@@ -353,6 +355,7 @@
           "sortDesc": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "desc"
         }
@@ -455,6 +458,7 @@
           "sortDesc": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "desc"
         }
@@ -556,6 +560,7 @@
           "showLegend": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "desc"
         }
@@ -661,6 +666,7 @@
           "showLegend": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "desc"
         }
@@ -733,8 +739,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -837,8 +842,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -951,8 +955,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1016,8 +1019,8 @@
       {
         "current": {
           "selected": true,
-          "text": "Prometheus-prod-atmosly",
-          "value": "cdverpho22sqoa"
+          "text": "default",
+          "value": "default"
         },
         "hide": 0,
         "includeAll": false,
@@ -1035,7 +1038,7 @@
       {
         "allValue": ".*",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -1069,6 +1072,7 @@
     "from": "now-5m",
     "to": "now"
   },
+  "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {
     "refresh_intervals": [
       "5s",
@@ -1097,6 +1101,6 @@
   "timezone": "browser",
   "title": "Request Handling Performance",
   "uid": "Nginxrequesthandling",
-  "version": 6,
+  "version": 1,
   "weekStart": ""
 }

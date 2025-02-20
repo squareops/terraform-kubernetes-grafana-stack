@@ -36,7 +36,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 3559,
+  "id": 30,
   "links": [],
   "panels": [
     {
@@ -97,7 +97,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -178,7 +178,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -264,7 +264,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -346,7 +346,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -429,7 +429,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -545,6 +545,7 @@
           "showLegend": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
@@ -715,6 +716,7 @@
           "showLegend": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "asc"
         }
@@ -819,6 +821,7 @@
           "width": 200
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
@@ -984,6 +987,7 @@
           "width": 200
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "desc"
         }
@@ -1083,6 +1087,7 @@
           "showLegend": false
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "desc"
         }
@@ -1327,7 +1332,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "repeatDirection": "h",
       "targets": [
         {
@@ -1454,8 +1459,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1804,9 +1808,9 @@
     "list": [
       {
         "current": {
-          "selected": false,
-          "text": "Prometheus-prod-atmosly",
-          "value": "cdverpho22sqoa"
+          "selected": true,
+          "text": "default",
+          "value": "default"
         },
         "hide": 0,
         "includeAll": false,
@@ -1967,6 +1971,7 @@
     "from": "now-1h",
     "to": "now"
   },
+  "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {
     "refresh_intervals": [
       "5s",
@@ -1995,6 +2000,6 @@
   "timezone": "browser",
   "title": "NGINX Ingress controller",
   "uid": "nginxingresscontroller",
-  "version": 4,
+  "version": 1,
   "weekStart": ""
 }

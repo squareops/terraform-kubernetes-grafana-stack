@@ -20,7 +20,7 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 10443,
   "graphTooltip": 0,
-  "id": 3562,
+  "id": 28,
   "links": [],
   "panels": [
     {
@@ -169,6 +169,7 @@
           "showLegend": false
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "desc"
         }
@@ -338,6 +339,7 @@
           "showLegend": false
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "desc"
         }
@@ -475,6 +477,7 @@
           "showLegend": false
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "desc"
         }
@@ -614,6 +617,7 @@
           "showLegend": false
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "desc"
         }
@@ -725,6 +729,7 @@
           "showLegend": false
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "desc"
         }
@@ -836,6 +841,7 @@
           "showLegend": false
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "desc"
         }
@@ -965,6 +971,7 @@
           "showLegend": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
@@ -1177,7 +1184,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -1362,7 +1369,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -1547,7 +1554,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -1644,8 +1651,8 @@
       {
         "current": {
           "selected": true,
-          "text": "Prometheus-nonprod-atmosly",
-          "value": "PB8A82C5223A7CC33"
+          "text": "default",
+          "value": "default"
         },
         "hide": 0,
         "includeAll": false,
@@ -1666,6 +1673,7 @@
     "from": "now-5m",
     "to": "now"
   },
+  "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {
     "refresh_intervals": [
       "5s",
@@ -1694,6 +1702,6 @@
   "timezone": "browser",
   "title": "NGINX / API / Host",
   "uid": "NginxApiHost",
-  "version": 6,
+  "version": 1,
   "weekStart": ""
 }

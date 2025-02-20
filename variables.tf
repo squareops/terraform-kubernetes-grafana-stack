@@ -34,23 +34,37 @@ variable "grafana_mimir_version" {
   description = "Version of the Grafana Mimir plugin to deploy."
 }
 
-
 variable "grafana_mimir_enabled" {
   default     = false
   type        = bool
   description = "Specify whether or not to deploy the Grafana Mimir plugin."
 }
 
+variable "thanos_enabled" {
+  default     = false
+  type        = bool
+  description = "Choose whether to enable Thanos HA setup for kube-prometheus stack"
+}
+
+variable "thanos_chart_version" {
+  default     = "15.10.2"
+  type        = string
+  description = "helm chart version for thanos"
+}
+
 variable "deployment_config" {
   type = any
   default = {
     hostname                            = ""
-    storage_class_name                  = "gp2"
+    storage_class_name                  = "gp3"
     prometheus_values_yaml              = ""
     loki_values_yaml                    = ""
     blackbox_values_yaml                = ""
     grafana_mimir_values_yaml           = ""
+    thanos_values_yaml                  = ""
     tempo_values_yaml                   = ""
+    prometheus_replicas                 = 1
+    prometheus_shards                   = 1
     dashboard_refresh_interval          = ""
     grafana_enabled                     = true
     prometheus_hostname                 = ""
@@ -61,6 +75,12 @@ variable "deployment_config" {
     private_alb_enabled                 = ""
     loki_internal_ingress_enabled       = false
     loki_hostname                       = ""
+    thanos_configs = {
+      s3_bucket_name       = ""
+      versioning_enabled   = ""
+      s3_bucket_region     = ""
+      s3_object_expiration = ""
+    }
     mimir_s3_bucket_config = {
       s3_bucket_name       = ""
       versioning_enabled   = ""

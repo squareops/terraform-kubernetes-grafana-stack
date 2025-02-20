@@ -54,8 +54,22 @@ locals {
   version: 1
   EOF
 
+  thanos_datasource_config = <<EOF
+- name: thanos
+  access: proxy
+  editable: false
+  isDefault: true
+  jsonData:
+      tlsSkipVerify: true
+      prometheusType: Thanos
+      cacheLevel: Low
+  orgId: 1
+  type: prometheus
+  url: http://thanos-query-frontend.monitoring.svc.cluster.local:9090
+  version: 1
+  EOF
 }
-
+#
 data "aws_caller_identity" "current" {}
 
 data "aws_eks_cluster" "kubernetes_cluster" {
@@ -113,6 +127,8 @@ resource "helm_release" "blackbox_exporter" {
   ]
 }
 
+#---------------------prometheus_grafana----------------------------------
+
 locals {
   ingress_annotations = var.deployment_config.grafana_ingress_load_balancer == "alb" ? {
     "kubernetes.io/ingress.class"                    = "alb",
@@ -137,21 +153,8 @@ locals {
     secretName = "monitor-tls",
     hosts      = [var.deployment_config.hostname]
   }]
-}
 
-#---------------------prometheus_grafana----------------------------------
-
-resource "helm_release" "prometheus_grafana" {
-  depends_on        = [kubernetes_namespace.monitoring, kubernetes_priority_class.priority_class]
-  name              = "prometheus-operator"
-  chart             = "kube-prometheus-stack"
-  version           = var.prometheus_chart_version
-  timeout           = 600
-  namespace         = var.pgl_namespace
-  repository        = "https://prometheus-community.github.io/helm-charts"
-  dependency_update = true
-
-  values = var.grafana_mimir_enabled ? [
+  kube_prometheus_stack_values = var.grafana_mimir_enabled == true && var.thanos_enabled == false ? [
     templatefile("${path.module}/helm/values/prometheus/mimir/values.yaml", {
       hostname                = var.deployment_config.hostname,
       grafana_enabled         = var.deployment_config.grafana_enabled,
@@ -164,12 +167,42 @@ resource "helm_release" "prometheus_grafana" {
       annotations             = jsonencode(local.annotations) # Correct usage of jsonencode
     }),
     var.deployment_config.prometheus_values_yaml
+    ] : var.grafana_mimir_enabled == false && var.thanos_enabled == true ? [
+    templatefile("${path.module}/helm/values/prometheus/thanos/values.yaml", {
+      hostname                           = var.deployment_config.hostname,
+      grafana_enabled                    = var.deployment_config.grafana_enabled,
+      grafana_ha_enabled                 = var.deployment_config.grafana_ha_enabled,
+      storage_class_name                 = var.deployment_config.storage_class_name,
+      prometheus_hostname                = var.deployment_config.prometheus_hostname,
+      prometheus_shards                  = var.deployment_config.prometheus_shards
+      prometheus_replicas                = var.deployment_config.prometheus_replicas
+      s3_bucket_name                     = var.deployment_config.thanos_configs.s3_bucket_name
+      s3_endpoint                        = "s3.${var.deployment_config.thanos_configs.s3_bucket_region}.amazonaws.com"
+      s3_bucket_region                   = var.deployment_config.thanos_configs.s3_bucket_region
+      min_refresh_interval               = var.deployment_config.dashboard_refresh_interval,
+      grafana_admin_password             = random_password.grafana_password.result,
+      enable_prometheus_internal_ingress = var.deployment_config.prometheus_internal_ingress_enabled,
+      ingress_enabled                    = true,
+      ingress_annotations                = jsonencode(local.ingress_annotations),
+      ingress_hosts                      = jsonencode(local.ingress_hosts),
+      ingress_tls                        = jsonencode(local.ingress_tls),
+      ingress_ingressClassName           = var.deployment_config.grafana_ingress_load_balancer == "alb" ? "alb" : var.deployment_config.ingress_class_name
+      loki_datasource_config             = var.loki_scalable_enabled ? local.loki_datasource_config : "",
+      tempo_datasource_config            = var.tempo_enabled ? local.tempo_datasource_config : "",
+      cw_datasource_config               = var.cloudwatch_enabled ? local.cw_datasource_config : "",
+      thanos_datasource_config           = var.thanos_enabled ? local.thanos_datasource_config : "",
+      annotations                        = jsonencode(local.annotations) # Correct usage of jsonencode
+    }),
+    var.deployment_config.prometheus_values_yaml
     ] : [
     templatefile("${path.module}/helm/values/prometheus/values.yaml", {
       hostname                           = var.deployment_config.hostname,
       grafana_enabled                    = var.deployment_config.grafana_enabled,
+      grafana_ha_enabled                 = var.deployment_config.grafana_ha_enabled,
       storage_class_name                 = var.deployment_config.storage_class_name,
       prometheus_hostname                = var.deployment_config.prometheus_hostname,
+      prometheus_shards                  = var.deployment_config.prometheus_shards
+      prometheus_replicas                = var.deployment_config.prometheus_replicas
       min_refresh_interval               = var.deployment_config.dashboard_refresh_interval,
       grafana_admin_password             = random_password.grafana_password.result,
       enable_prometheus_internal_ingress = var.deployment_config.prometheus_internal_ingress_enabled,
@@ -185,6 +218,19 @@ resource "helm_release" "prometheus_grafana" {
     }),
     var.deployment_config.prometheus_values_yaml
   ]
+}
+
+resource "helm_release" "prometheus_grafana" {
+  depends_on        = [kubernetes_namespace.monitoring, kubernetes_priority_class.priority_class]
+  name              = "prometheus-operator"
+  chart             = "kube-prometheus-stack"
+  version           = var.prometheus_chart_version
+  timeout           = 600
+  namespace         = var.pgl_namespace
+  repository        = "https://prometheus-community.github.io/helm-charts"
+  dependency_update = true
+
+  values = local.kube_prometheus_stack_values
 }
 
 resource "helm_release" "conntrak_stats_exporter" {
@@ -1106,11 +1152,12 @@ resource "kubernetes_config_map" "nodegroup_dashboard" {
   }
 
   data = {
-    "nodegroup-dashboard.json" = "${file("${path.module}/grafana/dashboards/nodegroup.json")}",
-    "cluster-dashboard.json"   = "${file("${path.module}/grafana/dashboards/k8s_view_global.json")}",
-    "namespace-dashboard.json" = "${file("${path.module}/grafana/dashboards/k8s_view_namespace.json")}",
-    "node-dashboard.json"      = "${file("${path.module}/grafana/dashboards/k8s_view_nodes.json")}",
-    "pods-dashboard.json"      = "${file("${path.module}/grafana/dashboards/k8s_view_pods.json")}"
+    "nodegroup-dashboard.json"      = "${file("${path.module}/grafana/dashboards/nodegroup.json")}",
+    "cluster-dashboard.json"        = "${file("${path.module}/grafana/dashboards/k8s_view_global.json")}",
+    "namespace-dashboard.json"      = "${file("${path.module}/grafana/dashboards/k8s_view_namespace.json")}",
+    "node-dashboard.json"           = "${file("${path.module}/grafana/dashboards/k8s_view_nodes.json")}",
+    "pods-dashboard.json"           = "${file("${path.module}/grafana/dashboards/k8s_view_pods.json")}",
+    "karpenter_node_dashboard.json" = "${file("${path.module}/grafana/dashboards/karpenter_node_dashboard.json")}"
   }
 }
 

@@ -25,7 +25,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": 2859,
+  "id": 32,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -66,7 +66,7 @@
         "content": "<div class=\"text-center\">\n  <img style=\"height:80px\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Kubernetes_logo_without_workmark.svg/1200px-Kubernetes_logo_without_workmark.svg.png\">\n  <h2 style=\"padding-top:10px\">$k8s_version</h2>\n</div>",
         "mode": "html"
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -135,7 +135,7 @@
         "sizing": "auto",
         "valueMode": "color"
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -284,7 +284,7 @@
         "text": {},
         "valueMode": "color"
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -430,7 +430,7 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -530,6 +530,7 @@
           "sortDesc": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
@@ -746,7 +747,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -818,7 +819,7 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -887,7 +888,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -953,7 +954,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -1109,7 +1110,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -1268,7 +1269,7 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -1385,6 +1386,7 @@
           "showLegend": false
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -1519,6 +1521,7 @@
           "showLegend": false
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -1620,8 +1623,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1726,8 +1728,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1831,8 +1832,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1949,8 +1949,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2073,8 +2072,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2182,8 +2180,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2299,8 +2296,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2415,8 +2411,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2520,8 +2515,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2625,8 +2619,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2747,8 +2740,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2886,8 +2878,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -3070,8 +3061,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -3181,8 +3171,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -3320,8 +3309,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -3460,8 +3448,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -3535,9 +3522,9 @@
     "list": [
       {
         "current": {
-          "selected": false,
-          "text": "Prometheus",
-          "value": "prometheus"
+          "selected": true,
+          "text": "default",
+          "value": "default"
         },
         "hide": 0,
         "includeAll": false,
@@ -3553,6 +3540,7 @@
       },
       {
         "current": {
+          "isNone": true,
           "selected": false,
           "text": "None",
           "value": ""
@@ -3627,7 +3615,7 @@
       },
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": [
             "node-exporter"
           ],
@@ -3659,8 +3647,8 @@
       {
         "current": {
           "selected": false,
-          "text": "v1.30.2-eks-1552ad0",
-          "value": "v1.30.2-eks-1552ad0"
+          "text": "v1.31.5-eks-5d632ec",
+          "value": "v1.31.5-eks-5d632ec"
         },
         "datasource": {
           "type": "prometheus",
@@ -3689,10 +3677,11 @@
     "from": "now-1h",
     "to": "now"
   },
+  "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {},
   "timezone": "",
   "title": "Kubernetes / Views / Global",
   "uid": "k8s_views_global",
-  "version": 7,
+  "version": 1,
   "weekStart": ""
 }

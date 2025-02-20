@@ -198,7 +198,7 @@ prometheus:
           resources:
             requests:
               storage: 50Gi
-    retention: 30d
+    retention: 2d
     walCompression: true
     ## If true, the Operator won't process any Prometheus configuration changes
     ##
@@ -226,3 +226,22 @@ prometheus:
 # prometheus-node-exporter:
 #   rbac:
 #     pspEnabled: true
+thanosRuler:
+  thanosRulerSpec:
+    retention: 24h
+    resources:
+      requests:
+        memory: 200Mi
+        cpu: 100m
+      limits:
+        memory: 400Mi
+        cpu: 200m
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: "Addons-Services"
+              operator: In
+              values:
+              - "true"
