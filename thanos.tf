@@ -52,13 +52,36 @@ resource "helm_release" "thanos" {
   ]
 }
 
-# resource "kubernetes_config_map" "mimir-overview_dashboard" {
+resource "kubernetes_config_map" "thanos-overview_dashboard" {
+  count = var.thanos_enabled && var.deployment_config.grafana_enabled ? 1 : 0
+  depends_on = [
+    helm_release.thanos
+  ]
+  metadata {
+    name      = "prometheus-operator-kube-p-thanos-overview-dashboard"
+    namespace = var.pgl_namespace
+    labels = {
+      "grafana_dashboard" : "1"
+      "app" : "kube-prometheus-stack-grafana"
+      "chart" : "kube-prometheus-stack-61.1.0"
+      "release" : "prometheus-operator"
+    }
+    annotations = {
+      "grafana_folder" : "thanos"
+    }
+  }
+  data = {
+    "thanos-overview-dashboard.json" = "${file("${path.module}/grafana/dashboards/thanos-overview.json")}"
+  }
+}
+
+# resource "kubernetes_config_map" "thanos-compactor_dashboard" {
 #   count = var.thanos_enabled && var.deployment_config.grafana_enabled ? 1 : 0
 #   depends_on = [
-#     helm_release.grafana_mimir
+#     helm_release.thanos
 #   ]
 #   metadata {
-#     name      = "prometheus-operator-kube-p-mimir-overview-dashboard"
+#     name      = "prometheus-operator-kube-p-thanos-compactor-dashboard"
 #     namespace = var.pgl_namespace
 #     labels = {
 #       "grafana_dashboard" : "1"
@@ -67,22 +90,22 @@ resource "helm_release" "thanos" {
 #       "release" : "prometheus-operator"
 #     }
 #     annotations = {
-#       "grafana_folder" : "Mimir"
+#       "grafana_folder" : "thanos"
 #     }
 #   }
 
 #   data = {
-#     "mimir-overview-dashboard.json" = "${file("${path.module}/grafana/dashboards/mimir-overview.json")}"
+#     "thanos-compactor-dashboard.json" = "${file("${path.module}/grafana/dashboards/mimir-compactor.json")}"
 #   }
 # }
 
-# resource "kubernetes_config_map" "mimir-compactor_dashboard" {
+# resource "kubernetes_config_map" "thanos-object-store_dashboard" {
 #   count = var.thanos_enabled && var.deployment_config.grafana_enabled ? 1 : 0
 #   depends_on = [
-#     helm_release.grafana_mimir
+#     helm_release.thanos
 #   ]
 #   metadata {
-#     name      = "prometheus-operator-kube-p-mimir-compactor-dashboard"
+#     name      = "prometheus-operator-kube-p-thanos-object-store-dashboard"
 #     namespace = var.pgl_namespace
 #     labels = {
 #       "grafana_dashboard" : "1"
@@ -91,22 +114,22 @@ resource "helm_release" "thanos" {
 #       "release" : "prometheus-operator"
 #     }
 #     annotations = {
-#       "grafana_folder" : "Mimir"
+#       "grafana_folder" : "thanos"
 #     }
 #   }
 
 #   data = {
-#     "mimir-compactor-dashboard.json" = "${file("${path.module}/grafana/dashboards/mimir-compactor.json")}"
+#     "thanos-object-store-dashboard.json" = "${file("${path.module}/grafana/dashboards/mimir-object-store.json")}"
 #   }
 # }
 
-# resource "kubernetes_config_map" "mimir-object-store_dashboard" {
+# resource "kubernetes_config_map" "thanos-queries_dashboard" {
 #   count = var.thanos_enabled && var.deployment_config.grafana_enabled ? 1 : 0
 #   depends_on = [
-#     helm_release.grafana_mimir
+#     helm_release.thanos
 #   ]
 #   metadata {
-#     name      = "prometheus-operator-kube-p-mimir-object-store-dashboard"
+#     name      = "prometheus-operator-kube-p-thanos-queries-dashboard"
 #     namespace = var.pgl_namespace
 #     labels = {
 #       "grafana_dashboard" : "1"
@@ -115,22 +138,22 @@ resource "helm_release" "thanos" {
 #       "release" : "prometheus-operator"
 #     }
 #     annotations = {
-#       "grafana_folder" : "Mimir"
+#       "grafana_folder" : "thanos"
 #     }
 #   }
 
 #   data = {
-#     "mimir-object-store-dashboard.json" = "${file("${path.module}/grafana/dashboards/mimir-object-store.json")}"
+#     "thanos-queries-dashboard.json" = "${file("${path.module}/grafana/dashboards/mimir-queries.json")}"
 #   }
 # }
 
-# resource "kubernetes_config_map" "mimir-queries_dashboard" {
+# resource "kubernetes_config_map" "thanos-writes-resources_dashboard" {
 #   count = var.thanos_enabled && var.deployment_config.grafana_enabled ? 1 : 0
 #   depends_on = [
-#     helm_release.grafana_mimir
+#     helm_release.thanos
 #   ]
 #   metadata {
-#     name      = "prometheus-operator-kube-p-mimir-queries-dashboard"
+#     name      = "prometheus-operator-kube-p-thanos-writes-resources-dashboard"
 #     namespace = var.pgl_namespace
 #     labels = {
 #       "grafana_dashboard" : "1"
@@ -139,22 +162,22 @@ resource "helm_release" "thanos" {
 #       "release" : "prometheus-operator"
 #     }
 #     annotations = {
-#       "grafana_folder" : "Mimir"
+#       "grafana_folder" : "thanos"
 #     }
 #   }
 
 #   data = {
-#     "mimir-queries-dashboard.json" = "${file("${path.module}/grafana/dashboards/mimir-queries.json")}"
+#     "thanos-writes-resources-dashboard.json" = "${file("${path.module}/grafana/dashboards/mimir-writes-resources.json")}"
 #   }
 # }
 
-# resource "kubernetes_config_map" "mimir-writes-resources_dashboard" {
+# resource "kubernetes_config_map" "thanos-writes_dashboard" {
 #   count = var.thanos_enabled && var.deployment_config.grafana_enabled ? 1 : 0
 #   depends_on = [
-#     helm_release.grafana_mimir
+#     helm_release.thanos
 #   ]
 #   metadata {
-#     name      = "prometheus-operator-kube-p-mimir-writes-resources-dashboard"
+#     name      = "prometheus-operator-kube-p-thanos-writes-dashboard"
 #     namespace = var.pgl_namespace
 #     labels = {
 #       "grafana_dashboard" : "1"
@@ -163,22 +186,22 @@ resource "helm_release" "thanos" {
 #       "release" : "prometheus-operator"
 #     }
 #     annotations = {
-#       "grafana_folder" : "Mimir"
+#       "grafana_folder" : "thanos"
 #     }
 #   }
 
 #   data = {
-#     "mimir-writes-resources-dashboard.json" = "${file("${path.module}/grafana/dashboards/mimir-writes-resources.json")}"
+#     "thanos-writes-dashboard.json" = "${file("${path.module}/grafana/dashboards/mimir-writes.json")}"
 #   }
 # }
 
-# resource "kubernetes_config_map" "mimir-writes_dashboard" {
+# resource "kubernetes_config_map" "thanos-reads_dashboard" {
 #   count = var.thanos_enabled && var.deployment_config.grafana_enabled ? 1 : 0
 #   depends_on = [
-#     helm_release.grafana_mimir
+#     helm_release.thanos
 #   ]
 #   metadata {
-#     name      = "prometheus-operator-kube-p-mimir-writes-dashboard"
+#     name      = "prometheus-operator-kube-p-thanos-reads-dashboard"
 #     namespace = var.pgl_namespace
 #     labels = {
 #       "grafana_dashboard" : "1"
@@ -187,22 +210,22 @@ resource "helm_release" "thanos" {
 #       "release" : "prometheus-operator"
 #     }
 #     annotations = {
-#       "grafana_folder" : "Mimir"
+#       "grafana_folder" : "thanos"
 #     }
 #   }
 
 #   data = {
-#     "mimir-writes-dashboard.json" = "${file("${path.module}/grafana/dashboards/mimir-writes.json")}"
+#     "thanos-reads-dashboard.json" = "${file("${path.module}/grafana/dashboards/mimir-reads.json")}"
 #   }
 # }
 
-# resource "kubernetes_config_map" "mimir-reads_dashboard" {
+# resource "kubernetes_config_map" "thanos-reads-resources_dashboard" {
 #   count = var.thanos_enabled && var.deployment_config.grafana_enabled ? 1 : 0
 #   depends_on = [
-#     helm_release.grafana_mimir
+#     helm_release.thanos
 #   ]
 #   metadata {
-#     name      = "prometheus-operator-kube-p-mimir-reads-dashboard"
+#     name      = "prometheus-operator-kube-p-thanos-reads-resources-dashboard"
 #     namespace = var.pgl_namespace
 #     labels = {
 #       "grafana_dashboard" : "1"
@@ -211,35 +234,11 @@ resource "helm_release" "thanos" {
 #       "release" : "prometheus-operator"
 #     }
 #     annotations = {
-#       "grafana_folder" : "Mimir"
+#       "grafana_folder" : "thanos"
 #     }
 #   }
 
 #   data = {
-#     "mimir-reads-dashboard.json" = "${file("${path.module}/grafana/dashboards/mimir-reads.json")}"
-#   }
-# }
-
-# resource "kubernetes_config_map" "mimir-reads-resources_dashboard" {
-#   count = var.thanos_enabled && var.deployment_config.grafana_enabled ? 1 : 0
-#   depends_on = [
-#     helm_release.grafana_mimir
-#   ]
-#   metadata {
-#     name      = "prometheus-operator-kube-p-mimir-reads-resources-dashboard"
-#     namespace = var.pgl_namespace
-#     labels = {
-#       "grafana_dashboard" : "1"
-#       "app" : "kube-prometheus-stack-grafana"
-#       "chart" : "kube-prometheus-stack-61.1.0"
-#       "release" : "prometheus-operator"
-#     }
-#     annotations = {
-#       "grafana_folder" : "Mimir"
-#     }
-#   }
-
-#   data = {
-#     "mimir-reads-resources-dashboard.json" = "${file("${path.module}/grafana/dashboards/mimir-reads-resources.json")}"
+#     "thanos-reads-resources-dashboard.json" = "${file("${path.module}/grafana/dashboards/mimir-reads-resources.json")}"
 #   }
 # }

@@ -13,7 +13,7 @@ locals {
 
 module "pgl" {
   source                        = "squareops/grafana-stack/kubernetes"
-  version                       = "3.0.3"
+  version                       = "4.0.0"
   cluster_name                  = ""
   kube_prometheus_stack_enabled = true
   loki_enabled                  = true

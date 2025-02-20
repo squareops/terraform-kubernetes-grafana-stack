@@ -26,7 +26,7 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 13548,
   "graphTooltip": 0,
-  "id": 67,
+  "id": 34,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -1520,12 +1520,16 @@
   ],
   "refresh": "",
   "schemaVersion": 39,
-  "tags": [],
+  "tags": [
+    "kubernetes",
+    "prometheus",
+    "nodegroup"
+  ],
   "templating": {
     "list": [
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "default",
           "value": "default"
         },
@@ -1574,8 +1578,8 @@
       {
         "current": {
           "selected": false,
-          "text": "ip-10-20-39-69.us-east-2.compute.internal",
-          "value": "ip-10-20-39-69.us-east-2.compute.internal"
+          "text": "ip-10-20-41-244.us-east-2.compute.internal",
+          "value": "ip-10-20-41-244.us-east-2.compute.internal"
         },
         "datasource": {
           "type": "prometheus",

@@ -1152,12 +1152,12 @@ resource "kubernetes_config_map" "nodegroup_dashboard" {
   }
 
   data = {
-    "nodegroup-dashboard.json" = "${file("${path.module}/grafana/dashboards/nodegroup.json")}",
-    "cluster-dashboard.json"   = "${file("${path.module}/grafana/dashboards/k8s_view_global.json")}",
-    "namespace-dashboard.json" = "${file("${path.module}/grafana/dashboards/k8s_view_namespace.json")}",
-    "node-dashboard.json"      = "${file("${path.module}/grafana/dashboards/k8s_view_nodes.json")}",
-    "pods-dashboard.json"      = "${file("${path.module}/grafana/dashboards/k8s_view_pods.json")}"
-    # "karpenter_node_dashboard.json" = "${file("${path.module}/grafana/dashboards/karpenter_node_dashboard.json")}"
+    "nodegroup-dashboard.json"      = "${file("${path.module}/grafana/dashboards/nodegroup.json")}",
+    "cluster-dashboard.json"        = "${file("${path.module}/grafana/dashboards/k8s_view_global.json")}",
+    "namespace-dashboard.json"      = "${file("${path.module}/grafana/dashboards/k8s_view_namespace.json")}",
+    "node-dashboard.json"           = "${file("${path.module}/grafana/dashboards/k8s_view_nodes.json")}",
+    "pods-dashboard.json"           = "${file("${path.module}/grafana/dashboards/k8s_view_pods.json")}",
+    "karpenter_node_dashboard.json" = "${file("${path.module}/grafana/dashboards/karpenter_node_dashboard.json")}"
   }
 }
 

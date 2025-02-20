@@ -44,7 +44,7 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 14314,
   "graphTooltip": 0,
-  "id": 4246,
+  "id": 27,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -139,7 +139,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -222,7 +222,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -305,7 +305,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -388,7 +388,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -474,7 +474,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -557,7 +557,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -641,7 +641,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -725,7 +725,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -809,7 +809,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -905,6 +905,7 @@
           "showLegend": false
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
@@ -1095,6 +1096,7 @@
           "showLegend": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
@@ -1207,6 +1209,7 @@
           "showLegend": false
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
@@ -1487,6 +1490,7 @@
           "showLegend": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "desc"
         }
@@ -1645,6 +1649,7 @@
         },
         "showValue": "never",
         "tooltip": {
+          "maxHeight": 600,
           "mode": "single",
           "showColorScale": false,
           "yHistogram": false
@@ -1656,7 +1661,7 @@
           "unit": "s"
         }
       },
-      "pluginVersion": "11.1.0",
+      "pluginVersion": "11.0.0",
       "reverseYBuckets": false,
       "targets": [
         {
@@ -2316,8 +2321,8 @@
       {
         "current": {
           "selected": true,
-          "text": "Prometheus",
-          "value": "prometheus"
+          "text": "default",
+          "value": "default"
         },
         "hide": 0,
         "includeAll": false,
@@ -2337,6 +2342,7 @@
     "from": "now-3h",
     "to": "now"
   },
+  "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {
     "refresh_intervals": [
       "10s",
@@ -2364,6 +2370,6 @@
   "timezone": "browser",
   "title": "Kubernetes Nginx Ingress Prometheus NextGen",
   "uid": "k8s-nginx-ingress-prometheus-ng",
-  "version": 5,
+  "version": 1,
   "weekStart": ""
 }
