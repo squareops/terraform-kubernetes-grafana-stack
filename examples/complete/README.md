@@ -21,7 +21,7 @@ No requirements.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_pgl"></a> [pgl](#module\_pgl) | squareops/grafana-stack/kubernetes | 3.0.3 |
+| <a name="module_pgl"></a> [pgl](#module\_pgl) | squareops/grafana-stack/kubernetes | 3.1.0 |
 
 ## Resources
 
