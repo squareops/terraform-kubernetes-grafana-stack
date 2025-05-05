@@ -1,12 +1,12 @@
 locals {
-  name        = "alloy"
-  region      = "us-east-1"
-  environment = "test"
+  name        = ""
+  region      = ""
+  environment = ""
   additional_tags = {
     Owner       = "organization_name"
     Expires     = "Never"
     Department  = "Engineering"
-    Product     = "alloy"
+    Product     = ""
     Environment = local.environment
   }
 }
