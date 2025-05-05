@@ -95,6 +95,25 @@ resource "helm_release" "loki" {
   ]
 }
 
+#---------------------Grafana Alloy----------------------------------
+
+resource "helm_release" "alloy" {
+  count           = var.grafana_alloy_enabled ? 1 : 0
+  depends_on      = [kubernetes_namespace.monitoring, helm_release.loki]
+  name            = "alloy"
+  atomic          = true
+  chart           = "alloy"
+  version         = var.alloy_chart_version
+  namespace       = var.pgl_namespace
+  repository      = "https://grafana.github.io/helm-charts"
+  cleanup_on_fail = true
+
+  values = [
+    templatefile("${path.module}/helm/values/alloy/alloy-values.yaml", {}),
+    var.deployment_config.alloy_values_yaml
+  ]
+}
+
 #---------------------blackbox----------------------------------
 
 resource "helm_release" "blackbox_exporter" {
@@ -1201,16 +1220,16 @@ resource "time_sleep" "wait_180_sec" {
   create_duration = "180s"
 }
 
-resource "null_resource" "grafana_homepage" {
-  count      = var.deployment_config.grafana_enabled ? 1 : 0
-  depends_on = [time_sleep.wait_180_sec]
-  provisioner "local-exec" {
-    interpreter = ["/bin/bash", "-c"]
-    command     = <<EOT
-    curl -H 'Content-Type: application/json' -X PUT "https://${nonsensitive(data.kubernetes_secret.prometheus-operator-grafana[0].data["admin-user"])}:${nonsensitive(data.kubernetes_secret.prometheus-operator-grafana[0].data["admin-password"])}@${var.deployment_config.hostname}/api/org/preferences" -d'{ "theme": "",  "homeDashboardUId": "grafana_home_dashboard",  "timezone":"utc"}'
-    EOT
-  }
-}
+# resource "null_resource" "grafana_homepage" {
+#   count      = var.deployment_config.grafana_enabled ? 1 : 0
+#   depends_on = [time_sleep.wait_180_sec]
+#   provisioner "local-exec" {
+#     interpreter = ["/bin/bash", "-c"]
+#     command     = <<EOT
+#     curl -H 'Content-Type: application/json' -X PUT "https://${nonsensitive(data.kubernetes_secret.prometheus-operator-grafana[0].data["admin-user"])}:${nonsensitive(data.kubernetes_secret.prometheus-operator-grafana[0].data["admin-password"])}@${var.deployment_config.hostname}/api/org/preferences" -d'{ "theme": "",  "homeDashboardUId": "grafana_home_dashboard",  "timezone":"utc"}'
+#     EOT
+#   }
+# }
 
 resource "kubernetes_config_map" "istio_control_plane_dashboard" {
   depends_on = [helm_release.prometheus_grafana]
