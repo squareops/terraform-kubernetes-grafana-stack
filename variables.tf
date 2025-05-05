@@ -16,6 +16,12 @@ variable "loki_stack_version" {
   description = "Version of the Loki stack to deploy."
 }
 
+variable "alloy_chart_version" {
+  default     = "1.0.2"
+  type        = string
+  description = "Version of the grafana alloy to deploy."
+}
+
 variable "blackbox_exporter_version" {
   default     = "8.17.0"
   type        = string
@@ -48,6 +54,7 @@ variable "deployment_config" {
     storage_class_name                  = "gp2"
     prometheus_values_yaml              = ""
     loki_values_yaml                    = ""
+    alloy_values_yaml                   = ""
     blackbox_values_yaml                = ""
     grafana_mimir_values_yaml           = ""
     tempo_values_yaml                   = ""
@@ -74,9 +81,8 @@ variable "deployment_config" {
       versioning_enabled    = ""
       s3_bucket_region      = ""
     }
-    promtail_config = {
-      promtail_version = "6.16.3"
-      promtail_values  = ""
+    alloy_config = {
+      alloy_values = ""
     }
     tempo_config = {
       s3_bucket_name       = ""
@@ -144,6 +150,12 @@ variable "cluster_name" {
 
 ###
 variable "loki_scalable_enabled" {
+  default     = false
+  type        = bool
+  description = "Specify whether or not to deploy the loki scalable"
+}
+
+variable "grafana_alloy_enabled" {
   default     = false
   type        = bool
   description = "Specify whether or not to deploy the loki scalable"
