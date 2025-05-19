@@ -16,9 +16,10 @@ module "pgl" {
   version                       = "3.1.0"
   cluster_name                  = ""
   kube_prometheus_stack_enabled = true
-  loki_enabled                  = false
-  loki_scalable_enabled         = true
-  grafana_mimir_enabled         = true
+  loki_enabled                  = true
+  grafana_alloy_enabled         = true
+  loki_scalable_enabled         = false
+  grafana_mimir_enabled         = false
   cloudwatch_enabled            = true
   tempo_enabled                 = false
   deployment_config = {
@@ -26,6 +27,7 @@ module "pgl" {
     storage_class_name                  = "infra-service-sc"
     prometheus_values_yaml              = file("./helm/prometheus.yaml")
     loki_values_yaml                    = file("./helm/loki.yaml")
+    alloy_values_yaml                   = file("./helm/alloy-values.yaml")
     blackbox_values_yaml                = file("./helm/blackbox.yaml")
     grafana_mimir_values_yaml           = file("./helm/mimir.yaml")
     tempo_values_yaml                   = file("./helm/tempo.yaml")
@@ -52,9 +54,8 @@ module "pgl" {
       versioning_enabled    = "false"
       s3_bucket_region      = "${local.region}"
     }
-    promtail_config = {
-      promtail_version = "6.16.3"
-      promtail_values  = file("./helm/promtail.yaml")
+    alloy_config = {
+      alloy_values = file("./helm/alloy-values.yaml")
     }
     tempo_config = {
       s3_bucket_name       = "${local.environment}-${local.name}-tempo-skaf"

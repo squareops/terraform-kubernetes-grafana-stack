@@ -19,6 +19,7 @@ loki:
     size: "50Gi"
 
 promtail:
+  enabled: false
   config:
     snippets:
       pipelineStages:
